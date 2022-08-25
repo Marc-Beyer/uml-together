@@ -1,0 +1,23 @@
+nav {
+    position: absolute;
+
+    width: 20%;
+    min-width: 200px;
+    height: 100vh;
+    background-color: teal;
+
+    display: flex;
+    flex-direction: column;
+
+    button {
+        background: none;
+        border: none;
+
+        text-align: left;
+    }
+}
+
+nav.closed {
+    width: 50px;
+    min-width: 50px;
+}
