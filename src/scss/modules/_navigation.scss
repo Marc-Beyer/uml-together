@@ -1,19 +1,43 @@
+@use "variables";
+
 nav {
     position: absolute;
+    z-index: 1000;
 
     width: 20%;
     min-width: 200px;
     height: 100vh;
-    background-color: teal;
+    background-color: variables.$primary-color;
 
     display: flex;
     flex-direction: column;
 
+    color: variables.$font-color;
+
     button {
+        color: inherit;
         background: none;
         border: none;
 
         text-align: left;
+    }
+
+    ul{
+        li{
+
+            overflow: hidden;
+            button{
+                padding: variables.$size-1;
+
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                &:hover{
+                    background: darken(variables.$primary-color, 30%);
+                }
+            }
+        }
     }
 }
 

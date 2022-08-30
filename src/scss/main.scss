@@ -1,5 +1,6 @@
 @use "modules/variables";
 @use "modules/navigation";
+@use "modules/components";
 
 *,
 ::before,
@@ -17,11 +18,16 @@ svg:not([fill]) {
     fill: currentColor;
 }
 
+hr {
+    color: currentColor;
+}
+
 [aria-busy="true"] {
     cursor: progress;
 }
 
-[aria-controls] {
+[aria-controls],
+button {
     cursor: pointer;
 }
 
