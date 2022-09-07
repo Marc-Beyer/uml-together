@@ -34,6 +34,7 @@ container.addEventListener("mousedown", (event) => {
     x = event.screenX;
     y = event.screenY;
     isMousedown = true;
+    Component.resetActiveComponents();
 });
 container.addEventListener("mouseup", (event) => {
     isMousedown = false;

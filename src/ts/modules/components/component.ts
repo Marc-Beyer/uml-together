@@ -4,6 +4,7 @@ export class Component extends HTMLElement {
     private static _xZoom: number = 1;
     private static _yZoom: number = 1;
     public static componentList: Component[] = [];
+    public static activeComponentList: Component[] = [];
     public static container: HTMLElement | null = document.getElementById("component-container");
 
     public static baseFontSize = 16;
@@ -25,10 +26,23 @@ export class Component extends HTMLElement {
         }
     }
 
+    public static resetActiveComponents() {
+        for (let index = 0; index < Component.componentList.length; index++) {
+            const element = Component.componentList[index];
+            element.isActive = false;
+        }
+    }
+
+    public static addActiveComponents(component: Component, reset: boolean = false) {
+        if (reset) this.resetActiveComponents();
+        Component.componentList.push(component);
+    }
+
     private _xPos!: number;
     private _yPos!: number;
     private _width!: number;
     private _height!: number;
+    private _isActive: boolean = false;
 
     /**
      * Getter and setter
@@ -63,6 +77,23 @@ export class Component extends HTMLElement {
         this._height = value;
         this.style.height = `${this._height * Component._yZoom}px`;
     }
+    public get isActive(): boolean {
+        return this._isActive;
+    }
+    public set isActive(value: boolean) {
+        console.log("SET active", value);
+
+        if (value) {
+            this.classList.add("is-active");
+        } else {
+            this.classList.remove("is-active");
+        }
+        this._isActive = value;
+    }
+
+    /**
+     * Methods
+     */
 
     public updateOffset() {
         this.xPos = this.xPos;
@@ -91,6 +122,17 @@ export class Component extends HTMLElement {
 
         Component.componentList.push(this);
         Component.container?.append(this);
+
+        this.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+        });
+
+        this.addEventListener("dblclick", () => {
+            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            this.isActive = true;
+        });
     }
 
     connectedCallback() {
