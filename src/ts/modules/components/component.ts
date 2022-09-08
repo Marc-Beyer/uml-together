@@ -27,15 +27,18 @@ export class Component extends HTMLElement {
     }
 
     public static resetActiveComponents() {
-        for (let index = 0; index < Component.componentList.length; index++) {
-            const element = Component.componentList[index];
+        for (let index = 0; index < Component.activeComponentList.length; index++) {
+            const element = Component.activeComponentList[index];
             element.isActive = false;
         }
+        Component.activeComponentList = [];
     }
 
-    public static addActiveComponents(component: Component, reset: boolean = false) {
+    public static addActiveComponents(component: Component, reset: boolean = true) {
         if (reset) this.resetActiveComponents();
-        Component.componentList.push(component);
+        Component.activeComponentList.push(component);
+        component.parentElement?.append(component);
+        component.isActive = true;
     }
 
     private _xPos!: number;
@@ -81,8 +84,6 @@ export class Component extends HTMLElement {
         return this._isActive;
     }
     public set isActive(value: boolean) {
-        console.log("SET active", value);
-
         if (value) {
             this.classList.add("is-active");
         } else {
@@ -94,6 +95,11 @@ export class Component extends HTMLElement {
     /**
      * Methods
      */
+
+    public addPos(x: number, y: number) {
+        this.xPos += x / -Component._xZoom;
+        this.yPos += y / -Component._yZoom;
+    }
 
     public updateOffset() {
         this.xPos = this.xPos;
@@ -125,14 +131,11 @@ export class Component extends HTMLElement {
 
         this.addEventListener("mousedown", (event) => {
             event.preventDefault();
-            event.stopPropagation();
-            console.log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+            //event.stopPropagation();
+            Component.addActiveComponents(this);
         });
 
-        this.addEventListener("dblclick", () => {
-            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-            this.isActive = true;
-        });
+        this.addEventListener("dblclick", () => {});
     }
 
     connectedCallback() {

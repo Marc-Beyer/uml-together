@@ -34,15 +34,26 @@ container.addEventListener("mousedown", (event) => {
     x = event.screenX;
     y = event.screenY;
     isMousedown = true;
-    Component.resetActiveComponents();
+
+    if (!event.defaultPrevented) Component.resetActiveComponents();
 });
+
 container.addEventListener("mouseup", (event) => {
     isMousedown = false;
 });
 
 document.addEventListener("mousemove", (event) => {
     if (!isMousedown) return;
-    Component.addOffset(x - event.screenX, y - event.screenY);
-    x = event.screenX;
-    y = event.screenY;
+    if (Component.activeComponentList.length > 0) {
+        for (let index = 0; index < Component.activeComponentList.length; index++) {
+            const component = Component.activeComponentList[index];
+            component.addPos(x - event.screenX, y - event.screenY);
+            x = event.screenX;
+            y = event.screenY;
+        }
+    } else {
+        Component.addOffset(x - event.screenX, y - event.screenY);
+        x = event.screenX;
+        y = event.screenY;
+    }
 });
