@@ -1,6 +1,6 @@
 import { ClassComponent } from "./modules/components/classComponent";
 import { Component } from "./modules/components/component";
-import * as navigation from "./modules/navigation";
+import * as navigation from "./modules/navigation/main";
 
 navigation.initialize();
 
