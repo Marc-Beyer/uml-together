@@ -3,6 +3,8 @@ export class Component extends HTMLElement {
     private static _yOffset: number = 1;
     private static _xZoom: number = 1;
     private static _yZoom: number = 1;
+    public static zoomMax = 5;
+    public static zoomMin = 0.5;
     public static componentList: Component[] = [];
     public static activeComponentList: Component[] = [];
     public static container: HTMLElement | null = document.getElementById("component-container");
@@ -19,8 +21,9 @@ export class Component extends HTMLElement {
     }
 
     public static addZoom(x: number, y: number) {
-        this._xZoom += x;
-        this._yZoom += y;
+        this._xZoom = Math.max(Math.min(this._xZoom + x, this.zoomMax), this.zoomMin);
+        this._yZoom = Math.max(Math.min(this._yZoom + y, this.zoomMax), this.zoomMin);
+
         for (let index = 0; index < this.componentList.length; index++) {
             this.componentList[index].updateZoom();
         }
