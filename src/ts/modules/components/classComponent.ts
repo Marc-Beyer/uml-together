@@ -6,8 +6,12 @@ export class ClassComponent extends Component {
     }
 
     connectedCallback() {
-        this.innerHTML = "Class";
-        this.append(document.createTextNode("+ public test: int"));
+        this.innerHTML = "";
+
+        let div = document.createElement("div");
+        div.append(document.createTextNode("+ public test: int"));
+        this.append(div);
+        this.append(document.createElement("hr"));
     }
 }
 
