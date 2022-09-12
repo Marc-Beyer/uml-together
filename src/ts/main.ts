@@ -10,7 +10,7 @@ for (let i = 0; i < 1; i++) {
     }
 }
 
-new ClassComponent(-120, -120, 100, 100);
+new ClassComponent(-120, -120);
 
 //new Component(0, 101, 100, 100);
 
@@ -31,6 +31,7 @@ let x: number = 0;
 let y: number = 0;
 let isMousedown = false;
 container.addEventListener("mousedown", (event) => {
+    if (event.button != 0 && event.button != 1) return;
     x = event.screenX;
     y = event.screenY;
     isMousedown = true;
@@ -39,6 +40,7 @@ container.addEventListener("mousedown", (event) => {
 });
 
 container.addEventListener("mouseup", (event) => {
+    if (event.button != 0 && event.button != 1) return;
     isMousedown = false;
 });
 

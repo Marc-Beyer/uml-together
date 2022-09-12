@@ -1,3 +1,5 @@
+import { ScaleHandle } from "./scaleHandle";
+
 export class Component extends HTMLElement {
     private static _xOffset: number = 1;
     private static _yOffset: number = 1;
@@ -12,6 +14,19 @@ export class Component extends HTMLElement {
     public static baseFontSize = 16;
     public static baseBorderWidth = 2;
 
+    public static get xZoom(): number {
+        return Component._xZoom;
+    }
+    public static set xZoom(value: number) {
+        Component._xZoom = Math.max(Math.min(value, this.zoomMax), this.zoomMin);
+    }
+    public static get yZoom(): number {
+        return Component._yZoom;
+    }
+    public static set yZoom(value: number) {
+        Component._yZoom = Math.max(Math.min(value, this.zoomMax), this.zoomMin);
+    }
+
     public static addOffset(x: number, y: number) {
         this._xOffset += x / -this._xZoom;
         this._yOffset += y / -this._yZoom;
@@ -21,8 +36,8 @@ export class Component extends HTMLElement {
     }
 
     public static addZoom(x: number, y: number) {
-        this._xZoom = Math.max(Math.min(this._xZoom + x, this.zoomMax), this.zoomMin);
-        this._yZoom = Math.max(Math.min(this._yZoom + y, this.zoomMax), this.zoomMin);
+        this._xZoom += x;
+        this._yZoom += y;
 
         for (let index = 0; index < this.componentList.length; index++) {
             this.componentList[index].updateZoom();
@@ -74,23 +89,32 @@ export class Component extends HTMLElement {
     }
     public set width(value: number) {
         this._width = value;
-        this.style.width = `${this._width * Component._xZoom}px`;
+        this.style.width = value === -1 ? "auto" : `${this._width * Component._xZoom}px`;
     }
     public get height(): number {
         return this._height;
     }
     public set height(value: number) {
         this._height = value;
-        this.style.height = `${this._height * Component._yZoom}px`;
+        this.style.height = value === -1 ? "auto" : `${this._height * Component._yZoom}px`;
     }
     public get isActive(): boolean {
         return this._isActive;
     }
     public set isActive(value: boolean) {
         if (value) {
+            this.addScaleHandle(-8, -8);
+            this.addScaleHandle(8, -8);
+            this.addScaleHandle(-8, 8);
+            this.addScaleHandle(8, 8);
             this.classList.add("is-active");
         } else {
             this.classList.remove("is-active");
+            let collection = this.getElementsByClassName("scale-handle");
+            while (collection.length > 0) {
+                const element = collection[0];
+                element.remove();
+            }
         }
         this._isActive = value;
     }
@@ -98,6 +122,20 @@ export class Component extends HTMLElement {
     /**
      * Methods
      */
+    private addScaleHandle(x: number, y: number) {
+        let scaleHandle = new ScaleHandle();
+        if (y < 0) {
+            scaleHandle.style.top = `${y}px`;
+        } else {
+            scaleHandle.style.bottom = `-${y}px`;
+        }
+        if (x < 0) {
+            scaleHandle.style.left = `${x}px`;
+        } else {
+            scaleHandle.style.right = `-${x}px`;
+        }
+        this.append(scaleHandle);
+    }
 
     public addPos(x: number, y: number) {
         this.xPos += x / -Component._xZoom;
@@ -115,9 +153,12 @@ export class Component extends HTMLElement {
         this.updateOffset();
         this.style.fontSize = `${Component._xZoom * Component.baseFontSize}px`;
         this.style.borderWidth = `${Component._xZoom * Component.baseBorderWidth}px`;
+        this.updateCSSOnZoom(Component._xZoom);
     }
 
-    constructor(xPos: number = 0, yPos: number = 0, width: number = 0, height: number = 0) {
+    protected updateCSSOnZoom() {}
+
+    constructor(xPos: number = 0, yPos: number = 0, width: number = -1, height: number = -1) {
         super();
         this.xPos = xPos;
         this.yPos = yPos;
@@ -133,6 +174,7 @@ export class Component extends HTMLElement {
         Component.container?.append(this);
 
         this.addEventListener("mousedown", (event) => {
+            if (event.button != 0) return;
             event.preventDefault();
             //event.stopPropagation();
             Component.addActiveComponents(this);

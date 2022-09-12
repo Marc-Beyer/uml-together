@@ -30,22 +30,22 @@ function createButton(diagrammButton: DiagramButton): HTMLButtonElement {
         //========================
         case "class":
             button.addEventListener("click", () => {
-                new ClassComponent(0, 0, 100, 100);
+                new ClassComponent();
             });
             break;
         case "interface":
             button.addEventListener("click", () => {
-                new InterfaceComponent(0, 0, 100, 100);
+                new InterfaceComponent();
             });
             break;
         case "enumeration":
             button.addEventListener("click", () => {
-                new EnumerationComponent(0, 0, 100, 100);
+                new EnumerationComponent();
             });
             break;
         case "primitive":
             button.addEventListener("click", () => {
-                new PrimitiveComponent(0, 0, 100, 100);
+                new PrimitiveComponent();
             });
             break;
         case "generalizationClass":

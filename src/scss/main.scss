@@ -20,6 +20,9 @@ svg:not([fill]) {
 
 hr {
     color: currentColor;
+    width: 100%;
+    border: inherit;
+    border-bottom: none;
 }
 
 [aria-busy="true"] {

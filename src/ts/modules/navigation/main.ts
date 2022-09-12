@@ -14,7 +14,7 @@ export interface DiagramButton {
 }
 
 //Data from DB
-let mockupDiagramm: Diagram = {
+let mockupDiagram: Diagram = {
     id: 0,
     title: "ClassDiagram",
     buttons: [
@@ -36,5 +36,5 @@ export function initialize() {
     document.getElementById("nav-btn")?.addEventListener("click", () => {
         nav?.classList.toggle("closed");
     });
-    createButtons(mockupDiagramm);
+    createButtons(mockupDiagram);
 }

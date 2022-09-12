@@ -1,13 +1,20 @@
+import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 
-export class InterfaceComponent extends Component {
-    constructor(xPos: number = 0, yPos: number = 0, width: number = 0, height: number = 0) {
-        super(xPos, yPos, width, height);
-    }
-
+export class InterfaceComponent extends ClassComponent {
     connectedCallback() {
-        this.innerHTML = "&lt;&lt;Interface&gt;&gt;<br>Class";
-        this.append(document.createTextNode("+ public test: int"));
+        this.innerHTML = "";
+
+        this.classList.add("class-component");
+
+        this.addHeaderBlock("<<Interface>>", false);
+        this.addHeaderBlock("Class");
+        this.addDivider();
+        this.addBlock("-date : Date");
+        this.addBlock("-status : String");
+        this.addDivider();
+        this.addBlock("+calcTotal() : int");
+        this.addBlock("+toString() : String");
     }
 }
 
