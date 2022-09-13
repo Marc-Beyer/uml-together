@@ -1,4 +1,4 @@
-import { ScaleHandle } from "./scaleHandle";
+import { ScaleHandle, ScaleHandlePosition } from "./scaleHandle";
 
 export class Component extends HTMLElement {
     private static _xOffset: number = 1;
@@ -103,10 +103,11 @@ export class Component extends HTMLElement {
     }
     public set isActive(value: boolean) {
         if (value) {
-            this.addScaleHandle(-8, -8);
-            this.addScaleHandle(8, -8);
-            this.addScaleHandle(-8, 8);
-            this.addScaleHandle(8, 8);
+            for (const key in ScaleHandlePosition) {
+                if (Object.prototype.hasOwnProperty.call(ScaleHandlePosition, key)) {
+                    this.addScaleHandle(key);
+                }
+            }
             this.classList.add("is-active");
         } else {
             this.classList.remove("is-active");
@@ -122,18 +123,8 @@ export class Component extends HTMLElement {
     /**
      * Methods
      */
-    private addScaleHandle(x: number, y: number) {
-        let scaleHandle = new ScaleHandle();
-        if (y < 0) {
-            scaleHandle.style.top = `${y}px`;
-        } else {
-            scaleHandle.style.bottom = `-${y}px`;
-        }
-        if (x < 0) {
-            scaleHandle.style.left = `${x}px`;
-        } else {
-            scaleHandle.style.right = `-${x}px`;
-        }
+    private addScaleHandle(scaleHandlePosition: String) {
+        let scaleHandle = new ScaleHandle(scaleHandlePosition, this);
         this.append(scaleHandle);
     }
 

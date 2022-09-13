@@ -1,5 +1,18 @@
+import { Component } from "./component";
+
+export enum ScaleHandlePosition {
+    "TOP_LEFT",
+    "TOP",
+    "TOP_RIGHT",
+    "RIGHT",
+    "BOTTOM_RIGHT",
+    "BOTTOM",
+    "BOTTOM_LEFT",
+    "LEFT",
+}
+
 export class ScaleHandle extends HTMLElement {
-    constructor() {
+    constructor(scaleHandlePosition: ScaleHandlePosition, component: Component) {
         super();
         this.className = "scale-handle";
 
