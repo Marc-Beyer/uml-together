@@ -9,8 +9,6 @@ export class EnumerationComponent extends ClassComponent {
         this.addHeaderBlock("<<enumeration>>", false);
         this.addHeaderBlock("Class");
         this.addDivider();
-        this.addBlock("-date : Date");
-        this.addBlock("-status : String");
         this.addDivider();
         this.addBlock("+calcTotal() : int");
         this.addBlock("+toString() : String");

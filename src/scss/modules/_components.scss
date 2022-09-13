@@ -30,7 +30,7 @@
         cursor: pointer;
 
         &.is-active {
-            outline: 2px dashed black;
+            //outline: 1px solid black;
             //z-index: 101;
         }
 
@@ -40,6 +40,12 @@
             text-align: left;
             height: auto;
             width: auto;
+
+            div{
+                overflow: hidden;
+                text-overflow: ellipsis;
+                width: 100%;
+            }
         }
     }
 
@@ -54,7 +60,5 @@
         border: 2px solid black;
 
         background-color: variables.$primary-bg-color;
-
-        cursor: nw-resize;
     }
 }

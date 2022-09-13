@@ -24,7 +24,7 @@ export class ClassComponent extends Component {
     protected addHeaderBlock(text: string, bold: boolean = true) {
         let div = document.createElement("div");
         div.append(document.createTextNode(text));
-        div.style.alignSelf = "center";
+        div.style.textAlign = "center";
         if (bold) div.style.fontWeight = "bold";
         this.append(div);
     }

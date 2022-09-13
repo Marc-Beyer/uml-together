@@ -1,5 +1,6 @@
 import { ClassComponent } from "./modules/components/classComponent";
 import { Component } from "./modules/components/component";
+import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
 
 navigation.initialize();
@@ -14,48 +15,4 @@ new ClassComponent(-120, -120);
 
 //new Component(0, 101, 100, 100);
 
-const zoomSensibility = -0.001;
-const container = document.getElementById("component-container");
-
-if (!container) {
-    throw new Error("component-container not found!");
-}
-
-container.addEventListener("wheel", (event) => {
-    const zoom = zoomSensibility * event.deltaY;
-
-    Component.addZoom(zoom, zoom);
-});
-
-let x: number = 0;
-let y: number = 0;
-let isMousedown = false;
-container.addEventListener("mousedown", (event) => {
-    if (event.button != 0 && event.button != 1) return;
-    x = event.screenX;
-    y = event.screenY;
-    isMousedown = true;
-
-    if (!event.defaultPrevented) Component.resetActiveComponents();
-});
-
-container.addEventListener("mouseup", (event) => {
-    if (event.button != 0 && event.button != 1) return;
-    isMousedown = false;
-});
-
-document.addEventListener("mousemove", (event) => {
-    if (!isMousedown) return;
-    if (Component.activeComponentList.length > 0) {
-        for (let index = 0; index < Component.activeComponentList.length; index++) {
-            const component = Component.activeComponentList[index];
-            component.addPos(x - event.screenX, y - event.screenY);
-            x = event.screenX;
-            y = event.screenY;
-        }
-    } else {
-        Component.addOffset(x - event.screenX, y - event.screenY);
-        x = event.screenX;
-        y = event.screenY;
-    }
-});
+initInput();
