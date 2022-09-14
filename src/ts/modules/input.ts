@@ -1,4 +1,5 @@
 import { Component } from "./components/component";
+import { ScaleHandle } from "./components/scaleHandle";
 
 export enum MovementMode {
     "SCREEN",
@@ -16,6 +17,7 @@ export class Input {
     public static zoomSensibility = -0.001;
     public static x: number = 0;
     public static y: number = 0;
+    public static scaleHandle: ScaleHandle;
 
     constructor() {
         const container = document.getElementById("component-container");
@@ -62,12 +64,7 @@ export class Input {
                     }
                     break;
                 case MovementMode.RESIZE:
-                    for (let index = 0; index < Component.activeComponentList.length; index++) {
-                        const component = Component.activeComponentList[index];
-                        component.addSize(Input.x - event.screenX, Input.y - event.screenY);
-                        Input.x = event.screenX;
-                        Input.y = event.screenY;
-                    }
+                    Input.scaleHandle.moveScaleHandle(event);
                     break;
 
                 default:

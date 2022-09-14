@@ -14,9 +14,14 @@ export enum ScaleHandlePosition {
 
 export class ScaleHandle extends HTMLElement {
     public handleSize: number = 12;
+    public scaleHandlePosition: number;
+    public component: Component;
 
     constructor(scaleHandlePosition: number, component: Component) {
         super();
+        this.scaleHandlePosition = scaleHandlePosition;
+        this.component = component;
+
         this.className = "scale-handle";
         this.style.width = `${this.handleSize}px`;
         this.style.height = `${this.handleSize}px`;
@@ -33,7 +38,51 @@ export class ScaleHandle extends HTMLElement {
             Input.y = event.screenY;
             Input.isMousedown = true;
             Input.movementMode = MovementMode.RESIZE;
+            Input.scaleHandle = this;
         });
+    }
+
+    public moveScaleHandle(event: MouseEvent) {
+        let x = Input.x - event.screenX;
+        let y = Input.y - event.screenY;
+        Input.x = event.screenX;
+        Input.y = event.screenY;
+
+        switch (this.scaleHandlePosition) {
+            case ScaleHandlePosition.TOP_LEFT:
+                this.component.addSize(-x, -y);
+                this.component.addPos(x, y);
+                break;
+            case ScaleHandlePosition.TOP:
+                this.component.addSize(0, -y);
+                this.component.addPos(0, y);
+                break;
+            case ScaleHandlePosition.TOP_RIGHT:
+                this.component.addSize(x, -y);
+                this.component.addPos(0, y);
+                break;
+            case ScaleHandlePosition.RIGHT:
+                this.component.addSize(x, 0);
+                break;
+            case ScaleHandlePosition.BOTTOM_RIGHT:
+                this.component.addSize(x, y);
+                break;
+            case ScaleHandlePosition.BOTTOM:
+                this.component.addSize(0, y);
+                break;
+            case ScaleHandlePosition.BOTTOM_LEFT:
+                this.component.addSize(-x, y);
+                this.component.addPos(x, 0);
+                break;
+            case ScaleHandlePosition.LEFT:
+                this.component.addSize(-x, 0);
+                this.component.addPos(x, 0);
+                break;
+
+            default:
+                this.style.display = "none";
+                break;
+        }
     }
 
     private setStyle(scaleHandlePosition: number, handleOffset: number) {
