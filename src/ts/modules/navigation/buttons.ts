@@ -3,6 +3,8 @@ import { InterfaceComponent } from "../components/interfaceComponent";
 import { EnumerationComponent } from "../components/enumerationComponent";
 import { PrimitiveComponent } from "../components/primitiveComponent";
 import { Diagram, DiagramButton } from "./main";
+import { ComponentType } from "../components/componentType";
+import { ComponentManager } from "../components/componentManager";
 
 const navList = document.getElementById("nav-btn-list");
 
@@ -19,12 +21,23 @@ export function createButtons(diagram: Diagram) {
     }
 }
 
-function createButton(diagrammButton: DiagramButton): HTMLButtonElement {
+function createButton(diagramButton: DiagramButton): HTMLButtonElement {
     let button: HTMLButtonElement = document.createElement("button");
-    button.textContent = diagrammButton.text;
+    button.textContent = diagramButton.text;
     button.classList.add("nav-button");
 
-    switch (diagrammButton.id) {
+    switch (diagramButton.type) {
+        case ComponentType.CLASS:
+            button.addEventListener("click", () => {
+                const component = new ClassComponent();
+                component.sendCreatedMessage(diagramButton.type);
+                ComponentManager.instance.addComponent(component);
+            });
+            break;
+    }
+
+    /*
+    switch (diagramButton.id) {
         //========================
         // Class diagram Buttons
         //========================
@@ -111,5 +124,6 @@ function createButton(diagrammButton: DiagramButton): HTMLButtonElement {
             button.textContent = "NON FUNCTIONAL BUTTON";
             break;
     }
+    */
     return button;
 }

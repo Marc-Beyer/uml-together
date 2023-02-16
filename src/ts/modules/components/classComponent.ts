@@ -1,3 +1,4 @@
+import { EditText } from "../elements/editText";
 import { Component } from "./component";
 
 export class ClassComponent extends Component {
@@ -16,9 +17,7 @@ export class ClassComponent extends Component {
     }
 
     protected addBlock(text: string) {
-        let div = document.createElement("div");
-        div.append(document.createTextNode(text));
-        this.append(div);
+        this.append(new EditText(text));
     }
 
     protected addHeaderBlock(text: string, bold: boolean = true) {

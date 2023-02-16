@@ -1,3 +1,4 @@
+import { ComponentType } from "../components/componentType";
 import { createButtons } from "./buttons";
 
 export interface Diagram {
@@ -11,6 +12,7 @@ export interface Diagram {
 export interface DiagramButton {
     text: string;
     id: string;
+    type: ComponentType;
 }
 
 //Data from DB
@@ -18,15 +20,15 @@ let mockupDiagram: Diagram = {
     id: 0,
     title: "ClassDiagram",
     buttons: [
-        { text: "Class", id: "class" },
-        { text: "Interface", id: "interface" },
-        { text: "Enumeration", id: "enumeration" },
-        { text: "Primitive", id: "primitive" },
-        { text: "Generalization", id: "generalizationClass" },
-        { text: "Usage", id: "usage" },
-        { text: "Association", id: "associationClass" },
-        { text: "Aggregation", id: "aggregation" },
-        { text: "Composition", id: "composition" },
+        { text: "Class", id: "class", type: ComponentType.CLASS },
+        { text: "Interface", id: "interface", type: ComponentType.DEFAULT },
+        { text: "Enumeration", id: "enumeration", type: ComponentType.DEFAULT },
+        { text: "Primitive", id: "primitive", type: ComponentType.DEFAULT },
+        { text: "Generalization", id: "generalizationClass", type: ComponentType.DEFAULT },
+        { text: "Usage", id: "usage", type: ComponentType.DEFAULT },
+        { text: "Association", id: "associationClass", type: ComponentType.DEFAULT },
+        { text: "Aggregation", id: "aggregation", type: ComponentType.DEFAULT },
+        { text: "Composition", id: "composition", type: ComponentType.DEFAULT },
     ],
 };
 

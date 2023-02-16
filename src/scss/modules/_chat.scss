@@ -1,0 +1,118 @@
+@use "variables";
+
+.chat {
+    position: fixed;
+    z-index: 99999;
+    bottom: 0;
+    right: 0;
+    width: 400px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+
+    button {
+        background-color: variables.$primary-color;
+        color: variables.$font-color;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover,
+        &:focus-visible {
+            background-color: #3aa0ff;
+        }
+
+        &:focus-visible {
+            outline: 2px solid green;
+        }
+
+        &:active {
+            background-color: #67b6ff;
+        }
+    }
+
+    .chat-header {
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ccc;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+
+        button {
+            background: none;
+            font-size: large;
+            position: relative;
+
+            .new-msg-indicator {
+                display: block;
+                position: absolute;
+
+                top: 0;
+                right: 0;
+
+                width: 15px;
+                height: 15px;
+
+                border-radius: 100%;
+                background-color: variables.$primary-color;
+                border: 1px solid black;
+                font-size: 12px;
+                font-weight: 900;
+            }
+
+            .chat-hidden {
+                display: none;
+            }
+        }
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: scroll;
+        padding: 10px;
+
+        .message-container {
+            margin-bottom: 10px;
+
+            .message-text {
+                background-color: #fff;
+                padding: 10px;
+                border-radius: 5px;
+            }
+        }
+    }
+
+    .chat-input {
+        background-color: #f5f5f5;
+        border-top: 1px solid #ccc;
+        padding: 10px;
+
+        form {
+            display: flex;
+            align-items: stretch;
+
+            input {
+                flex: 1;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                margin-right: 10px;
+            }
+        }
+    }
+}
+
+.chat-hidden {
+    width: auto;
+    height: auto;
+
+    h2,
+    .chat-messages,
+    .chat-input {
+        display: none;
+    }
+}

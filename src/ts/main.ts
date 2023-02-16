@@ -1,18 +1,31 @@
+import { ChatController } from "./modules/chat/chatController";
 import { ClassComponent } from "./modules/components/classComponent";
 import { Component } from "./modules/components/component";
+import { ComponentManager } from "./modules/components/componentManager";
+import { Connection } from "./modules/connections/connection";
 import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
+import { Vector2 } from "./modules/vector2";
+import { WebSocketController } from "./modules/webSocket/webSocketController";
 
-navigation.initialize();
+const href = window.location.href.split("#");
 
-for (let i = 0; i < 1; i++) {
-    for (let j = 0; j < 1; j++) {
-        new Component(i * 120, j * 120, 100, 100);
-    }
+if (href.length >= 2) {
+    const sessionId = href[1];
+
+    new ComponentManager();
+    new ChatController(new WebSocketController(sessionId));
+
+    init();
 }
 
-new ClassComponent(-120, -120);
+function init() {
+    navigation.initialize();
 
-//new Component(0, 101, 100, 100);
+    //const basicComponent = new Component(120, 120, 100, 100);
+    //const classComponent = new ClassComponent(-120, -120);
 
-initInput();
+    //new Connection(classComponent, basicComponent, new Vector2(0, 0), new Vector2(10, 100));
+
+    initInput();
+}

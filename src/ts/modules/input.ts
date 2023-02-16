@@ -1,5 +1,6 @@
 import { Component } from "./components/component";
 import { ScaleHandle } from "./components/scaleHandle";
+import { Grid } from "./grid";
 
 export enum MovementMode {
     "SCREEN",
@@ -29,7 +30,10 @@ export class Input {
         container.addEventListener("wheel", (event) => {
             const zoom = Input.zoomSensibility * event.deltaY;
 
-            Component.addZoom(zoom, zoom);
+            Grid.addZoom(zoom, zoom);
+        });
+        container.addEventListener("click", (event) => {
+            console.log("clicked on container");
         });
 
         container.addEventListener("mousedown", (event) => {
@@ -44,6 +48,20 @@ export class Input {
         container.addEventListener("mouseup", (event) => {
             if (event.button != 0 && event.button != 1) return;
             Input.isMousedown = false;
+
+            switch (Input.movementMode) {
+                case MovementMode.SCREEN:
+                    break;
+                case MovementMode.COMPONENT:
+                case MovementMode.RESIZE:
+                    for (let index = 0; index < Component.activeComponentList.length; index++) {
+                        Component.activeComponentList[index].sendMoveMessage();
+                    }
+                    break;
+
+                default:
+                    break;
+            }
         });
 
         document.addEventListener("mousemove", (event) => {
@@ -51,7 +69,7 @@ export class Input {
 
             switch (Input.movementMode) {
                 case MovementMode.SCREEN:
-                    Component.addOffset(Input.x - event.screenX, Input.y - event.screenY);
+                    Grid.addOffset(Input.x - event.screenX, Input.y - event.screenY);
                     Input.x = event.screenX;
                     Input.y = event.screenY;
                     break;

@@ -1,49 +1,18 @@
+import { Connection } from "../connections/connection";
+import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
+import { CreateMessage, MessageType } from "../webSocket/Message";
+import { WebSocketController } from "../webSocket/webSocketController";
+import { ComponentType } from "./componentType";
 import { ScaleHandle, ScaleHandlePosition } from "./scaleHandle";
 
-export class Component extends HTMLElement {
-    private static _xOffset: number = 1;
-    private static _yOffset: number = 1;
-    private static _xZoom: number = 1;
-    private static _yZoom: number = 1;
-    public static zoomMax = 5;
-    public static zoomMin = 0.42;
-    public static componentList: Component[] = [];
+export class Component extends HTMLElement implements GridPart {
     public static activeComponentList: Component[] = [];
     public static container: HTMLElement | null = document.getElementById("component-container");
 
     public static baseFontSize = 16;
     public static baseBorderWidth = 2;
-
-    public static get xZoom(): number {
-        return Component._xZoom;
-    }
-    public static set xZoom(value: number) {
-        Component._xZoom = Math.max(Math.min(value, this.zoomMax), this.zoomMin);
-    }
-    public static get yZoom(): number {
-        return Component._yZoom;
-    }
-    public static set yZoom(value: number) {
-        Component._yZoom = Math.max(Math.min(value, this.zoomMax), this.zoomMin);
-    }
-
-    public static addOffset(x: number, y: number) {
-        this._xOffset += x / -this._xZoom;
-        this._yOffset += y / -this._yZoom;
-        for (let index = 0; index < this.componentList.length; index++) {
-            this.componentList[index].updateOffset();
-        }
-    }
-
-    public static addZoom(x: number, y: number) {
-        this.xZoom += x;
-        this.yZoom += y;
-
-        for (let index = 0; index < this.componentList.length; index++) {
-            this.componentList[index].updateZoom();
-        }
-    }
+    public componentId: string = "";
 
     public static resetActiveComponents() {
         for (let index = 0; index < Component.activeComponentList.length; index++) {
@@ -62,44 +31,55 @@ export class Component extends HTMLElement {
         component.isActive = true;
     }
 
+    public connections: Connection[] = [];
+
     private _xPos!: number;
     private _yPos!: number;
     private _width!: number;
     private _height!: number;
     private _isActive: boolean = false;
 
-    /**
-     * Getter and setter
-     */
+    // Getter and setter
+
     public get xPos() {
         return this._xPos;
     }
     public set xPos(x: number) {
         this._xPos = x;
-        const nPos = window.innerWidth / 2 + (this._xPos + Component._xOffset) * Component.xZoom;
+        let gridXPos = Grid.xRaster > 0 ? Math.round(this._xPos / Grid.xRaster) * Grid.xRaster : this._xPos;
+        let nPos = window.innerWidth / 2 + (gridXPos + Grid.xOffset) * Grid.xZoom;
         this.style.left = `${nPos}px`;
+        this.updateConnections();
     }
     public get yPos(): number {
         return this._yPos;
     }
     public set yPos(y: number) {
         this._yPos = y;
-        const nPos = window.innerHeight / 2 + (this._yPos + Component._yOffset) * Component.yZoom;
+        let gridYPos = Grid.yRaster > 0 ? Math.round(this._yPos / Grid.yRaster) * Grid.yRaster : this._yPos;
+        let nPos = window.innerHeight / 2 + (gridYPos + Grid.yOffset) * Grid.yZoom;
         this.style.top = `${nPos}px`;
+        this.updateConnections();
     }
     public get width(): number {
         return this._width;
     }
     public set width(value: number) {
         this._width = Math.max(value, 0);
-        this.style.width = `${this._width * Component.xZoom}px`;
+        let gridWidth = Grid.xRaster > 0 ? Math.round(this._width / Grid.xRaster) * Grid.yRaster : this._width;
+        let width = gridWidth * Grid.xZoom;
+        this.style.width = `${width}px`;
+        this.updateConnections();
     }
     public get height(): number {
         return this._height;
     }
     public set height(value: number) {
         this._height = Math.max(value, 0);
-        this.style.height = `${this._height * Component.yZoom}px`;
+        let gridHeight = Grid.yRaster > 0 ? Math.round(this._height / Grid.yRaster) * Grid.yRaster : this._height;
+        let height = gridHeight * Grid.yZoom;
+        this.style.height = `${height}px`;
+        this.updateConnections();
     }
     public get isActive(): boolean {
         return this._isActive;
@@ -123,19 +103,20 @@ export class Component extends HTMLElement {
         this._isActive = value;
     }
 
-    constructor(xPos: number = 0, yPos: number = 0, width: number = 200, height: number = 200) {
+    constructor(xPos: number = 0, yPos: number = 0, width: number = 200, height: number = 200, id: string) {
         super();
         this.xPos = xPos;
         this.yPos = yPos;
         this.width = width;
         this.height = height;
+        this.componentId = id;
 
         this.updateZoom();
         this.updateOffset();
 
         this.className = "component";
 
-        Component.componentList.push(this);
+        Grid.gridParts.push(this);
         Component.container?.append(this);
 
         this.addEventListener("mousedown", (event) => {
@@ -145,25 +126,65 @@ export class Component extends HTMLElement {
             Component.addActiveComponents(this);
         });
 
-        this.addEventListener("dblclick", () => {});
+        this.addEventListener("click", (event) => {
+            console.log("click on component");
+        });
     }
 
+    // Methods
+
     /**
-     * Methods
+     * Send a create message and return the id of the component
+     * @param type the type of the created component
+     * @returns the id of the component
      */
+    public sendCreatedMessage(type: ComponentType): string {
+        const data: CreateMessage = {
+            type,
+            id: this.createId(),
+            x: this._xPos,
+            y: this._yPos,
+            width: this._width,
+            height: this._height,
+        };
+        WebSocketController.instance.sent({
+            type: MessageType.CREATE_COMPONENT,
+            data,
+        });
+        return data.id;
+    }
+
+    public sendMoveMessage() {
+        WebSocketController.instance.sent({
+            type: MessageType.MOVE_COMPONENT,
+            data: {
+                id: this.componentId,
+                x: this._xPos,
+                y: this._yPos,
+                width: this._width,
+                height: this._height,
+            },
+        });
+    }
+
+    private createId(): string {
+        this.componentId = self.crypto.randomUUID();
+        return this.componentId;
+    }
+
     private addScaleHandle(scaleHandlePosition: number) {
         let scaleHandle = new ScaleHandle(scaleHandlePosition, this);
         this.append(scaleHandle);
     }
 
     public addPos(x: number, y: number) {
-        this.xPos += x / -Component.xZoom;
-        this.yPos += y / -Component.yZoom;
+        this.xPos += x / -Grid.xZoom;
+        this.yPos += y / -Grid.yZoom;
     }
 
     public addSize(width: number, height: number) {
-        this.width += width / -Component.xZoom;
-        this.height += height / -Component.yZoom;
+        this.width += width / -Grid.xZoom;
+        this.height += height / -Grid.yZoom;
     }
 
     public updateOffset() {
@@ -175,15 +196,21 @@ export class Component extends HTMLElement {
         this.width = this.width;
         this.height = this.height;
         this.updateOffset();
-        this.style.fontSize = `${Component.xZoom * Component.baseFontSize}px`;
-        this.style.borderWidth = `${Component.xZoom * Component.baseBorderWidth}px`;
-        this.updateCSSOnZoom(Component.xZoom);
+        this.style.fontSize = `${Grid.xZoom * Component.baseFontSize}px`;
+        this.style.borderWidth = `${Grid.xZoom * Component.baseBorderWidth}px`;
+        this.updateCSSOnZoom();
     }
 
     protected updateCSSOnZoom() {}
 
     connectedCallback() {
         this.innerHTML = "Test Component";
+    }
+
+    private updateConnections() {
+        if (this.connections.length === 0) return;
+
+        Grid.updateConnections();
     }
 }
 
