@@ -24,11 +24,14 @@ export class Component extends HTMLElement implements GridPart {
     }
 
     public static addActiveComponents(component: Component, reset: boolean = true) {
-        if (reset) this.resetActiveComponents();
-        Input.movementMode = MovementMode.COMPONENT;
-        Component.activeComponentList.push(component);
-        component.parentElement?.append(component);
-        component.isActive = true;
+        if (reset) {
+            this.resetActiveComponents();
+            Input.movementMode = MovementMode.COMPONENT;
+            Component.activeComponentList.push(component);
+            component.parentElement?.append(component);
+            component.isActive = true;
+        } else {
+        }
     }
 
     public connections: Connection[] = [];
@@ -114,7 +117,7 @@ export class Component extends HTMLElement implements GridPart {
         this.updateZoom();
         this.updateOffset();
 
-        this.className = "component";
+        this.classList.add("component");
 
         Grid.gridParts.push(this);
         Component.container?.append(this);
@@ -123,11 +126,11 @@ export class Component extends HTMLElement implements GridPart {
             if (event.button != 0) return;
             event.preventDefault();
             //event.stopPropagation();
-            Component.addActiveComponents(this);
-        });
+            let reset = Component.activeComponentList.length !== 1 || !this.isActive;
 
-        this.addEventListener("click", (event) => {
-            console.log("click on component");
+            console.log(reset);
+
+            Component.addActiveComponents(this, reset);
         });
     }
 

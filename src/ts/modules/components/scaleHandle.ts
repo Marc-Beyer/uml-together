@@ -22,7 +22,7 @@ export class ScaleHandle extends HTMLElement {
         this.scaleHandlePosition = scaleHandlePosition;
         this.component = component;
 
-        this.className = "scale-handle";
+        this.classList.add("scale-handle");
         this.style.width = `${this.handleSize}px`;
         this.style.height = `${this.handleSize}px`;
 

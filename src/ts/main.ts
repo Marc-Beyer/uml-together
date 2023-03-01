@@ -1,11 +1,7 @@
 import { ChatController } from "./modules/chat/chatController";
-import { ClassComponent } from "./modules/components/classComponent";
-import { Component } from "./modules/components/component";
 import { ComponentManager } from "./modules/components/componentManager";
-import { Connection } from "./modules/connections/connection";
 import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
-import { Vector2 } from "./modules/vector2";
 import { WebSocketController } from "./modules/webSocket/webSocketController";
 
 const href = window.location.href.split("#");

@@ -41,10 +41,40 @@
             height: auto;
             width: auto;
 
-            div{
+            .edit-text,
+            input {
+                width: 100%;
+            }
+
+            div {
                 overflow: hidden;
                 text-overflow: ellipsis;
                 width: 100%;
+            }
+
+            hr {
+                margin: 0.2rem 0;
+            }
+
+            .class-head {
+                text-align: center;
+                padding: 0.3rem;
+
+                input {
+                    text-align: center;
+                    padding: 0.3rem;
+                }
+            }
+
+            .bold {
+                font-weight: bold;
+                input {
+                    font-weight: bold;
+                }
+            }
+
+            .italic {
+                font-style: italic;
             }
         }
     }

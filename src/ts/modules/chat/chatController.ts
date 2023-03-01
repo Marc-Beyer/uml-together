@@ -38,10 +38,10 @@ export class ChatController {
 
     public newMessage(message: Message) {
         const messageContainer = document.createElement("div");
-        messageContainer.className = "message-container";
+        messageContainer.classComponentName = "message-container";
 
         const messageText = document.createElement("p");
-        messageText.className = "message-text";
+        messageText.classComponentName = "message-text";
 
         messageText.textContent = message.data;
 

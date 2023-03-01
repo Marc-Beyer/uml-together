@@ -6,6 +6,7 @@ export enum MovementMode {
     "SCREEN",
     "COMPONENT",
     "RESIZE",
+    EDIT,
 }
 
 export function initInput() {
@@ -31,9 +32,6 @@ export class Input {
             const zoom = Input.zoomSensibility * event.deltaY;
 
             Grid.addZoom(zoom, zoom);
-        });
-        container.addEventListener("click", (event) => {
-            console.log("clicked on container");
         });
 
         container.addEventListener("mousedown", (event) => {
