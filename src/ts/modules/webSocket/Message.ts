@@ -56,3 +56,7 @@ export type MoveMessage = {
     width: number;
     height: number;
 };
+
+export type EditMessage = {
+    id: string;
+};

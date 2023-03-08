@@ -43,6 +43,10 @@ export class WebSocketController {
                     ComponentManager.instance.onMoveMessage(message.data);
                     break;
 
+                case MessageType.EDIT_COMPONENT:
+                    ComponentManager.instance.onEditMessage(message.data);
+                    break;
+
                 default:
                     break;
             }

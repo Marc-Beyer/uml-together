@@ -1,7 +1,7 @@
 import { Connection } from "../connections/connection";
 import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
-import { CreateMessage, MessageType } from "../webSocket/Message";
+import { CreateMessage, EditMessage, MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { ComponentType } from "./componentType";
 import { ScaleHandle, ScaleHandlePosition } from "./scaleHandle";
@@ -26,12 +26,11 @@ export class Component extends HTMLElement implements GridPart {
     public static addActiveComponents(component: Component, reset: boolean = true) {
         if (reset) {
             this.resetActiveComponents();
-            Input.movementMode = MovementMode.COMPONENT;
             Component.activeComponentList.push(component);
             component.parentElement?.append(component);
             component.isActive = true;
-        } else {
         }
+        Input.movementMode = MovementMode.COMPONENT;
     }
 
     public connections: Connection[] = [];
@@ -202,6 +201,14 @@ export class Component extends HTMLElement implements GridPart {
         this.style.fontSize = `${Grid.xZoom * Component.baseFontSize}px`;
         this.style.borderWidth = `${Grid.xZoom * Component.baseBorderWidth}px`;
         this.updateCSSOnZoom();
+    }
+
+    public edit(message: any) {
+        for (const key in message) {
+            if (Object.prototype.hasOwnProperty.call(message, key)) {
+                (this as any)[key] = message[key];
+            }
+        }
     }
 
     protected updateCSSOnZoom() {}

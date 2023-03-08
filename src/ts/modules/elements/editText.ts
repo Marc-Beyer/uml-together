@@ -7,12 +7,14 @@ export class EditText extends HTMLElement {
 
     private static LAST_CLICKED: number = 0;
     private onChange?: Function;
+    private onEnd?: Function;
 
-    constructor(text: string, inEditMode: boolean = false, onChange?: Function) {
+    constructor(text: string, inEditMode: boolean = false, onChange?: Function, onEnd?: Function) {
         super();
         this.text = text ?? "";
         this.inEditMode = inEditMode;
         this.onChange = onChange;
+        this.onEnd = onEnd;
         this.classList.add("edit-text");
 
         this.addEventListener("mousedown", () => {
@@ -43,10 +45,19 @@ export class EditText extends HTMLElement {
             input.addEventListener("focusout", () => {
                 this.inEditMode = false;
                 this.connectedCallback();
+                if (this.onEnd) this.onEnd(input.value);
             });
             input.addEventListener("change", () => {
                 this.text = input.value;
+                console.log(`text ${this.text} value ${input.value}`);
                 if (this.onChange) this.onChange(input.value);
+            });
+            input.addEventListener("keyup", (event: KeyboardEvent) => {
+                if (event.key === "Enter" || event.keyCode === 13) {
+                    console.log(`ENTER value ${input.value}`);
+
+                    if (this.onChange) this.onChange(input.value);
+                }
             });
             div.append(input);
         } else {

@@ -1,4 +1,4 @@
-import { CreateMessage, MoveMessage } from "../webSocket/Message";
+import { CreateMessage, EditMessage, MoveMessage } from "../webSocket/Message";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 import { ComponentType } from "./componentType";
@@ -28,11 +28,17 @@ export class ComponentManager {
         }
     }
 
+    public onEditMessage(message: EditMessage) {
+        const component = this.components.get(message.id);
+        console.log("Edit", component);
+        if (component === undefined) return;
+
+        component.edit(message);
+    }
+
     public onMoveMessage(message: MoveMessage) {
         const component = this.components.get(message.id);
-        console.log("asdddddddddddd", component);
         if (component === undefined) return;
-        console.log("okokokokokok");
 
         component.xPos = message.x;
         component.yPos = message.y;

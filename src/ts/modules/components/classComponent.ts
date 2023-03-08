@@ -39,21 +39,32 @@ export class ClassComponent extends Component {
 
         this.innerHTML = "";
 
+        // Add header
         this.addHeaderBlock();
 
-        this.addDivider();
+        // Add attributes
+        this.attributeList = this.attributeList.filter((etHolder: EditTextHolder) => {
+            return etHolder.text.trim() !== "";
+        });
+
+        if (this.attributeList.length > 0) this.addDivider("attributeList");
 
         if (this.attributeList) {
             for (let index = 0; index < this.attributeList.length; index++) {
-                this.addBlock(this.attributeList[index]);
+                this.addAttribute(index);
             }
         }
 
-        this.addDivider();
+        // Add operations
+        this.operationsList = this.operationsList.filter((etHolder: EditTextHolder) => {
+            return etHolder.text.trim() !== "";
+        });
+
+        if (this.operationsList.length > 0) this.addDivider("operationsList");
 
         if (this.operationsList) {
             for (let index = 0; index < this.operationsList.length; index++) {
-                this.addBlock(this.operationsList[index]);
+                this.addOperation(index);
             }
         }
     }
@@ -75,12 +86,63 @@ export class ClassComponent extends Component {
         });
     }
 
-    protected addBlock(etHolder: EditTextHolder) {
+    public edit(message: any): void {
+        this.cType.text = message.classType;
+        this.cName.text = message.className;
+        this.attributeList = [];
+        this.operationsList = [];
+        for (let index = 0; index < message.attributeList.length; index++) {
+            this.attributeList.push({ text: message.attributeList[index], inEditMode: false });
+        }
+        for (let index = 0; index < message.operationsList.length; index++) {
+            this.operationsList.push({ text: message.operationsList[index], inEditMode: false });
+        }
+
+        this.connectedCallback();
+    }
+
+    protected addAttribute(index: number) {
         this.append(
-            new EditText(etHolder.text, etHolder.inEditMode, (value: string) => {
-                etHolder.text = value;
+            new EditText(this.attributeList[index].text, this.attributeList[index].inEditMode, (value: string) => {
+                this.attributeList[index].text = value;
                 this.sendEditMessage();
             })
+        );
+    }
+
+    protected addOperation(index: number) {
+        this.append(
+            new EditText(
+                this.operationsList[index].text,
+                this.operationsList[index].inEditMode,
+                (value: string) => {
+                    this.operationsList[index].text = value;
+
+                    this.operationsList[index].inEditMode = false;
+                    this.sendEditMessage();
+                    if (value.trim() === "") {
+                        console.log("DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                        this.connectedCallback();
+                    } else {
+                        this.operationsList.push({
+                            text: "-",
+                            inEditMode: true,
+                        });
+                        Component.addActiveComponents(this, true);
+                    }
+                },
+                (value: string) => {
+                    console.log(`2 value ${value}`);
+
+                    this.operationsList[index].inEditMode = false;
+                    if (value === "") {
+                        this.operationsList.slice(0, index);
+                    } else {
+                        this.operationsList[index].inEditMode = false;
+                    }
+                    Component.addActiveComponents(this, true);
+                }
+            )
         );
     }
 
@@ -105,8 +167,10 @@ export class ClassComponent extends Component {
         this.append(div);
     }
 
-    protected addDivider() {
-        this.append(document.createElement("hr"));
+    protected addDivider(className?: string) {
+        const hr = document.createElement("hr");
+        if (className) hr.classList.add(className);
+        this.append(hr);
     }
 }
 
