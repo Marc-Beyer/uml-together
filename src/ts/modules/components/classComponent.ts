@@ -44,7 +44,7 @@ export class ClassComponent extends Component {
 
         // Add attributes
         this.attributeList = this.attributeList.filter((etHolder: EditTextHolder) => {
-            return etHolder.text.trim() !== "";
+            return etHolder.inEditMode || etHolder.text.trim() !== "";
         });
 
         if (this.attributeList.length > 0) this.addDivider("attributeList");
@@ -57,7 +57,7 @@ export class ClassComponent extends Component {
 
         // Add operations
         this.operationsList = this.operationsList.filter((etHolder: EditTextHolder) => {
-            return etHolder.text.trim() !== "";
+            return etHolder.inEditMode || etHolder.text.trim() !== "";
         });
 
         if (this.operationsList.length > 0) this.addDivider("operationsList");
@@ -103,10 +103,38 @@ export class ClassComponent extends Component {
 
     protected addAttribute(index: number) {
         this.append(
-            new EditText(this.attributeList[index].text, this.attributeList[index].inEditMode, (value: string) => {
-                this.attributeList[index].text = value;
-                this.sendEditMessage();
-            })
+            new EditText(
+                this.attributeList[index].text,
+                this.attributeList[index].inEditMode,
+                (value: string) => {
+                    this.attributeList[index].text = value;
+
+                    this.attributeList[index].inEditMode = false;
+                    this.sendEditMessage();
+                    if (value.trim() === "") {
+                        this.operationsList.push({
+                            text: "",
+                            inEditMode: true,
+                        });
+                        this.connectedCallback();
+                    } else {
+                        this.attributeList.push({
+                            text: "",
+                            inEditMode: true,
+                        });
+                        Component.addActiveComponents(this, true);
+                    }
+                },
+                (value: string) => {
+                    this.attributeList[index].inEditMode = false;
+                    if (value === "") {
+                        this.attributeList.slice(0, index);
+                    } else {
+                        this.attributeList[index].inEditMode = false;
+                    }
+                    Component.addActiveComponents(this, true);
+                }
+            )
         );
     }
 
@@ -121,19 +149,16 @@ export class ClassComponent extends Component {
                     this.operationsList[index].inEditMode = false;
                     this.sendEditMessage();
                     if (value.trim() === "") {
-                        console.log("DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                         this.connectedCallback();
                     } else {
                         this.operationsList.push({
-                            text: "-",
+                            text: "",
                             inEditMode: true,
                         });
                         Component.addActiveComponents(this, true);
                     }
                 },
                 (value: string) => {
-                    console.log(`2 value ${value}`);
-
                     this.operationsList[index].inEditMode = false;
                     if (value === "") {
                         this.operationsList.slice(0, index);
