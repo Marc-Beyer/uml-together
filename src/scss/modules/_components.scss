@@ -70,6 +70,14 @@
                 }
             }
 
+            .no-name {
+                font-weight: lighter;
+                color: variables.$font-color-deactivated;
+                input {
+                    font-weight: lighter;
+                }
+            }
+
             .bold {
                 font-weight: bold;
                 input {

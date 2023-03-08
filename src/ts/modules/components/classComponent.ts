@@ -175,19 +175,48 @@ export class ClassComponent extends Component {
         let div = document.createElement("div");
         div.classList.add("class-head");
 
-        if (this.cType && this.cType.text.trim().length > 0) {
-            const classTypeEditText = new EditText(this.cType.text, this.cType.inEditMode, (value: string) => {
-                this.cType.text = value;
-                this.sendEditMessage();
-            });
+        if (this.cType && (this.cType.text.trim().length > 0 || this.cType.inEditMode)) {
+            const classTypeEditText = new EditText(
+                this.cType.text,
+                this.cType.inEditMode,
+                (value: string) => {
+                    this.cType.text = value;
+
+                    this.cType.inEditMode = false;
+                    this.sendEditMessage();
+                    this.attributeList.push({
+                        text: "",
+                        inEditMode: true,
+                    });
+                    Component.addActiveComponents(this, true);
+                },
+                () => {
+                    this.cType.inEditMode = false;
+                    Component.addActiveComponents(this, true);
+                }
+            );
             div.append(classTypeEditText);
         }
 
-        const classNameEditText = new EditText(this.cName.text, this.cName.inEditMode, (value: string) => {
-            this.cName.text = value;
-            this.sendEditMessage();
-        });
-        classNameEditText.classList.add("bold");
+        const classNameEditText = new EditText(
+            this.cName.text.trim().length > 0 ? this.cName.text : "Class",
+            this.cName.inEditMode,
+            (value: string) => {
+                this.cName.text = value;
+
+                this.cName.inEditMode = false;
+                this.sendEditMessage();
+                this.cType.inEditMode = true;
+                Component.addActiveComponents(this, true);
+            },
+            () => {
+                this.cName.inEditMode = false;
+                Component.addActiveComponents(this, true);
+            }
+        );
+        this.cName.text.trim().length > 0
+            ? classNameEditText.classList.add("bold")
+            : classNameEditText.classList.add("no-name");
         div.append(classNameEditText);
         this.append(div);
     }

@@ -47,11 +47,12 @@ export class EditText extends HTMLElement {
                 this.connectedCallback();
                 if (this.onEnd) this.onEnd(input.value);
             });
-            input.addEventListener("change", () => {
+            /*input.addEventListener("change", () => {
                 this.text = input.value;
                 console.log(`text ${this.text} value ${input.value}`);
+
                 if (this.onChange) this.onChange(input.value);
-            });
+            });*/
             input.addEventListener("keyup", (event: KeyboardEvent) => {
                 if (event.key === "Enter" || event.keyCode === 13) {
                     console.log(`ENTER value ${input.value}`);
