@@ -8,9 +8,10 @@ const href = window.location.href.split("#");
 
 if (href.length >= 2) {
     const sessionId = href[1];
+    const key = href[2];
 
     new ComponentManager();
-    new ChatController(new WebSocketController(sessionId));
+    new ChatController(new WebSocketController(sessionId, key));
 
     init();
 }

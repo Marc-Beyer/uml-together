@@ -18,7 +18,7 @@ export class ClassComponent extends Component {
     public isInterface: boolean = false;
     public isEnum: boolean = false;
 
-    constructor(xPos: number = 0, yPos: number = 0, width: number = 250, height: number = 150, id: string) {
+    constructor(xPos: number = 0, yPos: number = 0, width: number = 275, height: number = 200, id: string) {
         super(xPos, yPos, width, height, id);
         this.classList.add("class-component");
 

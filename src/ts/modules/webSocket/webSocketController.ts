@@ -1,16 +1,19 @@
 import { ChatController } from "../chat/chatController";
 import { ComponentManager } from "../components/componentManager";
 import { isMessage, Message, MessageType } from "./Message";
+import * as crypto from "crypto-js";
 
 export class WebSocketController {
     public static instance: WebSocketController;
 
     private WebSocketUrl = "ws://127.0.0.1:3000";
     private socket: WebSocket;
+    private key: string;
 
-    constructor(sessionId: string) {
+    constructor(sessionId: string, key: string) {
         WebSocketController.instance = this;
         this.socket = new WebSocket(this.WebSocketUrl);
+        this.key = key;
 
         this.socket.addEventListener("open", () => {
             console.log("Opened WebSocket connection");
@@ -22,13 +25,22 @@ export class WebSocketController {
         });
 
         this.socket.addEventListener("message", (event) => {
-            console.log("Message from server ", event.data);
+            console.log("Message from server", event.data);
 
             let message: Message | undefined = undefined;
             try {
                 message = JSON.parse(event.data);
             } catch (error) {}
             if (!isMessage(message)) return;
+
+            console.log("new message", message);
+
+            try {
+                const bytes = crypto.AES.decrypt(message.data, this.key);
+                message.data = JSON.parse(bytes.toString(crypto.enc.Utf8));
+            } catch (error) {}
+
+            console.log("decrypted message", message);
 
             switch (message.type) {
                 case MessageType.CHAT_MESSAGE:
@@ -62,7 +74,9 @@ export class WebSocketController {
     }
 
     public sent(message: Message) {
-        console.log(`sent msg`, message);
+        if (message.type !== MessageType.JOIN) {
+            message.data = crypto.AES.encrypt(JSON.stringify(message.data), this.key).toString();
+        }
 
         this.socket.send(JSON.stringify(message));
     }

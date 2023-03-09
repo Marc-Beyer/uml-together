@@ -1,9 +1,9 @@
+import * as crypto from "crypto-js";
+
 export {};
 const button = document.getElementById("button") as HTMLButtonElement;
 
 button.addEventListener("click", function () {
-    console.log("CLICK");
-
     requestNewSession();
 });
 
@@ -17,21 +17,9 @@ async function requestNewSession() {
 
     if (!response.ok) return;
 
+    const key = crypto.lib.WordArray.random(128 / 8);
+    const hexKey = key.toString(crypto.enc.Hex);
+
     const result = await response.json();
-    window.location.href = `main.html#${result.sessionId}`;
+    window.location.href = `main.html#${result.sessionId}#${hexKey}`;
 }
-
-/*
-
-if (!response.ok) {
-}
-
-// If you care about a response:
-if (response.body !== null) {
-    // body is ReadableStream<Uint8Array>
-    // parse as needed, e.g. reading directly, or
-    const asString = new TextDecoder("utf-8").decode(response.body);
-    // and further:
-    const asJSON = JSON.parse(asString); // implicitly 'any', make sure to verify type on runtime.
-}
-*/
