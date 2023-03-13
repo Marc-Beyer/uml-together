@@ -21,9 +21,10 @@ let mockupDiagram: Diagram = {
     title: "ClassDiagram",
     buttons: [
         { text: "Class", id: "class", type: ComponentType.CLASS },
-        { text: "Interface", id: "interface", type: ComponentType.DEFAULT },
-        { text: "Enumeration", id: "enumeration", type: ComponentType.DEFAULT },
-        { text: "Primitive", id: "primitive", type: ComponentType.DEFAULT },
+        { text: "Interface", id: "interface", type: ComponentType.INTERFACE },
+        { text: "Enumeration", id: "enumeration", type: ComponentType.ENUM },
+        { text: "Primitive", id: "primitive", type: ComponentType.PRIMITIVE },
+        { text: "DataType", id: "dataType", type: ComponentType.DATA_TYPE },
         { text: "Generalization", id: "generalizationClass", type: ComponentType.DEFAULT },
         { text: "Usage", id: "usage", type: ComponentType.DEFAULT },
         { text: "Association", id: "associationClass", type: ComponentType.DEFAULT },

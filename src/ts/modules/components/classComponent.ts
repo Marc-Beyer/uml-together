@@ -18,18 +18,10 @@ export class ClassComponent extends Component {
     public isInterface: boolean = false;
     public isEnum: boolean = false;
 
-    constructor(xPos: number = 0, yPos: number = 0, width: number = 275, height: number = 200, id: string) {
+    constructor(xPos: number = 0, yPos: number = 0, width: number = 275, height: number = 200, id?: string) {
         super(xPos, yPos, width, height, id);
+
         this.classList.add("class-component");
-
-        this.cType = { text: "<<Interface>>", inEditMode: false };
-        this.cName = { text: "Class", inEditMode: false };
-
-        this.attributeList.push({ text: "+attribute1: String", inEditMode: false });
-        this.attributeList.push({ text: "-attribute2: int = 42", inEditMode: false });
-
-        this.operationsList.push({ text: "+operation1(param: String)", inEditMode: false });
-        this.operationsList.push({ text: "-operation2(param: String): String", inEditMode: false });
 
         this.connectedCallback();
     }

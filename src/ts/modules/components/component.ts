@@ -105,13 +105,13 @@ export class Component extends HTMLElement implements GridPart {
         this._isActive = value;
     }
 
-    constructor(xPos: number = 0, yPos: number = 0, width: number = 200, height: number = 200, id: string) {
+    constructor(xPos: number = 0, yPos: number = 0, width: number = 200, height: number = 200, id?: string) {
         super();
         this.xPos = xPos;
         this.yPos = yPos;
         this.width = width;
         this.height = height;
-        this.componentId = id;
+        this.componentId = id ?? this.createId();
 
         this.updateZoom();
         this.updateOffset();
@@ -143,7 +143,7 @@ export class Component extends HTMLElement implements GridPart {
     public sendCreatedMessage(type: ComponentType): string {
         const data: CreateMessage = {
             type,
-            id: this.createId(),
+            id: this.componentId,
             x: this._xPos,
             y: this._yPos,
             width: this._width,

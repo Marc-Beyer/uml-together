@@ -4,4 +4,5 @@ export enum ComponentType {
     ENUM,
     INTERFACE,
     PRIMITIVE,
+    DATA_TYPE,
 }

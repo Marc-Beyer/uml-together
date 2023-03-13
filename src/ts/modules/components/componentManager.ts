@@ -17,6 +17,10 @@ export class ComponentManager {
 
         switch (message.type) {
             case ComponentType.CLASS:
+            case ComponentType.INTERFACE:
+            case ComponentType.ENUM:
+            case ComponentType.PRIMITIVE:
+            case ComponentType.DATA_TYPE:
                 this.components.set(
                     message.id,
                     new ClassComponent(message.x, message.y, message.width, message.height, message.id)

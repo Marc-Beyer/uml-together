@@ -4,7 +4,7 @@ nav {
     position: absolute;
     z-index: 1000;
 
-    width: 260px;
+    width: 225px;
     min-width: 200px;
     height: 100vh;
     background-color: variables.$primary-color;
@@ -24,18 +24,24 @@ nav {
         text-align: left;
     }
 
-    ul{
-        li{
+    #nav-btn {
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
 
+    ul {
+        li {
             overflow: hidden;
-            button{
+            button {
                 padding: variables.$size-1;
 
                 width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
 
-                &:hover{
+                &:hover {
                     background: darken(variables.$primary-color, 30%);
                 }
             }

@@ -1,7 +1,4 @@
 import { ClassComponent } from "../components/classComponent";
-import { InterfaceComponent } from "../components/interfaceComponent";
-import { EnumerationComponent } from "../components/enumerationComponent";
-import { PrimitiveComponent } from "../components/primitiveComponent";
 import { Diagram, DiagramButton } from "./main";
 import { ComponentType } from "../components/componentType";
 import { ComponentManager } from "../components/componentManager";
@@ -32,6 +29,103 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 const component = new ClassComponent();
                 component.sendCreatedMessage(diagramButton.type);
                 ComponentManager.instance.addComponent(component);
+
+                component.cType.text = "";
+                component.cName.text = "Class";
+
+                component.attributeList.push({ text: "+attribute1: String", inEditMode: false });
+                component.attributeList.push({ text: "-attribute2: int = 42", inEditMode: false });
+
+                component.operationsList.push({ text: "+operation1(param: String)", inEditMode: false });
+                component.operationsList.push({ text: "-operation2(param: String): String", inEditMode: false });
+
+                //component.width = 200;
+                component.height = 150;
+
+                component.connectedCallback();
+                component.sendEditMessage();
+                component.sendMoveMessage();
+            });
+            break;
+
+        case ComponentType.INTERFACE:
+            button.addEventListener("click", () => {
+                const component = new ClassComponent();
+                component.sendCreatedMessage(diagramButton.type);
+                ComponentManager.instance.addComponent(component);
+
+                component.cType.text = "<<interface>>";
+                component.cName.text = "Interface";
+
+                component.attributeList.push({ text: "+attribute1: String", inEditMode: false });
+                component.attributeList.push({ text: "-attribute2: int = 42", inEditMode: false });
+
+                component.operationsList.push({ text: "+operation1(param: String)", inEditMode: false });
+                component.operationsList.push({ text: "-operation2(param: String): String", inEditMode: false });
+
+                //component.width = 200;
+                component.height = 200;
+
+                component.connectedCallback();
+                component.sendEditMessage();
+                component.sendMoveMessage();
+            });
+            break;
+
+        case ComponentType.ENUM:
+            button.addEventListener("click", () => {
+                const component = new ClassComponent();
+                component.sendCreatedMessage(diagramButton.type);
+                ComponentManager.instance.addComponent(component);
+
+                component.cType.text = "<<enumeration>>";
+                component.cName.text = "Enum";
+
+                component.attributeList.push({ text: "literal1", inEditMode: false });
+                component.attributeList.push({ text: "literal2", inEditMode: false });
+
+                component.width = 200;
+                component.height = 125;
+
+                component.connectedCallback();
+                component.sendEditMessage();
+                component.sendMoveMessage();
+            });
+            break;
+
+        case ComponentType.PRIMITIVE:
+            button.addEventListener("click", () => {
+                const component = new ClassComponent();
+                component.sendCreatedMessage(diagramButton.type);
+                ComponentManager.instance.addComponent(component);
+
+                component.cType.text = "<<primitive>>";
+                component.cName.text = "Primitive";
+
+                component.width = 200;
+                component.height = 100;
+
+                component.connectedCallback();
+                component.sendEditMessage();
+                component.sendMoveMessage();
+            });
+            break;
+
+        case ComponentType.DATA_TYPE:
+            button.addEventListener("click", () => {
+                const component = new ClassComponent();
+                component.sendCreatedMessage(diagramButton.type);
+                ComponentManager.instance.addComponent(component);
+
+                component.cType.text = "<<dataType>>";
+                component.cName.text = "DataType";
+
+                component.width = 200;
+                component.height = 100;
+
+                component.connectedCallback();
+                component.sendEditMessage();
+                component.sendMoveMessage();
             });
             break;
     }
