@@ -2,6 +2,7 @@ import { EditText } from "../elements/editText";
 import { MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { Component } from "./component";
+import { ComponentType } from "./componentType";
 
 export type EditTextHolder = {
     text: string;
@@ -76,6 +77,21 @@ export class ClassComponent extends Component {
                 }),
             },
         });
+    }
+
+    public getState() {
+        return {
+            ...super.getState(),
+            type: ComponentType.CLASS,
+            classType: this.cType.text,
+            className: this.cName.text,
+            attributeList: this.attributeList.map((etHolder: EditTextHolder) => {
+                return etHolder.text;
+            }),
+            operationsList: this.operationsList.map((etHolder: EditTextHolder) => {
+                return etHolder.text;
+            }),
+        };
     }
 
     public edit(message: any): void {

@@ -1,4 +1,12 @@
-import { CreateMessage, DeleteMessage, EditMessage, MoveMessage } from "../webSocket/Message";
+import {
+    CreateMessage,
+    DeleteMessage,
+    EditMessage,
+    MessageType,
+    MoveMessage,
+    StateMessage,
+} from "../webSocket/Message";
+import { WebSocketController } from "../webSocket/webSocketController";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 import { ComponentType } from "./componentType";
@@ -13,7 +21,10 @@ export class ComponentManager {
     }
 
     public onCreateMessage(message: CreateMessage) {
+        console.log("ne COmp", message);
+
         if (this.components.has(message.id)) return;
+        console.log("ne COmp", message);
 
         switch (message.type) {
             case ComponentType.CLASS:
@@ -55,6 +66,30 @@ export class ComponentManager {
         if (component === undefined) return;
 
         this.removeComponent(component);
+    }
+
+    public onRequestStateMessage() {
+        const components = [];
+        for (const [_, component] of this.components) {
+            components.push(component.getState());
+        }
+
+        WebSocketController.instance.sent({
+            type: MessageType.STATE,
+            data: {
+                components,
+            },
+        });
+    }
+
+    public onStateMessage(message: StateMessage) {
+        for (let index = 0; index < message.components.length; index++) {
+            console.log("dddddddddddddddW");
+
+            const component = message.components[index];
+            this.onCreateMessage(component);
+            this.onEditMessage(component);
+        }
     }
 
     public addComponent(component: Component) {

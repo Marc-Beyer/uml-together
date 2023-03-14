@@ -62,6 +62,15 @@ export class WebSocketController {
                 case MessageType.DELETE_COMPONENT:
                     ComponentManager.instance.onDeleteMessage(message.data);
                     break;
+
+                case MessageType.REQUEST_STATE:
+                    ComponentManager.instance.onRequestStateMessage();
+                    break;
+
+                case MessageType.STATE:
+                    ComponentManager.instance.onStateMessage(message.data);
+                    break;
+
                 default:
                     break;
             }

@@ -2,7 +2,8 @@ import { ComponentType } from "../components/componentType";
 
 export enum MessageType {
     JOIN,
-    GAME_STATE,
+    STATE,
+    REQUEST_STATE,
     CHAT_MESSAGE,
     CREATE_COMPONENT,
     MOVE_COMPONENT,
@@ -40,6 +41,10 @@ export function isJoinMessage(message: any): message is JoinMessage {
 
     return true;
 }
+
+export type StateMessage = {
+    components: CreateMessage[];
+};
 
 export type CreateMessage = {
     type: ComponentType;
