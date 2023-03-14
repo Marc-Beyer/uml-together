@@ -1,4 +1,4 @@
-import { CreateMessage, EditMessage, MoveMessage } from "../webSocket/Message";
+import { CreateMessage, DeleteMessage, EditMessage, MoveMessage } from "../webSocket/Message";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 import { ComponentType } from "./componentType";
@@ -50,11 +50,25 @@ export class ComponentManager {
         component.width = message.width;
     }
 
+    public onDeleteMessage(message: DeleteMessage) {
+        const component = this.components.get(message.id);
+        if (component === undefined) return;
+
+        this.removeComponent(component);
+    }
+
     public addComponent(component: Component) {
         if (this.components.has(component.componentId)) return;
 
-        console.log("Add comp", component.componentId);
+        console.log("Add component", component.componentId);
 
         this.components.set(component.componentId, component);
+    }
+
+    public removeComponent(component: Component) {
+        console.log("Remove component", component.componentId);
+
+        this.components.delete(component.componentId);
+        component.remove();
     }
 }

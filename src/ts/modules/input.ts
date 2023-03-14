@@ -1,4 +1,5 @@
 import { Component } from "./components/component";
+import { ComponentManager } from "./components/componentManager";
 import { ScaleHandle } from "./components/scaleHandle";
 import { Grid } from "./grid";
 
@@ -27,6 +28,19 @@ export class Input {
         if (!container) {
             throw new Error("component-container not found!");
         }
+
+        document.addEventListener("keyup", (event) => {
+            console.log(event.key, "up");
+
+            if (event.keyCode === 46 || event.key === "Delete") {
+                for (let index = 0; index < Component.activeComponentList.length; index++) {
+                    const component: Component = Component.activeComponentList[index];
+                    console.log(component, "rem");
+                    ComponentManager.instance.removeComponent(component);
+                    component.sendDeleteMessage();
+                }
+            }
+        });
 
         container.addEventListener("wheel", (event) => {
             const zoom = Input.zoomSensibility * event.deltaY;

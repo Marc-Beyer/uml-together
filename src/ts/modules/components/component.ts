@@ -169,6 +169,15 @@ export class Component extends HTMLElement implements GridPart {
         });
     }
 
+    sendDeleteMessage() {
+        WebSocketController.instance.sent({
+            type: MessageType.DELETE_COMPONENT,
+            data: {
+                id: this.componentId,
+            },
+        });
+    }
+
     private createId(): string {
         this.componentId = self.crypto.randomUUID();
         return this.componentId;

@@ -7,6 +7,7 @@ export enum MessageType {
     CREATE_COMPONENT,
     MOVE_COMPONENT,
     EDIT_COMPONENT,
+    DELETE_COMPONENT,
 }
 
 export type Message = {
@@ -58,5 +59,9 @@ export type MoveMessage = {
 };
 
 export type EditMessage = {
+    id: string;
+};
+
+export type DeleteMessage = {
     id: string;
 };
