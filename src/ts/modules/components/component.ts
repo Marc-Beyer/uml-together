@@ -1,7 +1,7 @@
 import { Connection } from "../connections/connection";
 import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
-import { CreateMessage, EditMessage, MessageType } from "../webSocket/Message";
+import { CreateMessage, MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { ComponentType } from "./componentType";
 import { ScaleHandle, ScaleHandlePosition } from "./scaleHandle";
