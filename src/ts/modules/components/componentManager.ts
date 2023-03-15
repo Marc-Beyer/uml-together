@@ -1,3 +1,5 @@
+import * as crypto from "crypto-js";
+
 import {
     CreateMessage,
     DeleteMessage,
@@ -79,6 +81,7 @@ export class ComponentManager {
             data: {
                 components,
             },
+            checksum: crypto.SHA3(JSON.stringify(components)).toString(),
         });
     }
 

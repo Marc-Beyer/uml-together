@@ -2,6 +2,7 @@ import { ChatController } from "../chat/chatController";
 import { ComponentManager } from "../components/componentManager";
 import { isMessage, Message, MessageType } from "./Message";
 import * as crypto from "crypto-js";
+import { Global } from "../global";
 
 export class WebSocketController {
     public static instance: WebSocketController;
@@ -35,10 +36,12 @@ export class WebSocketController {
 
             console.log("new message", message);
 
-            try {
-                const bytes = crypto.AES.decrypt(message.data, this.key);
-                message.data = JSON.parse(bytes.toString(crypto.enc.Utf8));
-            } catch (error) {}
+            if (Global.USE_ENCRYPTION) {
+                try {
+                    const bytes = crypto.AES.decrypt(message.data, this.key);
+                    message.data = JSON.parse(bytes.toString(crypto.enc.Utf8));
+                } catch (error) {}
+            }
 
             console.log("decrypted message", message);
 
@@ -86,7 +89,7 @@ export class WebSocketController {
     }
 
     public sent(message: Message) {
-        if (message.type !== MessageType.JOIN) {
+        if (message.type !== MessageType.JOIN && Global.USE_ENCRYPTION) {
             message.data = crypto.AES.encrypt(JSON.stringify(message.data), this.key).toString();
         }
 

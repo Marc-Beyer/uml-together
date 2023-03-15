@@ -14,6 +14,7 @@ export enum MessageType {
 export type Message = {
     type: MessageType;
     data: any;
+    checksum?: string;
 };
 
 export function isMessage(message: any): message is Message {
