@@ -1,11 +1,14 @@
 @use "variables";
 
+$small-nav-size: 48px;
+$large-nav-size: 225px;
+
 nav {
     position: absolute;
     z-index: 1000;
 
-    width: 225px;
-    min-width: 200px;
+    width: $large-nav-size;
+    min-width: $large-nav-size;
     height: 100vh;
     background-color: variables.$primary-color;
 
@@ -25,24 +28,44 @@ nav {
     }
 
     #nav-btn {
-        svg {
-            width: 20px;
-            height: 20px;
+        width: $small-nav-size;
+        height: $small-nav-size;
+        padding: 8px;
+        &:hover {
+            background-color: variables.$hover-color;
         }
     }
 
     ul {
+        overflow-x: hidden;
+        overflow-y: auto;
         li {
             overflow: hidden;
+
             button {
-                padding: variables.$size-1;
+                $padding: 8px;
+
+                overflow: hidden;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                //padding: variables.$size-2 variables.$size-1;
+                padding: $padding;
 
                 width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
 
+                .img-container {
+                    flex: 1;
+                    max-width: $small-nav-size - ($padding * 2);
+                    max-height: $small-nav-size - ($padding * 2);
+                    margin-right: variables.$size-1;
+                }
+
                 &:hover {
-                    background: darken(variables.$primary-color, 30%);
+                    background: variables.$hover-color;
                 }
             }
         }
@@ -50,6 +73,15 @@ nav {
 }
 
 nav.closed {
-    width: 50px;
-    min-width: 50px;
+    width: $small-nav-size;
+    min-width: $small-nav-size;
+    ul {
+        overflow-y: hidden;
+        .img-container {
+            margin-right: 0;
+        }
+        .text-container {
+            display: none;
+        }
+    }
 }

@@ -2,6 +2,7 @@ import { ClassComponent } from "../components/classComponent";
 import { Diagram, DiagramButton } from "./main";
 import { ComponentType } from "../components/componentType";
 import { ComponentManager } from "../components/componentManager";
+import { NoteComponent } from "../components/noteComponent";
 
 const navList = document.getElementById("nav-btn-list");
 
@@ -10,6 +11,7 @@ export function createButtons(diagram: Diagram) {
     for (const button of diagram.buttons) {
         let li = document.createElement("li");
         li.appendChild(createButton(button));
+
         liElements.push(li);
     }
 
@@ -20,7 +22,21 @@ export function createButtons(diagram: Diagram) {
 
 function createButton(diagramButton: DiagramButton): HTMLButtonElement {
     let button: HTMLButtonElement = document.createElement("button");
-    button.textContent = diagramButton.text;
+
+    const imgContainer = document.createElement("div");
+    imgContainer.classList.add("img-container");
+
+    const img = document.createElement("img");
+    img.src = diagramButton.icon ?? "img/default-icon.svg";
+    img.alt = diagramButton.text;
+
+    imgContainer.append(img);
+    button.append(imgContainer);
+
+    const textContainer = document.createElement("div");
+    textContainer.classList.add("text-container");
+    textContainer.append(document.createTextNode(diagramButton.text));
+    button.append(textContainer);
     button.classList.add("nav-button");
 
     switch (diagramButton.type) {
@@ -122,6 +138,25 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
 
                 component.width = 200;
                 component.height = 100;
+
+                component.connectedCallback();
+                component.sendEditMessage();
+                component.sendMoveMessage();
+            });
+            break;
+
+        case ComponentType.NOTE:
+            button.addEventListener("click", () => {
+                const component = new NoteComponent();
+                component.sendCreatedMessage(diagramButton.type);
+                ComponentManager.instance.addComponent(component);
+
+                component.cType.text = "";
+                component.cName.text = "";
+                component.operationsList.push({ text: "Note", inEditMode: false });
+
+                //component.width = 200;
+                component.height = 200;
 
                 component.connectedCallback();
                 component.sendEditMessage();

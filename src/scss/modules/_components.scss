@@ -16,7 +16,7 @@
         position: absolute;
 
         background-color: variables.$primary-bg-color;
-        border: 2px solid black;
+        border: 2px solid variables.$primary-line-color;
 
         min-width: 10px;
         min-height: 10px;
@@ -30,8 +30,40 @@
         cursor: pointer;
 
         &.is-active {
-            //outline: 1px solid black;
+            //outline: 1px solid variables.$primary-line-color;
             //z-index: 101;
+        }
+
+        &.note-component {
+            position: relative;
+            padding: variables.$size-05;
+
+            .header {
+                position: absolute;
+                right: 0;
+                background-color: variables.$primary-bg-color;
+                padding: 0;
+
+                border: inherit;
+                border-top-color: variables.$primary-bg-color;
+                border-right-color: variables.$primary-bg-color;
+
+                height: 2em;
+                width: 2em;
+                //border-right: none;
+                //border-top: none;
+
+                div {
+                    padding: 0;
+                    position: absolute;
+                    top: 50%;
+                    left: -51%;
+                    transform: rotate(45deg);
+                    height: 0.1em;
+                    width: 200%;
+                    background-color: variables.$primary-line-color;
+                }
+            }
         }
 
         &.class-component {
@@ -100,7 +132,7 @@
         height: 16px;
 
         border-radius: 100%;
-        border: 2px solid black;
+        border: 2px solid variables.$primary-line-color;
 
         background-color: variables.$primary-bg-color;
     }

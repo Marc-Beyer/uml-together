@@ -12,6 +12,7 @@ import { WebSocketController } from "../webSocket/webSocketController";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 import { ComponentType } from "./componentType";
+import { NoteComponent } from "./noteComponent";
 
 export class ComponentManager {
     public static instance: ComponentManager;
@@ -23,8 +24,6 @@ export class ComponentManager {
     }
 
     public onCreateMessage(message: CreateMessage) {
-        console.log("ne COmp", message);
-
         if (this.components.has(message.id)) return;
         console.log("ne COmp", message);
 
@@ -37,6 +36,13 @@ export class ComponentManager {
                 this.components.set(
                     message.id,
                     new ClassComponent(message.x, message.y, message.width, message.height, message.id)
+                );
+                break;
+
+            case ComponentType.NOTE:
+                this.components.set(
+                    message.id,
+                    new NoteComponent(message.x, message.y, message.width, message.height, message.id)
                 );
                 break;
 
