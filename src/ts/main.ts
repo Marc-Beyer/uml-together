@@ -1,5 +1,6 @@
 import { ChatController } from "./modules/chat/chatController";
 import { ComponentManager } from "./modules/components/componentManager";
+import { ConnectionManager } from "./modules/connections/connectionManager";
 import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
 import { WebSocketController } from "./modules/webSocket/webSocketController";
@@ -11,6 +12,7 @@ if (href.length >= 2) {
     const key = href[2];
 
     new ComponentManager();
+    new ConnectionManager();
     new ChatController(new WebSocketController(sessionId, key));
 
     init();

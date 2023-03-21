@@ -6,4 +6,9 @@ export enum ComponentType {
     PRIMITIVE,
     DATA_TYPE,
     NOTE,
+    GENERALIZATION,
+    USAGE,
+    ASSOCIATION,
+    AGGREGATION,
+    COMPOSITION,
 }

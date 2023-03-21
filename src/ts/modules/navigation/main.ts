@@ -27,11 +27,11 @@ let mockupDiagram: Diagram = {
         { text: "Primitive", id: "primitive", type: ComponentType.PRIMITIVE, icon: "img/primitive-icon.svg" },
         { text: "DataType", id: "dataType", type: ComponentType.DATA_TYPE, icon: "img/dataType-icon.svg" },
         { text: "Note", id: "note", type: ComponentType.NOTE, icon: "img/note-icon.svg" },
-        { text: "Generalization", id: "generalizationClass", type: ComponentType.DEFAULT },
-        { text: "Usage", id: "usage", type: ComponentType.DEFAULT },
-        { text: "Association", id: "associationClass", type: ComponentType.DEFAULT },
-        { text: "Aggregation", id: "aggregation", type: ComponentType.DEFAULT },
-        { text: "Composition", id: "composition", type: ComponentType.DEFAULT },
+        { text: "Generalization", id: "generalizationClass", type: ComponentType.GENERALIZATION },
+        { text: "Usage", id: "usage", type: ComponentType.USAGE },
+        { text: "Association", id: "associationClass", type: ComponentType.ASSOCIATION },
+        { text: "Aggregation", id: "aggregation", type: ComponentType.AGGREGATION },
+        { text: "Composition", id: "composition", type: ComponentType.COMPOSITION },
     ],
 };
 

@@ -116,9 +116,9 @@ export class ClassComponent extends Component {
                 this.attributeList[index].inEditMode,
                 (value: string) => {
                     this.attributeList[index].text = value;
-
                     this.attributeList[index].inEditMode = false;
                     this.sendEditMessage();
+
                     if (value.trim() === "") {
                         this.operationsList.push({
                             text: "",
@@ -134,7 +134,10 @@ export class ClassComponent extends Component {
                     }
                 },
                 (value: string) => {
+                    this.attributeList[index].text = value;
                     this.attributeList[index].inEditMode = false;
+                    this.sendEditMessage();
+
                     if (value === "") {
                         this.attributeList.slice(0, index);
                     } else {
@@ -153,9 +156,9 @@ export class ClassComponent extends Component {
                 this.operationsList[index].inEditMode,
                 (value: string) => {
                     this.operationsList[index].text = value;
-
                     this.operationsList[index].inEditMode = false;
                     this.sendEditMessage();
+
                     if (value.trim() === "") {
                         this.connectedCallback();
                     } else {
@@ -167,7 +170,10 @@ export class ClassComponent extends Component {
                     }
                 },
                 (value: string) => {
+                    this.operationsList[index].text = value;
                     this.operationsList[index].inEditMode = false;
+                    this.sendEditMessage();
+
                     if (value === "") {
                         this.operationsList.slice(0, index);
                     } else {
@@ -189,17 +195,20 @@ export class ClassComponent extends Component {
                 this.cType.inEditMode,
                 (value: string) => {
                     this.cType.text = value;
-
                     this.cType.inEditMode = false;
                     this.sendEditMessage();
+
                     this.attributeList.push({
                         text: "",
                         inEditMode: true,
                     });
                     Component.addActiveComponents(this, true);
                 },
-                () => {
+                (value: string) => {
+                    this.cType.text = value;
                     this.cType.inEditMode = false;
+                    this.sendEditMessage();
+
                     Component.addActiveComponents(this, true);
                 }
             );
@@ -211,14 +220,17 @@ export class ClassComponent extends Component {
             this.cName.inEditMode,
             (value: string) => {
                 this.cName.text = value;
-
                 this.cName.inEditMode = false;
                 this.sendEditMessage();
+
                 this.cType.inEditMode = true;
                 Component.addActiveComponents(this, true);
             },
-            () => {
+            (value: string) => {
+                this.cName.text = value;
                 this.cName.inEditMode = false;
+                this.sendEditMessage();
+
                 Component.addActiveComponents(this, true);
             }
         );

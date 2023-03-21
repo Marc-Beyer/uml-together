@@ -5,12 +5,12 @@ $size-3: 1.5rem;
 
 $background-color: #ffffff;
 
-$primary-color: rgb(0, 132, 255);
+$primary-color: #0078d4;
 $primary-bg-color: rgb(255, 255, 255);
 $primary-line-color: rgb(0, 0, 0);
 
 $hover-color-transparent: rgba(0, 0, 0, 0.4);
-$hover-color: darken($primary-color, 30%);
+$hover-color: darken($primary-color, 20%);
 
 $font-color: rgb(255, 255, 255);
 $font-color-deactivated: rgb(92, 92, 92);

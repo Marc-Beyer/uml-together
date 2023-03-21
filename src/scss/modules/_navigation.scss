@@ -1,5 +1,6 @@
 @use "variables";
 
+$tool-nav-size: 38px;
 $small-nav-size: 48px;
 $large-nav-size: 225px;
 
@@ -7,17 +8,10 @@ nav {
     position: absolute;
     z-index: 1000;
 
-    width: $large-nav-size;
-    min-width: $large-nav-size;
-    height: 100vh;
-    background-color: variables.$primary-color;
-
     display: flex;
-    flex-direction: column;
 
+    background-color: variables.$primary-color;
     color: variables.$font-color;
-
-    translate: width 3s;
 
     button {
         color: inherit;
@@ -25,16 +19,35 @@ nav {
         border: none;
 
         text-align: left;
-    }
 
-    #nav-btn {
-        width: $small-nav-size;
-        height: $small-nav-size;
-        padding: 8px;
         &:hover {
             background-color: variables.$hover-color;
         }
     }
+}
+
+#tool-nav {
+    width: 100%;
+    background-color: darken(variables.$primary-color, 10%);
+
+    button {
+        padding: 0 8px;
+    }
+
+    #nav-btn {
+        width: $small-nav-size;
+        height: $tool-nav-size;
+        padding: 4px 8px;
+    }
+}
+
+#main-nav {
+    width: $large-nav-size;
+    min-width: $large-nav-size;
+    height: calc(100vh - $tool-nav-size);
+    top: $tool-nav-size;
+
+    flex-direction: column;
 
     ul {
         overflow-x: hidden;
@@ -50,7 +63,6 @@ nav {
                 flex-direction: row;
                 align-items: center;
 
-                //padding: variables.$size-2 variables.$size-1;
                 padding: $padding;
 
                 width: 100%;
@@ -63,25 +75,21 @@ nav {
                     max-height: $small-nav-size - ($padding * 2);
                     margin-right: variables.$size-1;
                 }
-
-                &:hover {
-                    background: variables.$hover-color;
-                }
             }
         }
     }
-}
 
-nav.closed {
-    width: $small-nav-size;
-    min-width: $small-nav-size;
-    ul {
-        overflow-y: hidden;
-        .img-container {
-            margin-right: 0;
-        }
-        .text-container {
-            display: none;
+    &.closed {
+        width: $small-nav-size;
+        min-width: $small-nav-size;
+        ul {
+            overflow-y: hidden;
+            .img-container {
+                margin-right: 0;
+            }
+            .text-container {
+                display: none;
+            }
         }
     }
 }

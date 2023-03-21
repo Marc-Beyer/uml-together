@@ -31,17 +31,17 @@ export class ChatController {
             };
             this.chatInput.value = "";
 
-            webSocketController.sent(message);
             this.newMessage(message);
+            webSocketController.sent(message);
         });
     }
 
     public newMessage(message: Message) {
         const messageContainer = document.createElement("div");
-        messageContainer.classComponentName = "message-container";
+        messageContainer.classList.add("message-container");
 
         const messageText = document.createElement("p");
-        messageText.classComponentName = "message-text";
+        messageText.classList.add("message-text");
 
         messageText.textContent = message.data;
 

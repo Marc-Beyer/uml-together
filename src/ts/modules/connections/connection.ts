@@ -1,4 +1,5 @@
 import { Component } from "../components/component";
+import { ComponentType } from "../components/componentType";
 import { Grid, GridPart } from "../grid";
 import { Vector2 } from "../vector2";
 
@@ -8,12 +9,21 @@ export class Connection implements GridPart {
     private startOffset: Vector2;
     private endOffset: Vector2;
     private points: Vector2[] = [];
+    private type: ComponentType;
 
-    constructor(startComponent: Component, endComponent: Component, startOffset: Vector2, endOffset: Vector2) {
+    constructor(
+        startComponent: Component,
+        endComponent: Component,
+        type: ComponentType,
+        startOffset: Vector2 = new Vector2(0, 0),
+        endOffset: Vector2 = new Vector2(0, 0)
+    ) {
         this.endComponent = endComponent;
         this.startComponent = startComponent;
         this.endOffset = endOffset;
         this.startOffset = startOffset;
+
+        this.type = type;
 
         this.startComponent.connections.push(this);
         this.endComponent.connections.push(this);
@@ -36,18 +46,26 @@ export class Connection implements GridPart {
 
         Grid.ctx.beginPath();
         Grid.ctx.moveTo(
-            this.transformXPos(this.startComponent.xPos + this.startOffset.x),
-            this.transformYPos(this.startComponent.yPos + this.startOffset.y)
+            this.transformXPos(this.translateX(this.startComponent.xPos) + this.startComponent.width / 2),
+            this.transformYPos(this.translateY(this.startComponent.yPos) + this.startComponent.height / 2)
         );
         for (let index = 0; index < this.points.length; index++) {
             const point = this.points[index];
             Grid.ctx.lineTo(this.transformXPos(point.x), this.transformYPos(point.y));
         }
         Grid.ctx.lineTo(
-            this.transformXPos(this.endComponent.xPos + this.endOffset.x),
-            this.transformYPos(this.endComponent.yPos + this.endOffset.y)
+            this.transformXPos(this.translateX(this.endComponent.xPos) + this.endComponent.width / 2),
+            this.transformYPos(this.translateY(this.endComponent.yPos) + this.endComponent.height / 2)
         );
         Grid.ctx.stroke();
+    }
+
+    private translateX(value: number): number {
+        return Grid.xRaster > 0 ? Math.round(value / Grid.xRaster) * Grid.xRaster : value;
+    }
+
+    private translateY(value: number): number {
+        return Grid.yRaster > 0 ? Math.round(value / Grid.yRaster) * Grid.yRaster : value;
     }
 
     private transformXPos(x: number): number {

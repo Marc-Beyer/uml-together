@@ -1,4 +1,5 @@
 import { Connection } from "../connections/connection";
+import { ConnectionManager } from "../connections/connectionManager";
 import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
 import { CreateMessage, MessageType } from "../webSocket/Message";
@@ -19,7 +20,9 @@ export class Component extends HTMLElement implements GridPart {
             const element = Component.activeComponentList[index];
             element.isActive = false;
         }
-        Input.movementMode = MovementMode.SCREEN;
+        if (Input.movementMode !== MovementMode.CONNECTION) {
+            Input.movementMode = MovementMode.SCREEN;
+        }
         Component.activeComponentList = [];
     }
 
@@ -30,7 +33,13 @@ export class Component extends HTMLElement implements GridPart {
             component.parentElement?.append(component);
             component.isActive = true;
         }
-        Input.movementMode = MovementMode.COMPONENT;
+        if (Input.movementMode === MovementMode.CONNECTION) {
+            console.log("connect", component);
+
+            ConnectionManager.instance.connect(component);
+        } else {
+            Input.movementMode = MovementMode.COMPONENT;
+        }
     }
 
     public connections: Connection[] = [];

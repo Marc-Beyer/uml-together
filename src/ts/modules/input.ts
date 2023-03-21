@@ -1,6 +1,7 @@
 import { Component } from "./components/component";
 import { ComponentManager } from "./components/componentManager";
 import { ScaleHandle } from "./components/scaleHandle";
+import { ConnectionManager } from "./connections/connectionManager";
 import { Grid } from "./grid";
 
 export enum MovementMode {
@@ -8,6 +9,7 @@ export enum MovementMode {
     "COMPONENT",
     "RESIZE",
     EDIT,
+    CONNECTION,
 }
 
 export function initInput() {
@@ -54,7 +56,9 @@ export class Input {
             Input.y = event.screenY;
             Input.isMousedown = true;
 
-            if (!event.defaultPrevented) Component.resetActiveComponents();
+            if (!event.defaultPrevented) {
+                if (Input.movementMode !== MovementMode.CONNECTION) Component.resetActiveComponents();
+            }
         });
 
         container.addEventListener("mouseup", (event) => {
@@ -71,34 +75,51 @@ export class Input {
                     }
                     break;
 
+                case MovementMode.CONNECTION:
+                    break;
+
                 default:
                     break;
             }
         });
 
         document.addEventListener("mousemove", (event) => {
-            if (!Input.isMousedown) return;
-
-            switch (Input.movementMode) {
-                case MovementMode.SCREEN:
-                    Grid.addOffset(Input.x - event.screenX, Input.y - event.screenY);
-                    Input.x = event.screenX;
-                    Input.y = event.screenY;
-                    break;
-                case MovementMode.COMPONENT:
-                    for (let index = 0; index < Component.activeComponentList.length; index++) {
-                        const component = Component.activeComponentList[index];
-                        component.addPos(Input.x - event.screenX, Input.y - event.screenY);
+            if (Input.isMousedown) {
+                switch (Input.movementMode) {
+                    case MovementMode.SCREEN:
+                        Grid.addOffset(Input.x - event.screenX, Input.y - event.screenY);
                         Input.x = event.screenX;
                         Input.y = event.screenY;
-                    }
-                    break;
-                case MovementMode.RESIZE:
-                    Input.scaleHandle.moveScaleHandle(event);
-                    break;
+                        break;
+                    case MovementMode.COMPONENT:
+                        for (let index = 0; index < Component.activeComponentList.length; index++) {
+                            const component = Component.activeComponentList[index];
+                            component.addPos(Input.x - event.screenX, Input.y - event.screenY);
+                            Input.x = event.screenX;
+                            Input.y = event.screenY;
+                        }
+                        break;
+                    case MovementMode.RESIZE:
+                        Input.scaleHandle.moveScaleHandle(event);
+                        break;
 
-                default:
-                    break;
+                    case MovementMode.CONNECTION:
+                        Grid.addOffset(Input.x - event.screenX, Input.y - event.screenY);
+                        Input.x = event.screenX;
+                        Input.y = event.screenY;
+
+                        ConnectionManager.instance.drawConnection(event.screenX, event.screenY);
+                        break;
+
+                    default:
+                        break;
+                }
+            } else {
+                switch (Input.movementMode) {
+                    case MovementMode.CONNECTION:
+                        ConnectionManager.instance.drawConnection(event.pageX, event.pageY);
+                        break;
+                }
             }
         });
     }

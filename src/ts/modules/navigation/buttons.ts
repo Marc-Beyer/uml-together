@@ -3,6 +3,8 @@ import { Diagram, DiagramButton } from "./main";
 import { ComponentType } from "../components/componentType";
 import { ComponentManager } from "../components/componentManager";
 import { NoteComponent } from "../components/noteComponent";
+import { Input, MovementMode } from "../input";
+import { Component } from "../components/component";
 
 const navList = document.getElementById("nav-btn-list");
 
@@ -161,6 +163,18 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.connectedCallback();
                 component.sendEditMessage();
                 component.sendMoveMessage();
+            });
+            break;
+        case ComponentType.GENERALIZATION:
+        case ComponentType.USAGE:
+        case ComponentType.ASSOCIATION:
+        case ComponentType.AGGREGATION:
+        case ComponentType.COMPOSITION:
+            button.addEventListener("click", () => {
+                console.log("sddddddddddddddddddddddddddddd");
+
+                Input.movementMode = MovementMode.CONNECTION;
+                Component.resetActiveComponents();
             });
             break;
     }
