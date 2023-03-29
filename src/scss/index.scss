@@ -1,50 +1,86 @@
 @use "modules/variables";
+
+*,
+::before,
+::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #fff;
+    background-image: url(../img/wallpaper/cosmos-gca30392cd_1920.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: black;
     font-family: Arial, sans-serif;
     font-size: 16px;
     color: #333;
 }
 
-.container {
-    background-color: #f4f4f4;
-    border: 2px solid variables.$primary-color;
-    border-radius: 10px;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-}
+.outer-container {
+    height: 100vh;
+    display: flex;
 
-.welcome-text {
-    font-size: 24px;
-    font-weight: bold;
-    color: variables.$primary-color;
-    margin-bottom: 20px;
-}
+    justify-content: center;
+    align-items: center;
 
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fff;
-    background-color: variables.$primary-color;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+    div {
+        //outline: 1px solid yellow;
+    }
 
-.button:hover {
-    background-color: darken(variables.$primary-color, 10%);
-}
+    .welcome-text {
+        flex: 1;
 
-.link {
-    color: variables.$primary-color;
-    text-decoration: none;
-    margin-left: 20px;
-}
+        margin-top: 20vh;
+        margin-left: 10%;
 
-.link:hover {
-    text-decoration: underline;
+        align-self: baseline;
+        text-align: justify;
+
+        font-size: 64px;
+        font-weight: bold;
+        color: variables.$primary-color;
+    }
+
+    .container {
+        flex: 1;
+
+        margin-right: 20%;
+        margin-left: 10%;
+
+        color: white;
+
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: variables.$primary-color;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: darken(variables.$primary-color, 10%);
+            }
+
+            a {
+                //color: variables.$primary-color;
+                color: white;
+                text-decoration: none;
+                margin-left: 20px;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+    }
 }
