@@ -1,7 +1,8 @@
-import { Component } from "../components/component";
+import { Component, Line } from "../components/component";
 import { ComponentType } from "../components/componentType";
 import { Grid, GridPart } from "../grid";
 import { Vector2 } from "../vector2";
+import * as drawHelper from "./drawHelper";
 
 export class Connection implements GridPart {
     private startComponent: Component;
@@ -50,26 +51,7 @@ export class Connection implements GridPart {
         let endX = this.endComponent.realXPos + this.endComponent.realWidth / 2;
         let endY = this.endComponent.realYPos + this.endComponent.realHeight / 2;
 
-        let intersection = this.getIntersectionPoint(
-            new Vector2(endX, endY),
-            new Vector2(startX, startY),
-            this.startComponent.realXPos,
-            this.startComponent.realYPos,
-            this.startComponent.realWidth,
-            this.startComponent.realHeight
-        );
-        if (intersection) {
-            console.log("ComponentType", ComponentType[this.type]);
-
-            switch (this.type) {
-                case ComponentType.GENERALIZATION:
-                    Grid.ctx.strokeRect(intersection.x - 5, intersection.y - 5, 10, 10);
-                    break;
-
-                default:
-                    break;
-            }
-        }
+        let angle = Connection.getAngle(startX, startY, endX, endY);
 
         Grid.ctx.beginPath();
 
@@ -77,44 +59,52 @@ export class Connection implements GridPart {
 
         for (let index = 0; index < this.points.length; index++) {
             const point = this.points[index];
-            Grid.ctx.lineTo(this.transformXPos(point.x), this.transformYPos(point.y));
+            Grid.ctx.lineTo(Connection.transformXPos(point.x), Connection.transformYPos(point.y));
         }
 
         Grid.ctx.lineTo(endX, endY);
 
         Grid.ctx.stroke();
+
+        let intersection = this.getIntersectionPoint(new Vector2(startX, startY), new Vector2(endX, endY), this.endComponent.getCollider());
+        if (intersection) {
+            switch (this.type) {
+                case ComponentType.GENERALIZATION:
+                    drawHelper.drawRotatedTriangle(intersection.x, intersection.y, angle);
+                    break;
+                case ComponentType.ASSOCIATION:
+                    drawHelper.drawRotatedTriangle(intersection.x, intersection.y, angle, true);
+                    break;
+                case ComponentType.AGGREGATION:
+                    drawHelper.drawRotatedRectangle(intersection.x, intersection.y, angle);
+                    break;
+                case ComponentType.COMPOSITION:
+                    drawHelper.drawRotatedRectangle(intersection.x, intersection.y, angle, true);
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 
-    private getIntersectionPoint(startPoint: Vector2, endPoint: Vector2, boxX: number, boxY: number, boxWidth: number, boxHeight: number) {
-        let topLeft = new Vector2(boxX, boxY);
-        let topRight = new Vector2(boxX + boxWidth, boxY);
-        let bottomLeft = new Vector2(boxX, boxY + boxHeight);
-        let bottomRight = new Vector2(boxX + boxWidth, boxY + boxHeight);
-
-        let point = this.getLineIntersection(startPoint, endPoint, topLeft, topRight);
-        if (point !== null) return point;
-
-        point = this.getLineIntersection(startPoint, endPoint, topLeft, bottomLeft);
-        if (point !== null) return point;
-
-        point = this.getLineIntersection(startPoint, endPoint, topRight, bottomRight);
-        if (point !== null) return point;
-
-        point = this.getLineIntersection(startPoint, endPoint, bottomRight, bottomLeft);
-        if (point !== null) return point;
-
+    private getIntersectionPoint(startPoint: Vector2, endPoint: Vector2, collider: Line[]) {
+        for (let index = 0; index < collider.length; index++) {
+            let point = this.getLineIntersection(startPoint, endPoint, collider[index]);
+            if (point !== null) return point;
+        }
         return null;
     }
 
-    private getLineIntersection(start1: Vector2, end1: Vector2, start2: Vector2, end2: Vector2) {
+    private getLineIntersection(start1: Vector2, end1: Vector2, line: Line) {
         const x1 = start1.x;
         const y1 = start1.y;
         const x2 = end1.x;
         const y2 = end1.y;
-        const x3 = start2.x;
-        const y3 = start2.y;
-        const x4 = end2.x;
-        const y4 = end2.y;
+        const x3 = line.x1;
+        const y3 = line.y1;
+        const x4 = line.x2;
+        const y4 = line.y2;
 
         const denominator = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
         if (denominator === 0) {
@@ -134,12 +124,20 @@ export class Connection implements GridPart {
         return new Vector2(intersectionX, intersectionY);
     }
 
-    private transformXPos(x: number): number {
+    public static getSlope(x1: number, y1: number, x2: number, y2: number) {
+        return (y2 - y1) / (x2 - x1);
+    }
+
+    public static getAngle(x1: number, y1: number, x2: number, y2: number) {
+        return Math.atan2(y2 - y1, x2 - x1);
+    }
+
+    public static transformXPos(x: number): number {
         let nx = Grid.width / 2 + (x + Grid.xOffset) * Grid.xZoom;
         if (Grid.xRaster > 0) nx = Math.round(nx / Grid.xRaster) * Grid.xRaster;
         return nx;
     }
-    private transformYPos(y: number): number {
+    public static transformYPos(y: number): number {
         let ny = Grid.height / 2 + (y + Grid.yOffset) * Grid.yZoom;
         if (Grid.yRaster > 0) ny = Math.round(ny / Grid.xRaster) * Grid.xRaster;
         return ny;

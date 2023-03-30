@@ -7,6 +7,13 @@ import { WebSocketController } from "../webSocket/webSocketController";
 import { ComponentType } from "./componentType";
 import { ScaleHandle, ScaleHandlePosition } from "./scaleHandle";
 
+export interface Line {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+}
+
 export class Component extends HTMLElement implements GridPart {
     public static activeComponentList: Component[] = [];
     public static container: HTMLElement | null = document.getElementById("component-container");
@@ -258,6 +265,35 @@ export class Component extends HTMLElement implements GridPart {
                 (this as any)[key] = message[key];
             }
         }
+    }
+
+    public getCollider(): Line[] {
+        return [
+            {
+                x1: this.realXPos,
+                y1: this.realYPos,
+                x2: this.realXPos + this.realWidth,
+                y2: this.realYPos,
+            },
+            {
+                x1: this.realXPos + this.realWidth,
+                y1: this.realYPos,
+                x2: this.realXPos + this.realWidth,
+                y2: this.realYPos + this.realHeight,
+            },
+            {
+                x1: this.realXPos + this.realWidth,
+                y1: this.realYPos + this.realHeight,
+                x2: this.realXPos,
+                y2: this.realYPos + this.realHeight,
+            },
+            {
+                x1: this.realXPos,
+                y1: this.realYPos + this.realHeight,
+                x2: this.realXPos,
+                y2: this.realYPos,
+            },
+        ];
     }
 
     protected updateCSSOnZoom() {}
