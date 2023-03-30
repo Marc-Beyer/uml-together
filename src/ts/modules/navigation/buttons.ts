@@ -5,6 +5,7 @@ import { ComponentManager } from "../components/componentManager";
 import { NoteComponent } from "../components/noteComponent";
 import { Input, MovementMode } from "../input";
 import { Component } from "../components/component";
+import { ConnectionManager } from "../connections/connectionManager";
 
 const navList = document.getElementById("nav-btn-list");
 
@@ -171,8 +172,7 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
         case ComponentType.AGGREGATION:
         case ComponentType.COMPOSITION:
             button.addEventListener("click", () => {
-                console.log("sddddddddddddddddddddddddddddd");
-
+                ConnectionManager.instance.connectionType = diagramButton.type;
                 Input.movementMode = MovementMode.CONNECTION;
                 Component.resetActiveComponents();
             });

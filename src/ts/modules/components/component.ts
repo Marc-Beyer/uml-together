@@ -50,7 +50,28 @@ export class Component extends HTMLElement implements GridPart {
     private _height!: number;
     private _isActive: boolean = false;
 
+    private _realXPos!: number;
+    private _realYPos!: number;
+    private _realWidth!: number;
+    private _realHeight!: number;
+
     // Getter and setter
+
+    public get realXPos() {
+        return this._realXPos;
+    }
+
+    public get realYPos() {
+        return this._realYPos;
+    }
+
+    public get realWidth() {
+        return this._realWidth;
+    }
+
+    public get realHeight() {
+        return this._realHeight;
+    }
 
     public get xPos() {
         return this._xPos;
@@ -58,8 +79,8 @@ export class Component extends HTMLElement implements GridPart {
     public set xPos(x: number) {
         this._xPos = x;
         let gridXPos = Grid.xRaster > 0 ? Math.round(this._xPos / Grid.xRaster) * Grid.xRaster : this._xPos;
-        let nPos = window.innerWidth / 2 + (gridXPos + Grid.xOffset) * Grid.xZoom;
-        this.style.left = `${nPos}px`;
+        this._realXPos = window.innerWidth / 2 + (gridXPos + Grid.xOffset) * Grid.xZoom;
+        this.style.left = `${this._realXPos}px`;
         this.updateConnections();
     }
     public get yPos(): number {
@@ -68,8 +89,8 @@ export class Component extends HTMLElement implements GridPart {
     public set yPos(y: number) {
         this._yPos = y;
         let gridYPos = Grid.yRaster > 0 ? Math.round(this._yPos / Grid.yRaster) * Grid.yRaster : this._yPos;
-        let nPos = window.innerHeight / 2 + (gridYPos + Grid.yOffset) * Grid.yZoom;
-        this.style.top = `${nPos}px`;
+        this._realYPos = window.innerHeight / 2 + (gridYPos + Grid.yOffset) * Grid.yZoom;
+        this.style.top = `${this._realYPos}px`;
         this.updateConnections();
     }
     public get width(): number {
@@ -78,8 +99,8 @@ export class Component extends HTMLElement implements GridPart {
     public set width(value: number) {
         this._width = Math.max(value, 0);
         let gridWidth = Grid.xRaster > 0 ? Math.round(this._width / Grid.xRaster) * Grid.yRaster : this._width;
-        let width = gridWidth * Grid.xZoom;
-        this.style.width = `${width}px`;
+        this._realWidth = gridWidth * Grid.xZoom;
+        this.style.width = `${this._realWidth}px`;
         this.updateConnections();
     }
     public get height(): number {
@@ -88,8 +109,8 @@ export class Component extends HTMLElement implements GridPart {
     public set height(value: number) {
         this._height = Math.max(value, 0);
         let gridHeight = Grid.yRaster > 0 ? Math.round(this._height / Grid.yRaster) * Grid.yRaster : this._height;
-        let height = gridHeight * Grid.yZoom;
-        this.style.height = `${height}px`;
+        this._realHeight = gridHeight * Grid.yZoom;
+        this.style.height = `${this._realHeight}px`;
         this.updateConnections();
     }
     public get isActive(): boolean {

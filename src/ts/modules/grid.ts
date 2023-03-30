@@ -10,8 +10,8 @@ export class Grid {
     public static zoomMin = 0.42;
     public static width: number = -1;
     public static height: number = -1;
-    public static xRaster: number = 10;
-    public static yRaster: number = 10;
+    public static xRaster: number = 10; // TODO: 10
+    public static yRaster: number = 10; // TODO: 10
 
     public static gridParts: GridPart[] = [];
     public static connections: Connection[] = [];
