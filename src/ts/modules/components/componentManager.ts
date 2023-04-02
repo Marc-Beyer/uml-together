@@ -1,13 +1,6 @@
 import * as crypto from "crypto-js";
 
-import {
-    CreateMessage,
-    DeleteMessage,
-    EditMessage,
-    MessageType,
-    MoveMessage,
-    StateMessage,
-} from "../webSocket/Message";
+import { CreateMessage, DeleteMessage, EditMessage, MessageType, MoveMessage, StateMessage } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
@@ -25,7 +18,6 @@ export class ComponentManager {
 
     public onCreateMessage(message: CreateMessage) {
         if (this.components.has(message.id)) return;
-        console.log("ne COmp", message);
 
         switch (message.type) {
             case ComponentType.CLASS:
@@ -33,17 +25,11 @@ export class ComponentManager {
             case ComponentType.ENUM:
             case ComponentType.PRIMITIVE:
             case ComponentType.DATA_TYPE:
-                this.components.set(
-                    message.id,
-                    new ClassComponent(message.x, message.y, message.width, message.height, message.id)
-                );
+                this.components.set(message.id, new ClassComponent(message.x, message.y, message.width, message.height, message.id));
                 break;
 
             case ComponentType.NOTE:
-                this.components.set(
-                    message.id,
-                    new NoteComponent(message.x, message.y, message.width, message.height, message.id)
-                );
+                this.components.set(message.id, new NoteComponent(message.x, message.y, message.width, message.height, message.id));
                 break;
 
             default:
@@ -112,7 +98,12 @@ export class ComponentManager {
     public removeComponent(component: Component) {
         console.log("Remove component", component.componentId);
 
+        component.onDelete();
         this.components.delete(component.componentId);
         component.remove();
+    }
+
+    public getComponentFromId(id: string): Component | undefined {
+        return this.components.get(id);
     }
 }

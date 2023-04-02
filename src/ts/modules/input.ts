@@ -1,6 +1,7 @@
 import { Component } from "./components/component";
 import { ComponentManager } from "./components/componentManager";
 import { ScaleHandle } from "./components/scaleHandle";
+import { Connection } from "./connections/connection";
 import { ConnectionManager } from "./connections/connectionManager";
 import { Grid } from "./grid";
 
@@ -10,6 +11,7 @@ export enum MovementMode {
     "RESIZE",
     EDIT,
     CONNECTION,
+    SELECTED_CONNECTION,
 }
 
 export function initInput() {
@@ -35,12 +37,7 @@ export class Input {
             console.log(event.key, "up");
 
             if (event.keyCode === 46 || event.key === "Delete") {
-                for (let index = 0; index < Component.activeComponentList.length; index++) {
-                    const component: Component = Component.activeComponentList[index];
-                    console.log(component, "rem");
-                    ComponentManager.instance.removeComponent(component);
-                    component.sendDeleteMessage();
-                }
+                Input.removeComponents();
             }
         });
 
@@ -57,7 +54,19 @@ export class Input {
             Input.isMousedown = true;
 
             if (!event.defaultPrevented) {
-                if (Input.movementMode !== MovementMode.CONNECTION) Component.resetActiveComponents();
+                if (Input.movementMode !== MovementMode.CONNECTION) {
+                    if (ConnectionManager.instance.selectedConnectionOnClick(event.pageX, event.pageY)) {
+                        Component.resetActiveComponents();
+                    } else {
+                        Connection.resetActiveConnections();
+                        Component.resetActiveComponents();
+                    }
+                } else {
+                    Connection.resetActiveConnections();
+                    Component.resetActiveComponents();
+                }
+            } else {
+                if (!event.ctrlKey) Connection.resetActiveConnections(false);
             }
         });
 
@@ -70,8 +79,8 @@ export class Input {
                     break;
                 case MovementMode.COMPONENT:
                 case MovementMode.RESIZE:
-                    for (let index = 0; index < Component.activeComponentList.length; index++) {
-                        Component.activeComponentList[index].sendMoveMessage();
+                    for (const component of Component.activeComponentList) {
+                        component.sendMoveMessage();
                     }
                     break;
 
@@ -92,12 +101,13 @@ export class Input {
                         Input.y = event.screenY;
                         break;
                     case MovementMode.COMPONENT:
-                        for (let index = 0; index < Component.activeComponentList.length; index++) {
-                            const component = Component.activeComponentList[index];
-                            component.addPos(Input.x - event.screenX, Input.y - event.screenY);
-                            Input.x = event.screenX;
-                            Input.y = event.screenY;
+                        const x = Input.x - event.screenX;
+                        const y = Input.y - event.screenY;
+                        for (const component of Component.activeComponentList) {
+                            component.addPos(x, y);
                         }
+                        Input.x = event.screenX;
+                        Input.y = event.screenY;
                         break;
                     case MovementMode.RESIZE:
                         Input.scaleHandle.moveScaleHandle(event);
@@ -122,5 +132,12 @@ export class Input {
                 }
             }
         });
+    }
+
+    public static removeComponents() {
+        for (const component of Component.activeComponentList) {
+            ComponentManager.instance.removeComponent(component);
+            component.sendDeleteMessage();
+        }
     }
 }

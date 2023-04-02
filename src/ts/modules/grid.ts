@@ -1,4 +1,4 @@
-import { Connection } from "./connections/connection";
+import { ConnectionManager } from "./connections/connectionManager";
 
 export interface GridPart {
     updateOffset(): void;
@@ -13,10 +13,10 @@ export class Grid {
     public static xRaster: number = 10;
     public static yRaster: number = 10;
     public static lineColor = "black";
+    public static lineColorSelected = "red";
     public static backgroundColor = "white";
 
     public static gridParts: GridPart[] = [];
-    public static connections: Connection[] = [];
 
     private static _xOffset: number = 1;
     private static _yOffset: number = 1;
@@ -77,9 +77,7 @@ export class Grid {
         }
 
         this.ctx.clearRect(0, 0, this.width, this.height);
-        for (let index = 0; index < this.connections.length; index++) {
-            this.connections[index].updateOffset();
-        }
+        ConnectionManager.instance.updateConnections();
     }
 
     public static addZoom(x: number, y: number) {
@@ -91,15 +89,11 @@ export class Grid {
         }
 
         this.ctx.clearRect(0, 0, this.width, this.height);
-        for (let index = 0; index < this.connections.length; index++) {
-            this.connections[index].updateZoom();
-        }
+        ConnectionManager.instance.updateConnections();
     }
 
     public static updateConnections() {
         this.ctx.clearRect(0, 0, this.width, this.height);
-        for (let index = 0; index < this.connections.length; index++) {
-            this.connections[index].drawConnection();
-        }
+        ConnectionManager.instance.updateConnections();
     }
 }

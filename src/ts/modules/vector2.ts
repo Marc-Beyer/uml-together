@@ -19,4 +19,22 @@ export class Vector2 {
         this._x = x;
         this._y = y;
     }
+
+    public add(vec: Vector2) {
+        this.x += vec.x;
+        this.y += vec.y;
+        return this;
+    }
+
+    public addNumber(x: number, y: number) {
+        this.x += x;
+        this.y += y;
+        return this;
+    }
+
+    public sub(vec: Vector2) {
+        this.x -= vec.x;
+        this.y -= vec.y;
+        return this;
+    }
 }

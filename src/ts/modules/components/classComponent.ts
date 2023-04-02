@@ -1,4 +1,6 @@
 import { EditText } from "../elements/editText";
+import { Grid } from "../grid";
+import { Input } from "../input";
 import { MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { Component } from "./component";
@@ -107,6 +109,57 @@ export class ClassComponent extends Component {
         }
 
         this.connectedCallback();
+    }
+
+    protected createContextMenu(list: Element) {
+        list.append(
+            this.createContextBtn("Delete Component", "Del", () => {
+                Input.removeComponents();
+            })
+        );
+        list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));
+
+        list.append(document.createElement("hr"));
+
+        list.append(
+            this.createContextBtn("Add Attribute", "", () => {
+                this.attributeList.push({
+                    text: "",
+                    inEditMode: true,
+                });
+                this.connectedCallback();
+            })
+        );
+        list.append(
+            this.createContextBtn("Add Operation", "", () => {
+                this.operationsList.push({
+                    text: "",
+                    inEditMode: true,
+                });
+                this.connectedCallback();
+            })
+        );
+        list.append(
+            this.createContextBtn("Add Annotation", "", () => {
+                this.cType.inEditMode = true;
+                this.connectedCallback();
+            })
+        );
+
+        list.append(document.createElement("hr"));
+        list.append(
+            this.createContextBtn("Auto Resize", "", () => {
+                this.style.width = "";
+                this.style.height = "";
+                const rect = this.getBoundingClientRect();
+                let width = rect.width;
+                let height = rect.height;
+
+                this.width = width / Grid.xZoom + Grid.xRaster;
+                this.height = height / Grid.yZoom;
+                this.sendMoveMessage();
+            })
+        );
     }
 
     protected addAttribute(index: number) {
@@ -234,9 +287,7 @@ export class ClassComponent extends Component {
                 Component.addActiveComponents(this, true);
             }
         );
-        this.cName.text.trim().length > 0
-            ? classNameEditText.classList.add("bold")
-            : classNameEditText.classList.add("no-name");
+        this.cName.text.trim().length > 0 ? classNameEditText.classList.add("bold") : classNameEditText.classList.add("no-name");
         div.append(classNameEditText);
         this.append(div);
     }

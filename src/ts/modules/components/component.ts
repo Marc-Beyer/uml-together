@@ -15,7 +15,7 @@ export interface Line {
 }
 
 export class Component extends HTMLElement implements GridPart {
-    public static activeComponentList: Component[] = [];
+    public static activeComponentList: Set<Component> = new Set();
     public static container: HTMLElement | null = document.getElementById("component-container");
 
     public static baseFontSize = 16;
@@ -23,20 +23,19 @@ export class Component extends HTMLElement implements GridPart {
     public componentId: string = "";
 
     public static resetActiveComponents() {
-        for (let index = 0; index < Component.activeComponentList.length; index++) {
-            const element = Component.activeComponentList[index];
-            element.isActive = false;
+        for (const component of Component.activeComponentList) {
+            component.isActive = false;
         }
         if (Input.movementMode !== MovementMode.CONNECTION) {
             Input.movementMode = MovementMode.SCREEN;
         }
-        Component.activeComponentList = [];
+        Component.activeComponentList = new Set();
     }
 
-    public static addActiveComponents(component: Component, reset: boolean = true) {
-        if (reset) {
-            this.resetActiveComponents();
-            Component.activeComponentList.push(component);
+    public static addActiveComponents(component: Component, activate: boolean = true, resetOthers: boolean = true) {
+        if (activate) {
+            if (resetOthers && !Component.activeComponentList.has(component)) this.resetActiveComponents();
+            Component.activeComponentList.add(component);
             component.parentElement?.append(component);
             component.isActive = true;
         }
@@ -162,11 +161,29 @@ export class Component extends HTMLElement implements GridPart {
             if (event.button != 0) return;
             event.preventDefault();
             //event.stopPropagation();
-            let reset = Component.activeComponentList.length !== 1 || !this.isActive;
 
-            console.log(reset);
+            Component.addActiveComponents(this, true, !event.ctrlKey);
+        });
 
-            Component.addActiveComponents(this, reset);
+        this.addEventListener("contextmenu", (event) => {
+            const contextMenu = document.getElementById("context-menu");
+            if (!contextMenu) return;
+            event.preventDefault();
+            const list = contextMenu.children[0];
+
+            contextMenu.style.display = "block";
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.top = `${event.pageY}px`;
+            list.innerHTML = "";
+            this.createContextMenu(list);
+
+            document.addEventListener(
+                "click",
+                () => {
+                    contextMenu.style.display = "";
+                },
+                { once: true }
+            );
         });
     }
 
@@ -294,6 +311,35 @@ export class Component extends HTMLElement implements GridPart {
                 y2: this.realYPos,
             },
         ];
+    }
+
+    public onDelete() {
+        for (let index = 0; index < this.connections.length; index++) {
+            ConnectionManager.instance.delete(this.connections[index]);
+        }
+    }
+
+    protected createContextMenu(list: Element) {
+        list.append(
+            this.createContextBtn("Delete Component", "DEL", () => {
+                Input.removeComponents();
+            })
+        );
+    }
+
+    protected createContextBtn(text: string, shortcut: string = "", listener: () => any) {
+        let li = document.createElement("li");
+        let btn = document.createElement("button");
+        let div1 = document.createElement("div");
+        div1.append(document.createTextNode(text));
+        let div2 = document.createElement("div");
+        div2.append(document.createTextNode(shortcut));
+
+        btn.addEventListener("click", listener);
+        btn.append(div1);
+        btn.append(div2);
+        li.append(btn);
+        return li;
     }
 
     protected updateCSSOnZoom() {}

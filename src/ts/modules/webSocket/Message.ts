@@ -9,6 +9,9 @@ export enum MessageType {
     MOVE_COMPONENT,
     EDIT_COMPONENT,
     DELETE_COMPONENT,
+    CREATE_CONNECTION,
+    MOVE_CONNECTION,
+    DELETE_CONNECTION,
 }
 
 export type Message = {
@@ -54,6 +57,17 @@ export type CreateMessage = {
     y: number;
     width: number;
     height: number;
+};
+
+export type CreateConnectionMessage = {
+    type: ComponentType;
+    id: string;
+    startComponent: string;
+    endComponent: string;
+    startOffsetX: number;
+    startOffsetY: number;
+    endOffsetX: number;
+    endOffsetY: number;
 };
 
 export type MoveMessage = {

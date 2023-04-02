@@ -3,6 +3,7 @@ import { ComponentManager } from "../components/componentManager";
 import { isMessage, Message, MessageType } from "./Message";
 import * as crypto from "crypto-js";
 import { Global } from "../global";
+import { ConnectionManager } from "../connections/connectionManager";
 
 export class WebSocketController {
     public static instance: WebSocketController;
@@ -43,7 +44,7 @@ export class WebSocketController {
                 } catch (error) {}
             }
 
-            console.log("decrypted message", message);
+            console.log("decrypted message", MessageType[message.type], message);
 
             switch (message.type) {
                 case MessageType.CHAT_MESSAGE:
@@ -74,6 +75,9 @@ export class WebSocketController {
                     ComponentManager.instance.onStateMessage(message.data);
                     break;
 
+                case MessageType.CREATE_CONNECTION:
+                    ConnectionManager.instance.onCreateMessage(message.data);
+                    break;
                 default:
                     break;
             }

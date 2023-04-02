@@ -35,7 +35,7 @@
         }
 
         &.note-component {
-            position: relative;
+            //position: relative;
             padding: variables.$size-05;
 
             .header {
@@ -82,7 +82,7 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
                 width: 100%;
-                padding: 0 0.3rem;
+                padding: 0 0.3em;
             }
 
             input {
@@ -95,11 +95,11 @@
 
             .class-head {
                 text-align: center;
-                padding: 0.3rem;
+                padding: 0.3em;
 
                 input {
                     text-align: center;
-                    padding: 0.3rem;
+                    padding: 0.3em;
                 }
             }
 

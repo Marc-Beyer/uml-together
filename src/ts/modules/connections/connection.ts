@@ -1,10 +1,17 @@
 import { Component, Line } from "../components/component";
 import { ComponentType } from "../components/componentType";
 import { Grid, GridPart } from "../grid";
+import { Input, MovementMode } from "../input";
 import { Vector2 } from "../vector2";
+import { MessageType } from "../webSocket/Message";
+import { WebSocketController } from "../webSocket/webSocketController";
 import * as drawHelper from "./drawHelper";
 
 export class Connection implements GridPart {
+    public static activeConnectionList: Connection[] = [];
+    public connectionId: string = "";
+    public isActive: boolean = false;
+
     private startComponent: Component;
     private endComponent: Component;
     private startOffset: Vector2;
@@ -12,25 +19,111 @@ export class Connection implements GridPart {
     private points: Vector2[] = [];
     private type: ComponentType;
 
+    static resetActiveConnections(changeMoveMode: boolean = true) {
+        for (let index = 0; index < Connection.activeConnectionList.length; index++) {
+            const element = Connection.activeConnectionList[index];
+            element.isActive = false;
+        }
+        if (changeMoveMode && Input.movementMode !== MovementMode.CONNECTION) {
+            Input.movementMode = MovementMode.SCREEN;
+        }
+        Connection.activeConnectionList = [];
+
+        Grid.updateConnections();
+    }
+
+    public static addActiveConnection(connection: Connection, reset: boolean = true) {
+        //if (reset) {
+        this.resetActiveConnections();
+        Connection.activeConnectionList.push(connection);
+        connection.isActive = true;
+        //}
+        //Input.movementMode = MovementMode.SELECTED_CONNECTION;
+    }
+
     constructor(
         startComponent: Component,
         endComponent: Component,
         type: ComponentType,
-        startOffset: Vector2 = new Vector2(0, 0),
-        endOffset: Vector2 = new Vector2(0, 0)
+        startOffset?: Vector2,
+        endOffset?: Vector2,
+        id?: string
     ) {
         this.endComponent = endComponent;
         this.startComponent = startComponent;
-        this.endOffset = endOffset;
-        this.startOffset = startOffset;
-
+        if (endOffset === undefined) {
+            this.endOffset = new Vector2(0, 0);
+        } else {
+            this.endOffset = endOffset;
+        }
+        if (startOffset === undefined) {
+            this.startOffset = new Vector2(0, 0);
+            //this.calcOffset();
+        } else {
+            this.startOffset = startOffset;
+        }
         this.type = type;
+        this.connectionId = id ?? this.createId();
 
         this.startComponent.connections.push(this);
         this.endComponent.connections.push(this);
-        Grid.connections.push(this);
 
         this.updateZoom();
+    }
+
+    public sendCreatedMessage() {
+        WebSocketController.instance.sent({
+            type: MessageType.CREATE_CONNECTION,
+            data: {
+                type: this.type,
+                id: this.connectionId,
+                startComponent: this.startComponent.componentId,
+                endComponent: this.endComponent.componentId,
+                startOffsetX: this.startOffset.x,
+                startOffsetY: this.startOffset.y,
+                endOffsetX: this.endOffset.x,
+                endOffsetY: this.endOffset.y,
+            },
+        });
+        return this.connectionId;
+    }
+
+    public sendMoveMessage() {
+        WebSocketController.instance.sent({
+            type: MessageType.MOVE_CONNECTION,
+            data: {
+                id: this.connectionId,
+                startOffsetX: this.startOffset.x,
+                startOffsetY: this.startOffset.y,
+                endOffsetX: this.endOffset.x,
+                endOffsetY: this.endOffset.y,
+            },
+        });
+    }
+
+    public sendDeleteMessage() {
+        WebSocketController.instance.sent({
+            type: MessageType.DELETE_CONNECTION,
+            data: {
+                id: this.connectionId,
+            },
+        });
+    }
+
+    private calcOffset() {
+        let startX = this.startComponent.xPos + this.startComponent.width / 2;
+        let startY = this.startComponent.yPos + this.startComponent.height / 2;
+        let startPos = new Vector2(startX, startY);
+
+        let endX = this.endComponent.xPos + this.endComponent.width / 2;
+        let endY = this.endComponent.yPos + this.endComponent.height / 2;
+        let endPos = new Vector2(endX, endY);
+
+        let startInters = this.getIntersectionPoint(startPos, endPos, this.startComponent.getCollider());
+        let endInters = this.getIntersectionPoint(startPos, endPos, this.endComponent.getCollider());
+
+        if (startInters) this.startOffset.add(startInters.sub(startPos));
+        if (endInters) this.endOffset.add(endInters.sub(endPos));
     }
 
     public updateOffset(): void {
@@ -42,14 +135,17 @@ export class Connection implements GridPart {
     }
 
     public drawConnection() {
-        Grid.ctx.fillStyle = "black";
+        Grid.ctx.strokeStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+        Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+        console.log(" this.isActive", this.isActive);
+
         Grid.ctx.lineWidth = 2 * Grid.xZoom;
 
-        let startX = this.startComponent.realXPos + this.startComponent.realWidth / 2;
-        let startY = this.startComponent.realYPos + this.startComponent.realHeight / 2;
+        let startX = this.startComponent.realXPos + this.startComponent.realWidth / 2 + this.startOffset.x * Grid.yZoom;
+        let startY = this.startComponent.realYPos + this.startComponent.realHeight / 2 + this.startOffset.y * Grid.yZoom;
 
-        let endX = this.endComponent.realXPos + this.endComponent.realWidth / 2;
-        let endY = this.endComponent.realYPos + this.endComponent.realHeight / 2;
+        let endX = this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.yZoom;
+        let endY = this.endComponent.realYPos + this.endComponent.realHeight / 2 + this.endOffset.y * Grid.yZoom;
 
         let angle = Connection.getAngle(startX, startY, endX, endY);
 
@@ -67,24 +163,23 @@ export class Connection implements GridPart {
         Grid.ctx.stroke();
 
         let intersection = this.getIntersectionPoint(new Vector2(startX, startY), new Vector2(endX, endY), this.endComponent.getCollider());
-        if (intersection) {
-            switch (this.type) {
-                case ComponentType.GENERALIZATION:
-                    drawHelper.drawRotatedTriangle(intersection.x, intersection.y, angle);
-                    break;
-                case ComponentType.ASSOCIATION:
-                    drawHelper.drawRotatedTriangle(intersection.x, intersection.y, angle, true);
-                    break;
-                case ComponentType.AGGREGATION:
-                    drawHelper.drawRotatedRectangle(intersection.x, intersection.y, angle);
-                    break;
-                case ComponentType.COMPOSITION:
-                    drawHelper.drawRotatedRectangle(intersection.x, intersection.y, angle, true);
-                    break;
+        if (intersection) drawHelper.drawConnectionHead(this.type, intersection.x, intersection.y, angle);
+    }
 
-                default:
-                    break;
-            }
+    public getPoints() {
+        return {
+            x1: this.startComponent.realXPos + this.startComponent.realWidth / 2 + this.startOffset.x * Grid.yZoom,
+            y1: this.startComponent.realYPos + this.startComponent.realHeight / 2 + this.startOffset.y * Grid.yZoom,
+            x2: this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.yZoom,
+            y2: this.endComponent.realYPos + this.endComponent.realHeight / 2 + this.endOffset.y * Grid.yZoom,
+        };
+    }
+
+    public addSize(width: number, height: number, componentID: String) {
+        if (this.endComponent.componentId === componentID) {
+            this.endOffset.addNumber(-width, -height);
+        } else {
+            this.startOffset.addNumber(-width, -height);
         }
     }
 
@@ -141,5 +236,10 @@ export class Connection implements GridPart {
         let ny = Grid.height / 2 + (y + Grid.yOffset) * Grid.yZoom;
         if (Grid.yRaster > 0) ny = Math.round(ny / Grid.xRaster) * Grid.xRaster;
         return ny;
+    }
+
+    private createId(): string {
+        this.connectionId = self.crypto.randomUUID();
+        return this.connectionId;
     }
 }

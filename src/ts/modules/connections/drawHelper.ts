@@ -1,4 +1,25 @@
+import { ComponentType } from "../components/componentType";
 import { Grid } from "../grid";
+
+export function drawConnectionHead(type: ComponentType, x: number, y: number, angle: number) {
+    switch (type) {
+        case ComponentType.GENERALIZATION:
+            drawRotatedTriangle(x, y, angle);
+            break;
+        case ComponentType.ASSOCIATION:
+            drawRotatedTriangle(x, y, angle, true);
+            break;
+        case ComponentType.AGGREGATION:
+            drawRotatedRectangle(x, y, angle);
+            break;
+        case ComponentType.COMPOSITION:
+            drawRotatedRectangle(x, y, angle, true);
+            break;
+
+        default:
+            break;
+    }
+}
 
 export function drawRotatedTriangle(x: number, y: number, angle: number, filled: boolean = false) {
     angle += (Math.PI / 4) * 3;

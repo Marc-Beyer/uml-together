@@ -10,6 +10,7 @@ export class NoteComponent extends ClassComponent {
         super(xPos, yPos, width, height, id);
 
         this.classList.add("note-component");
+        //this.classList.remove("class-component");
 
         this.connectedCallback();
     }

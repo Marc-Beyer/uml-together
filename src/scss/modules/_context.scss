@@ -1,0 +1,41 @@
+@use "variables";
+
+#context-menu {
+    display: none;
+    position: absolute;
+    z-index: 99999999;
+
+    /*
+    &:focus-within {
+        display: block;
+    }
+    */
+
+    ul {
+        background-color: variables.$primary-color;
+        list-style: none;
+
+        hr {
+            border-top: 1px solid variables.$font-color;
+        }
+
+        button {
+            display: flex;
+            justify-content: space-between;
+
+            width: 100%;
+            background: none;
+            color: variables.$font-color;
+
+            border: none;
+
+            div {
+                padding: 0.5rem 1rem;
+            }
+
+            &:hover {
+                background-color: lighten(variables.$primary-color, 20%);
+            }
+        }
+    }
+}
