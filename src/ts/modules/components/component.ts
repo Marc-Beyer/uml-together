@@ -166,6 +166,8 @@ export class Component extends HTMLElement implements GridPart {
         });
 
         this.addEventListener("contextmenu", (event) => {
+            if (event.ctrlKey) return;
+
             const contextMenu = document.getElementById("context-menu");
             if (!contextMenu) return;
             event.preventDefault();
