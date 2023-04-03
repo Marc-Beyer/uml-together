@@ -2,7 +2,7 @@ import { ChatController } from "../chat/chatController";
 import { ComponentManager } from "../components/componentManager";
 import { isMessage, Message, MessageType } from "./Message";
 import * as crypto from "crypto-js";
-import { Global } from "../global";
+import { Global } from "../settings/global";
 import { ConnectionManager } from "../connections/connectionManager";
 
 export class WebSocketController {

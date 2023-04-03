@@ -47,12 +47,6 @@ export function initialize() {
     createButtons(mockupDiagram);
 
     let settingsModal = document.getElementById("settings-modal");
-    document.getElementById("settings-modal-close")?.addEventListener("click", () => {
-        if (settingsModal) settingsModal.style.display = "";
-    });
-    document.getElementById("settings-modal-save-btn")?.addEventListener("click", () => {
-        if (settingsModal) settingsModal.style.display = "";
-    });
 
     document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {});
     document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {});

@@ -1,7 +1,7 @@
 import { Component } from "../components/component";
 import { ComponentManager } from "../components/componentManager";
 import { ComponentType } from "../components/componentType";
-import { Global } from "../global";
+import { Global } from "../settings/global";
 import { Grid } from "../grid";
 import { Input, MovementMode } from "../input";
 import { Vector2 } from "../vector2";

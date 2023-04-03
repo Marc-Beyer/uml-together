@@ -3,6 +3,7 @@ import { ComponentManager } from "./modules/components/componentManager";
 import { ConnectionManager } from "./modules/connections/connectionManager";
 import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
+import * as settings from "./modules/settings/settings";
 import { WebSocketController } from "./modules/webSocket/webSocketController";
 
 const href = window.location.href.split("#");
@@ -20,6 +21,7 @@ if (href.length >= 2) {
 
 function init() {
     navigation.initialize();
+    settings.initSettings();
 
     //const basicComponent = new Component(120, 120, 100, 100);
     //const classComponent = new ClassComponent(-120, -120);

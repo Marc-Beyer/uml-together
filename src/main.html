@@ -23,21 +23,20 @@
                 <span id="settings-modal-close">&times;</span>
                 <h2>Settings</h2>
                 <div class="option">
-                    <label for="language">Language</label>
-                    <select id="language">
-                        <option value="c-sharp">C#</option>
-                        <option value="java">Java</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="typescript">TypeScrip</option>
-                    </select>
+                    <label for="settings-filename">File Name</label>
+                    <input type="text" id="settings-filename" />
                 </div>
                 <div class="option">
-                    <label for="grid">Grid</label>
-                    <input type="checkbox" id="grid" />
+                    <label for="settings-programming-language">Language</label>
+                    <select id="settings-programming-language"></select>
                 </div>
                 <div class="option">
-                    <label for="dark-mode">Dark mode</label>
-                    <input type="checkbox" id="dark-mode" />
+                    <label for="settings-grid">Grid</label>
+                    <input type="number" pattern="/^[0-9]+$/" id="settings-grid" />
+                </div>
+                <div class="option">
+                    <label for="settings-dark-mode">Dark mode</label>
+                    <input type="checkbox" id="settings-dark-mode" />
                 </div>
                 <div class="btn-container">
                     <button id="settings-modal-save-btn">Save Changes</button>
