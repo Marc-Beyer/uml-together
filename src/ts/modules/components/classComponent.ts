@@ -11,18 +11,20 @@ export type EditTextHolder = {
 };
 
 export class ClassComponent extends Component {
-    public cType = new EditText("<<Interface>>", false, (pressedEnter) => {
+    public cType = new EditText("", false, (pressedEnter) => {
         this.sendEditMessage();
         if (pressedEnter) {
             this.addAttribute("", true);
         }
+        this.connectedCallback();
     });
-    public cName = new EditText("Class", false, (pressedEnter) => {
+    public cName = new EditText("", false, (pressedEnter) => {
         this.sendEditMessage();
         if (pressedEnter) {
             this.cType.inEditMode = true;
             this.cType.refresh();
         }
+        this.connectedCallback();
     });
     public attributeList: EditText[] = [];
     public operationsList: EditText[] = [];
@@ -95,6 +97,7 @@ export class ClassComponent extends Component {
                     this.addAttribute("", true);
                 }
             }
+            this.connectedCallback();
         });
         this.attributeList.push(editText);
         this.attributeContainer?.append(editText);
@@ -119,6 +122,7 @@ export class ClassComponent extends Component {
             if (pressedEnter && newText !== "") {
                 this.addOperation("", true);
             }
+            this.connectedCallback();
         });
         this.operationsList.push(editText);
         this.operationsContainer?.append(editText);
