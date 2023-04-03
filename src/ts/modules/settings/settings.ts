@@ -16,8 +16,12 @@ export function initSettings() {
 
         Global.FILE_NAME = filenameInput.value;
         Global.PROGRAMMING_LANG = programmingLangSelect.selectedIndex;
-        Grid.xRaster = gridInput.checked ? 10 : 0;
-        Grid.yRaster = gridInput.checked ? 10 : 0;
+        Grid.xRaster = Number(gridInput.value);
+        Grid.yRaster = Number(gridInput.value);
+        if (isNaN(Grid.xRaster)) {
+            Grid.xRaster = 0;
+            Grid.yRaster = 0;
+        }
         Global.DARK_MODE = darkModeInput.checked;
     });
 
@@ -32,6 +36,6 @@ export function initSettings() {
     }
     programmingLangSelect.selectedIndex = Global.PROGRAMMING_LANG;
 
-    gridInput.checked = Grid.xRaster > 0;
+    gridInput.value = Grid.xRaster + "";
     darkModeInput.checked = Global.DARK_MODE;
 }
