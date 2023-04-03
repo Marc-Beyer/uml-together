@@ -30,11 +30,11 @@ let mockupDiagram: Diagram = {
         { text: "Primitive", id: "primitive", type: ComponentType.PRIMITIVE, icon: "img/primitive-icon.svg" },
         { text: "DataType", id: "dataType", type: ComponentType.DATA_TYPE, icon: "img/dataType-icon.svg" },
         { text: "Note", id: "note", type: ComponentType.NOTE, icon: "img/note-icon.svg" },
-        { text: "Generalization", id: "generalizationClass", type: ComponentType.GENERALIZATION },
-        { text: "Usage", id: "usage", type: ComponentType.USAGE },
-        { text: "Association", id: "associationClass", type: ComponentType.ASSOCIATION },
-        { text: "Aggregation", id: "aggregation", type: ComponentType.AGGREGATION },
-        { text: "Composition", id: "composition", type: ComponentType.COMPOSITION },
+        { text: "Association", id: "associationClass", type: ComponentType.ASSOCIATION, icon: "img/association-icon.svg" },
+        { text: "Generalization", id: "generalizationClass", type: ComponentType.GENERALIZATION, icon: "img/generalization-icon.svg" },
+        { text: "Composition", id: "composition", type: ComponentType.COMPOSITION, icon: "img/composition-icon.svg" },
+        { text: "Aggregation", id: "aggregation", type: ComponentType.AGGREGATION, icon: "img/aggregation.icon.svg" },
+        { text: "Usage", id: "usage", type: ComponentType.USAGE, icon: "img/usage-icon.svg" },
     ],
 };
 
