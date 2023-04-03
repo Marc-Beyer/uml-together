@@ -72,18 +72,36 @@ export class Grid {
         this._xOffset += x / -this._xZoom;
         this._yOffset += y / -this._yZoom;
 
-        for (let index = 0; index < this.gridParts.length; index++) {
-            this.gridParts[index].updateOffset();
-        }
+        Grid.updateAfterOffsetChange();
+    }
 
-        this.ctx.clearRect(0, 0, this.width, this.height);
-        ConnectionManager.instance.updateConnections();
+    public static resetOffset() {
+        this._xOffset = 1 / -this._xZoom;
+        this._yOffset = 1 / -this._yZoom;
+
+        Grid.updateAfterOffsetChange();
     }
 
     public static addZoom(x: number, y: number) {
         this.xZoom += x;
         this.yZoom += y;
 
+        Grid.updateAfterZoomChange();
+    }
+
+    public static resetZoom() {
+        this.xZoom = 1;
+        this.yZoom = 1;
+
+        Grid.updateAfterZoomChange();
+    }
+
+    public static updateConnections() {
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        ConnectionManager.instance.updateConnections();
+    }
+
+    private static updateAfterZoomChange() {
         for (let index = 0; index < this.gridParts.length; index++) {
             this.gridParts[index].updateZoom();
         }
@@ -92,7 +110,11 @@ export class Grid {
         ConnectionManager.instance.updateConnections();
     }
 
-    public static updateConnections() {
+    private static updateAfterOffsetChange() {
+        for (let index = 0; index < this.gridParts.length; index++) {
+            this.gridParts[index].updateOffset();
+        }
+
         this.ctx.clearRect(0, 0, this.width, this.height);
         ConnectionManager.instance.updateConnections();
     }

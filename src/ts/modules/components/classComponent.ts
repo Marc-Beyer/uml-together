@@ -149,15 +149,7 @@ export class ClassComponent extends Component {
         list.append(document.createElement("hr"));
         list.append(
             this.createContextBtn("Auto Resize", "", () => {
-                this.style.width = "";
-                this.style.height = "";
-                const rect = this.getBoundingClientRect();
-                let width = rect.width;
-                let height = rect.height;
-
-                this.width = width / Grid.xZoom + Grid.xRaster;
-                this.height = height / Grid.yZoom;
-                this.sendMoveMessage();
+                this.autoResize();
             })
         );
     }

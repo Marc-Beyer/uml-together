@@ -4,6 +4,10 @@ $tool-nav-size: 38px;
 $small-nav-size: 48px;
 $large-nav-size: 225px;
 
+#nav-btn-list {
+    z-index: 1000;
+}
+
 nav {
     position: absolute;
     z-index: 1000;
@@ -29,9 +33,45 @@ nav {
 #tool-nav {
     width: 100%;
     background-color: darken(variables.$primary-color, 10%);
+    display: flex;
 
-    button {
-        padding: 0 8px;
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+
+        position: relative;
+
+        button {
+            flex: 1;
+            padding: 0 8px;
+        }
+
+        .sub-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            min-width: 200px;
+
+            flex-direction: column;
+
+            background-color: darken(variables.$primary-color, 10%);
+            list-style: none;
+
+            hr {
+                border-top: 1px solid darken(variables.$font-color, 30%);
+            }
+
+            button {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        &:hover > .sub-menu {
+            display: flex;
+        }
     }
 
     #nav-btn {

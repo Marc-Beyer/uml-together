@@ -79,8 +79,6 @@ export class ComponentManager {
 
     public onStateMessage(message: StateMessage) {
         for (let index = 0; index < message.components.length; index++) {
-            console.log("dddddddddddddddW");
-
             const component = message.components[index];
             this.onCreateMessage(component);
             this.onEditMessage(component);
@@ -105,5 +103,11 @@ export class ComponentManager {
 
     public getComponentFromId(id: string): Component | undefined {
         return this.components.get(id);
+    }
+
+    public autoResizeAll() {
+        for (const [_, component] of this.components) {
+            component.autoResize();
+        }
     }
 }

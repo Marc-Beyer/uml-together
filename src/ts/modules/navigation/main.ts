@@ -1,4 +1,7 @@
+import { Component } from "../components/component";
+import { ComponentManager } from "../components/componentManager";
 import { ComponentType } from "../components/componentType";
+import { Grid } from "../grid";
 import { createButtons } from "./buttons";
 
 export interface Diagram {
@@ -42,4 +45,42 @@ export function initialize() {
         nav?.classList.toggle("closed");
     });
     createButtons(mockupDiagram);
+
+    let settingsModal = document.getElementById("settings-modal");
+    document.getElementById("settings-modal-close")?.addEventListener("click", () => {
+        if (settingsModal) settingsModal.style.display = "";
+    });
+    document.getElementById("settings-modal-save-btn")?.addEventListener("click", () => {
+        if (settingsModal) settingsModal.style.display = "";
+    });
+
+    document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-import-json")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-settings")?.addEventListener("click", () => {
+        if (settingsModal) settingsModal.style.display = "block";
+    });
+    document.getElementById("nav-btn-center-view")?.addEventListener("click", () => {
+        Grid.resetOffset();
+    });
+    document.getElementById("nav-btn-reset-zoom")?.addEventListener("click", () => {
+        Grid.resetZoom();
+    });
+    document.getElementById("nav-btn-resize-all")?.addEventListener("click", () => {
+        ComponentManager.instance.autoResizeAll();
+    });
+    document.getElementById("nav-btn-reset-file")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-copy-link")?.addEventListener("click", () => {
+        const currentUrl = window.location.href;
+
+        navigator.clipboard
+            .writeText(currentUrl)
+            .then(() => {
+                console.log("Text copied to clipboard");
+            })
+            .catch((error) => {
+                console.error("Failed to copy text: ", error);
+            });
+    });
 }

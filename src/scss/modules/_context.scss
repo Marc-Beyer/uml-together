@@ -16,7 +16,7 @@
         list-style: none;
 
         hr {
-            border-top: 1px solid variables.$font-color;
+            border-top: 1px solid darken(variables.$font-color, 30%);
         }
 
         button {

@@ -1,0 +1,77 @@
+@use "variables";
+
+.modal {
+    position: fixed;
+    display: none;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: variables.$size-1;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+
+        #settings-modal-close {
+            color: variables.$primary-color;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+
+            &:hover,
+            &:focus {
+                color: variables.$hover-color;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        }
+
+        h2 {
+            margin-bottom: variables.$size-1;
+        }
+
+        .option {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            width: 100%;
+
+            margin-bottom: variables.$size-05;
+
+            label {
+                margin-right: variables.$size-05;
+            }
+
+            select {
+                margin-left: variables.$size-05;
+            }
+        }
+        .btn-container {
+            display: flex;
+            width: 100%;
+
+            #settings-modal-save-btn {
+                background-color: variables.$primary-color;
+                color: variables.$font-color;
+                border: none;
+                padding: variables.$size-05 variables.$size-1;
+                margin-top: variables.$size-1;
+                margin-left: auto;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: variables.$hover-color;
+                }
+            }
+        }
+    }
+}

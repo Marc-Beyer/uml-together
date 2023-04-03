@@ -321,6 +321,18 @@ export class Component extends HTMLElement implements GridPart {
         }
     }
 
+    public autoResize() {
+        this.style.width = "";
+        this.style.height = "";
+        const rect = this.getBoundingClientRect();
+        let width = rect.width;
+        let height = rect.height;
+
+        this.width = width / Grid.xZoom + Grid.xRaster;
+        this.height = height / Grid.yZoom;
+        this.sendMoveMessage();
+    }
+
     protected createContextMenu(list: Element) {
         list.append(
             this.createContextBtn("Delete Component", "DEL", () => {
