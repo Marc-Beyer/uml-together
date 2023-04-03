@@ -162,6 +162,16 @@ export class Connection implements GridPart {
 
         let angle = Connection.getAngle(startX, startY, endX, endY);
 
+        switch (this.type) {
+            case ComponentType.USAGE:
+                Grid.ctx.setLineDash([5, 5]);
+                break;
+
+            default:
+                Grid.ctx.setLineDash([]);
+                break;
+        }
+
         Grid.ctx.beginPath();
 
         Grid.ctx.moveTo(startX, startY);

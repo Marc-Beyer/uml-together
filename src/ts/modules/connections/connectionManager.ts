@@ -120,7 +120,18 @@ export class ConnectionManager {
         let y2 = this.translateY(y);
 
         Grid.ctx.fillStyle = Grid.lineColor;
+        Grid.ctx.strokeStyle = Grid.lineColor;
         Grid.ctx.lineWidth = 2 * Grid.xZoom;
+
+        switch (this.connectionType) {
+            case ComponentType.USAGE:
+                Grid.ctx.setLineDash([5, 5]);
+                break;
+
+            default:
+                Grid.ctx.setLineDash([]);
+                break;
+        }
 
         Grid.ctx.beginPath();
         Grid.ctx.moveTo(x1, y1);
