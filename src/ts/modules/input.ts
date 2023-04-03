@@ -20,11 +20,23 @@ export function initInput() {
 
 export class Input {
     public static isMousedown = false;
-    public static movementMode: MovementMode = MovementMode.SCREEN;
     public static zoomSensibility = -0.001;
     public static x: number = 0;
     public static y: number = 0;
     public static scaleHandle: ScaleHandle;
+    public static clickedOnComponent: boolean = false;
+
+    private static _movementMode: MovementMode = MovementMode.SCREEN;
+
+    public static get movementMode() {
+        return Input._movementMode;
+    }
+
+    public static set movementMode(mode: MovementMode) {
+        console.log("MovementMode", MovementMode[mode]);
+
+        Input._movementMode = mode;
+    }
 
     constructor() {
         const container = document.getElementById("component-container");
@@ -48,12 +60,12 @@ export class Input {
         });
 
         container.addEventListener("mousedown", (event) => {
-            if (event.button != 0 && event.button != 1) return;
+            if (event.button !== 0 && event.button !== 1) return;
             Input.x = event.screenX;
             Input.y = event.screenY;
             Input.isMousedown = true;
 
-            if (!event.defaultPrevented) {
+            if (!Input.clickedOnComponent) {
                 if (Input.movementMode !== MovementMode.CONNECTION) {
                     if (ConnectionManager.instance.selectedConnectionOnClick(event.pageX, event.pageY)) {
                         Component.resetActiveComponents();
@@ -62,10 +74,14 @@ export class Input {
                         Component.resetActiveComponents();
                     }
                 } else {
+                    if (event.button === 1) {
+                        ConnectionManager.instance.stopConnecting();
+                    }
                     Connection.resetActiveConnections();
                     Component.resetActiveComponents();
                 }
             } else {
+                Input.clickedOnComponent = false;
                 if (!event.ctrlKey) Connection.resetActiveConnections(false);
             }
         });
@@ -119,6 +135,11 @@ export class Input {
                         Input.y = event.screenY;
 
                         ConnectionManager.instance.drawConnection(event.screenX, event.screenY);
+                        break;
+
+                    case MovementMode.EDIT:
+                        console.log("EDIT");
+
                         break;
 
                     default:

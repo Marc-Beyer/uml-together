@@ -52,11 +52,11 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.cType.text = "";
                 component.cName.text = "Class";
 
-                component.attributeList.push({ text: "+attribute1: String", inEditMode: false });
-                component.attributeList.push({ text: "-attribute2: int = 42", inEditMode: false });
+                component.addAttribute("+attribute1: String");
+                component.addAttribute("-attribute2: int = 42");
 
-                component.operationsList.push({ text: "+operation1(param: String)", inEditMode: false });
-                component.operationsList.push({ text: "-operation2(param: String): String", inEditMode: false });
+                component.addOperation("+operation1(param: String)");
+                component.addOperation("-operation2(param: String): String");
 
                 //component.width = 200;
                 component.height = 150;
@@ -76,11 +76,11 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.cType.text = "<<interface>>";
                 component.cName.text = "Interface";
 
-                component.attributeList.push({ text: "+attribute1: String", inEditMode: false });
-                component.attributeList.push({ text: "-attribute2: int = 42", inEditMode: false });
+                component.addAttribute("+attribute1: String");
+                component.addAttribute("-attribute2: int = 42");
 
-                component.operationsList.push({ text: "+operation1(param: String)", inEditMode: false });
-                component.operationsList.push({ text: "-operation2(param: String): String", inEditMode: false });
+                component.addOperation("+operation1(param: String)");
+                component.addOperation("-operation2(param: String): String");
 
                 //component.width = 200;
                 component.height = 200;
@@ -100,8 +100,8 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.cType.text = "<<enumeration>>";
                 component.cName.text = "Enum";
 
-                component.attributeList.push({ text: "literal1", inEditMode: false });
-                component.attributeList.push({ text: "literal2", inEditMode: false });
+                component.addAttribute("literal1");
+                component.addAttribute("literal2");
 
                 component.width = 200;
                 component.height = 125;
@@ -156,7 +156,7 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
 
                 component.cType.text = "";
                 component.cName.text = "";
-                component.operationsList.push({ text: "Note", inEditMode: false });
+                component.addOperation("Note");
 
                 component.width = 100;
                 component.height = 100;
@@ -259,7 +259,7 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
         case "exceptionHandler":
             break;
         //========================
-        //    Generell Buttons
+        //    General Buttons
         //========================
         case "note":
             break;

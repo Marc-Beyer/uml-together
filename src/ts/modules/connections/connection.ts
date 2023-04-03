@@ -24,7 +24,7 @@ export class Connection implements GridPart {
             const element = Connection.activeConnectionList[index];
             element.isActive = false;
         }
-        if (changeMoveMode && Input.movementMode !== MovementMode.CONNECTION) {
+        if (changeMoveMode && Input.movementMode !== MovementMode.CONNECTION && Input.movementMode !== MovementMode.COMPONENT) {
             Input.movementMode = MovementMode.SCREEN;
         }
         Connection.activeConnectionList = [];

@@ -31,10 +31,14 @@ export class ConnectionManager {
             connection.sendCreatedMessage();
             this.addConnection(connection);
 
-            this.selectedForConnection = null;
-            Input.movementMode = MovementMode.SCREEN;
-            Grid.updateConnections();
+            this.stopConnecting();
         }
+    }
+
+    public stopConnecting() {
+        this.selectedForConnection = null;
+        Input.movementMode = MovementMode.SCREEN;
+        Grid.updateConnections();
     }
 
     public selectedConnectionOnClick(x: number, y: number): boolean {

@@ -1,5 +1,4 @@
 import { EditText } from "../elements/editText";
-import { Grid } from "../grid";
 import { Input } from "../input";
 import { MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
@@ -12,14 +11,25 @@ export type EditTextHolder = {
 };
 
 export class ClassComponent extends Component {
-    public cType: EditTextHolder = { text: "<<Interface>>", inEditMode: false };
-    public cName: EditTextHolder = { text: "Class", inEditMode: false };
-    public attributeList: EditTextHolder[] = [];
-    public operationsList: EditTextHolder[] = [];
+    public cType = new EditText("<<Interface>>", false, (pressedEnter) => {
+        this.sendEditMessage();
+        if (pressedEnter) {
+            this.addAttribute("", true);
+        }
+    });
+    public cName = new EditText("Class", false, (pressedEnter) => {
+        this.sendEditMessage();
+        if (pressedEnter) {
+            this.cType.inEditMode = true;
+            this.cType.refresh();
+        }
+    });
+    public attributeList: EditText[] = [];
+    public operationsList: EditText[] = [];
 
-    public isAbstract: boolean = false;
-    public isInterface: boolean = false;
-    public isEnum: boolean = false;
+    private classHeader: HTMLDivElement | undefined = undefined;
+    private attributeContainer: HTMLDivElement | undefined = undefined;
+    private operationsContainer: HTMLDivElement | undefined = undefined;
 
     constructor(xPos: number = 0, yPos: number = 0, width: number = 275, height: number = 200, id?: string) {
         super(xPos, yPos, width, height, id);
@@ -37,33 +47,84 @@ export class ClassComponent extends Component {
         // Add header
         this.addHeaderBlock();
 
-        // Add attributes
-        this.attributeList = this.attributeList.filter((etHolder: EditTextHolder) => {
-            return etHolder.inEditMode || etHolder.text.trim() !== "";
-        });
-
+        // Add a divider if there are attributes
         if (this.attributeList.length > 0) this.addDivider("attributeList");
 
-        if (this.attributeList) {
+        if (this.attributeContainer === undefined) {
+            this.attributeContainer = document.createElement("div");
+
             for (let index = 0; index < this.attributeList.length; index++) {
-                this.addAttribute(index);
+                this.attributeContainer.append(this.attributeList[index]);
             }
         }
+        this.append(this.attributeContainer);
 
-        // Add operations
-        this.operationsList = this.operationsList.filter((etHolder: EditTextHolder) => {
-            return etHolder.inEditMode || etHolder.text.trim() !== "";
-        });
-
+        // Add a divider if there are operations
         if (this.operationsList.length > 0) this.addDivider("operationsList");
 
-        if (this.operationsList) {
+        if (this.operationsContainer === undefined) {
+            this.operationsContainer = document.createElement("div");
+
             for (let index = 0; index < this.operationsList.length; index++) {
-                this.addOperation(index);
+                this.operationsContainer.append(this.operationsList[index]);
             }
         }
+        this.append(this.operationsContainer);
     }
 
+    // Add a new attribute
+    public addAttribute(text: string, inEditMode: boolean = false) {
+        const editText = new EditText(text, inEditMode, (pressedEnter: boolean) => {
+            const newText = editText.text.trim();
+
+            // Filter out all empty editTexts
+            this.attributeList = this.attributeList.filter((editText: EditText) => {
+                if (editText.text.trim() === "" && !editText.inEditMode) {
+                    editText.remove();
+                    return false;
+                }
+                return true;
+            });
+
+            this.sendEditMessage();
+
+            if (pressedEnter) {
+                if (newText === "") {
+                    this.addOperation("", true);
+                } else {
+                    this.addAttribute("", true);
+                }
+            }
+        });
+        this.attributeList.push(editText);
+        this.attributeContainer?.append(editText);
+    }
+
+    // Add a new operation
+    public addOperation(text: string, inEditMode: boolean = false) {
+        const editText = new EditText(text, inEditMode, (pressedEnter: boolean) => {
+            const newText = editText.text.trim();
+
+            // Filter out all empty editTexts
+            this.operationsList = this.operationsList.filter((editText: EditText) => {
+                if (editText.text.trim() === "" && !editText.inEditMode) {
+                    editText.remove();
+                    return false;
+                }
+                return true;
+            });
+
+            this.sendEditMessage();
+
+            if (pressedEnter && newText !== "") {
+                this.addOperation("", true);
+            }
+        });
+        this.operationsList.push(editText);
+        this.operationsContainer?.append(editText);
+    }
+
+    // Send a EDIT_COMPONENT message
     public sendEditMessage() {
         WebSocketController.instance.sent({
             type: MessageType.EDIT_COMPONENT,
@@ -71,46 +132,59 @@ export class ClassComponent extends Component {
                 id: this.componentId,
                 classType: this.cType.text,
                 className: this.cName.text,
-                attributeList: this.attributeList.map((etHolder: EditTextHolder) => {
-                    return etHolder.text;
+                attributeList: this.attributeList.map((editText: EditText) => {
+                    return editText.text;
                 }),
-                operationsList: this.operationsList.map((etHolder: EditTextHolder) => {
-                    return etHolder.text;
+                operationsList: this.operationsList.map((editText: EditText) => {
+                    return editText.text;
                 }),
             },
         });
     }
 
+    // Get the current state of the component
     public getState() {
         return {
             ...super.getState(),
             type: ComponentType.CLASS,
             classType: this.cType.text,
             className: this.cName.text,
-            attributeList: this.attributeList.map((etHolder: EditTextHolder) => {
-                return etHolder.text;
+            attributeList: this.attributeList.map((editText: EditText) => {
+                return editText.text;
             }),
-            operationsList: this.operationsList.map((etHolder: EditTextHolder) => {
-                return etHolder.text;
+            operationsList: this.operationsList.map((editText: EditText) => {
+                return editText.text;
             }),
         };
     }
 
+    // Handle a EDIT_COMPONENT message
     public edit(message: any): void {
         this.cType.text = message.classType;
         this.cName.text = message.className;
+
+        // Clear the attributes and operations and remove them from the DOM
+        for (let index = 0; index < this.attributeList.length; index++) {
+            this.attributeList[index].remove();
+        }
+        for (let index = 0; index < this.operationsList.length; index++) {
+            this.operationsList[index].remove();
+        }
         this.attributeList = [];
         this.operationsList = [];
+
+        // Add
         for (let index = 0; index < message.attributeList.length; index++) {
-            this.attributeList.push({ text: message.attributeList[index], inEditMode: false });
+            this.addAttribute(message.attributeList[index]);
         }
         for (let index = 0; index < message.operationsList.length; index++) {
-            this.operationsList.push({ text: message.operationsList[index], inEditMode: false });
+            this.addOperation(message.operationsList[index]);
         }
 
         this.connectedCallback();
     }
 
+    // Add functionality to the custom context menu
     protected createContextMenu(list: Element) {
         list.append(
             this.createContextBtn("Delete Component", "Del", () => {
@@ -123,19 +197,13 @@ export class ClassComponent extends Component {
 
         list.append(
             this.createContextBtn("Add Attribute", "", () => {
-                this.attributeList.push({
-                    text: "",
-                    inEditMode: true,
-                });
+                this.addAttribute("", true);
                 this.connectedCallback();
             })
         );
         list.append(
             this.createContextBtn("Add Operation", "", () => {
-                this.operationsList.push({
-                    text: "",
-                    inEditMode: true,
-                });
+                this.addOperation("", true);
                 this.connectedCallback();
             })
         );
@@ -154,136 +222,19 @@ export class ClassComponent extends Component {
         );
     }
 
-    protected addAttribute(index: number) {
-        this.append(
-            new EditText(
-                this.attributeList[index].text,
-                this.attributeList[index].inEditMode,
-                (value: string) => {
-                    this.attributeList[index].text = value;
-                    this.attributeList[index].inEditMode = false;
-                    this.sendEditMessage();
-
-                    if (value.trim() === "") {
-                        this.operationsList.push({
-                            text: "",
-                            inEditMode: true,
-                        });
-                        this.connectedCallback();
-                    } else {
-                        this.attributeList.push({
-                            text: "",
-                            inEditMode: true,
-                        });
-                        Component.addActiveComponents(this, true);
-                    }
-                },
-                (value: string) => {
-                    this.attributeList[index].text = value;
-                    this.attributeList[index].inEditMode = false;
-                    this.sendEditMessage();
-
-                    if (value === "") {
-                        this.attributeList.slice(0, index);
-                    } else {
-                        this.attributeList[index].inEditMode = false;
-                    }
-                    Component.addActiveComponents(this, true);
-                }
-            )
-        );
-    }
-
-    protected addOperation(index: number) {
-        this.append(
-            new EditText(
-                this.operationsList[index].text,
-                this.operationsList[index].inEditMode,
-                (value: string) => {
-                    this.operationsList[index].text = value;
-                    this.operationsList[index].inEditMode = false;
-                    this.sendEditMessage();
-
-                    if (value.trim() === "") {
-                        this.connectedCallback();
-                    } else {
-                        this.operationsList.push({
-                            text: "",
-                            inEditMode: true,
-                        });
-                        Component.addActiveComponents(this, true);
-                    }
-                },
-                (value: string) => {
-                    this.operationsList[index].text = value;
-                    this.operationsList[index].inEditMode = false;
-                    this.sendEditMessage();
-
-                    if (value === "") {
-                        this.operationsList.slice(0, index);
-                    } else {
-                        this.operationsList[index].inEditMode = false;
-                    }
-                    Component.addActiveComponents(this, true);
-                }
-            )
-        );
-    }
-
+    // Add the heder of the class
     protected addHeaderBlock() {
-        let div = document.createElement("div");
-        div.classList.add("class-head");
+        if (this.classHeader === undefined) {
+            this.classHeader = document.createElement("div");
+            this.classHeader.classList.add("class-head");
 
-        if (this.cType && (this.cType.text.trim().length > 0 || this.cType.inEditMode)) {
-            const classTypeEditText = new EditText(
-                this.cType.text,
-                this.cType.inEditMode,
-                (value: string) => {
-                    this.cType.text = value;
-                    this.cType.inEditMode = false;
-                    this.sendEditMessage();
-
-                    this.attributeList.push({
-                        text: "",
-                        inEditMode: true,
-                    });
-                    Component.addActiveComponents(this, true);
-                },
-                (value: string) => {
-                    this.cType.text = value;
-                    this.cType.inEditMode = false;
-                    this.sendEditMessage();
-
-                    Component.addActiveComponents(this, true);
-                }
-            );
-            div.append(classTypeEditText);
+            this.classHeader.append(this.cType);
+            this.classHeader.append(this.cName);
         }
-
-        const classNameEditText = new EditText(
-            this.cName.text.trim().length > 0 ? this.cName.text : "Class",
-            this.cName.inEditMode,
-            (value: string) => {
-                this.cName.text = value;
-                this.cName.inEditMode = false;
-                this.sendEditMessage();
-
-                this.cType.inEditMode = true;
-                Component.addActiveComponents(this, true);
-            },
-            (value: string) => {
-                this.cName.text = value;
-                this.cName.inEditMode = false;
-                this.sendEditMessage();
-
-                Component.addActiveComponents(this, true);
-            }
-        );
-        this.cName.text.trim().length > 0 ? classNameEditText.classList.add("bold") : classNameEditText.classList.add("no-name");
-        div.append(classNameEditText);
-        this.append(div);
+        this.append(this.classHeader);
     }
 
+    // Add a horizontal line
     protected addDivider(className?: string) {
         const hr = document.createElement("hr");
         if (className) hr.classList.add(className);

@@ -39,12 +39,17 @@ export class Component extends HTMLElement implements GridPart {
             component.parentElement?.append(component);
             component.isActive = true;
         }
-        if (Input.movementMode === MovementMode.CONNECTION) {
-            console.log("connect", component);
+        switch (Input.movementMode) {
+            case MovementMode.CONNECTION:
+                ConnectionManager.instance.connect(component);
+                break;
+                break;
+            case MovementMode.EDIT:
+                break;
 
-            ConnectionManager.instance.connect(component);
-        } else {
-            Input.movementMode = MovementMode.COMPONENT;
+            default:
+                Input.movementMode = MovementMode.COMPONENT;
+                break;
         }
     }
 
@@ -159,8 +164,8 @@ export class Component extends HTMLElement implements GridPart {
 
         this.addEventListener("mousedown", (event) => {
             if (event.button != 0) return;
-            event.preventDefault();
-            //event.stopPropagation();
+
+            Input.clickedOnComponent = true;
 
             Component.addActiveComponents(this, true, !event.ctrlKey);
         });
