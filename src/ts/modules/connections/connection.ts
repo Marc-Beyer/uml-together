@@ -110,6 +110,19 @@ export class Connection implements GridPart {
         });
     }
 
+    public getState() {
+        return {
+            id: this.connectionId,
+            startComponent: this.startComponent.componentId,
+            endComponent: this.endComponent.componentId,
+            startOffsetX: this.startOffset.x,
+            startOffsetY: this.startOffset.y,
+            endOffsetX: this.endOffset.x,
+            endOffsetY: this.endOffset.y,
+            type: this.type,
+        };
+    }
+
     private calcOffset() {
         let startX = this.startComponent.xPos + this.startComponent.width / 2;
         let startY = this.startComponent.yPos + this.startComponent.height / 2;

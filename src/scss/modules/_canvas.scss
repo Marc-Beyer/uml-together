@@ -1,5 +1,5 @@
 @use "variables";
 
 #main-canvas {
-    background-color: variables.$background-color;
+    background-color: var(--background-color); //variables.$background-color;
 }

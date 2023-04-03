@@ -12,11 +12,11 @@
     */
 
     ul {
-        background-color: variables.$primary-color;
+        background-color: var(--primary-color);
         list-style: none;
 
         hr {
-            border-top: 1px solid darken(variables.$font-color, 30%);
+            border-top: 1px solid var(--font-color-darken);
         }
 
         button {
@@ -25,16 +25,17 @@
 
             width: 100%;
             background: none;
-            color: variables.$font-color;
+            color: var(--font-color);
 
             border: none;
 
             div {
                 padding: 0.5rem 1rem;
+                background: none;
             }
 
             &:hover {
-                background-color: lighten(variables.$primary-color, 20%);
+                background: var(--primary-color-darken);
             }
         }
     }

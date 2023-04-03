@@ -14,8 +14,8 @@ nav {
 
     display: flex;
 
-    background-color: variables.$primary-color;
-    color: variables.$font-color;
+    background-color: var(--primary-color);
+    color: var(--font-color);
 
     button {
         color: inherit;
@@ -25,14 +25,14 @@ nav {
         text-align: left;
 
         &:hover {
-            background-color: variables.$hover-color;
+            background-color: var(--hover-color);
         }
     }
 }
 
 #tool-nav {
     width: 100%;
-    background-color: darken(variables.$primary-color, 10%);
+    background-color: var(--primary-color-darken);
     display: flex;
 
     .nav-item {
@@ -57,11 +57,11 @@ nav {
 
             flex-direction: column;
 
-            background-color: darken(variables.$primary-color, 10%);
+            background-color: var(--primary-color-darken);
             list-style: none;
 
             hr {
-                border-top: 1px solid darken(variables.$font-color, 30%);
+                border-top: 1px solid var(--font-color-darken);
             }
 
             button {
@@ -113,7 +113,7 @@ nav {
                     flex: 1;
                     max-width: $small-nav-size - ($padding * 2);
                     max-height: $small-nav-size - ($padding * 2);
-                    margin-right: variables.$size-1;
+                    margin-right: var(--size-1);
                 }
             }
         }

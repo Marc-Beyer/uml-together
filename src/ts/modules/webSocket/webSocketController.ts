@@ -68,11 +68,24 @@ export class WebSocketController {
                     break;
 
                 case MessageType.REQUEST_STATE:
-                    ComponentManager.instance.onRequestStateMessage();
+                    const components = ComponentManager.instance.getState();
+                    const connections = ConnectionManager.instance.getState();
+
+                    const data = {
+                        components,
+                        connections,
+                    };
+
+                    WebSocketController.instance.sent({
+                        type: MessageType.STATE,
+                        data,
+                        checksum: crypto.SHA3(JSON.stringify(data)).toString(),
+                    });
                     break;
 
                 case MessageType.STATE:
                     ComponentManager.instance.onStateMessage(message.data);
+                    ConnectionManager.instance.onStateMessage(message.data);
                     break;
 
                 case MessageType.CREATE_CONNECTION:

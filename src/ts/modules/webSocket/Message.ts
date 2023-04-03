@@ -48,6 +48,7 @@ export function isJoinMessage(message: any): message is JoinMessage {
 
 export type StateMessage = {
     components: CreateMessage[];
+    connections: CreateConnectionMessage[];
 };
 
 export type CreateMessage = {

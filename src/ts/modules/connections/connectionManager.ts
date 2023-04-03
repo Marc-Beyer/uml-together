@@ -5,7 +5,7 @@ import { Global } from "../settings/global";
 import { Grid } from "../grid";
 import { Input, MovementMode } from "../input";
 import { Vector2 } from "../vector2";
-import { CreateConnectionMessage } from "../webSocket/Message";
+import { CreateConnectionMessage, StateMessage } from "../webSocket/Message";
 import { Connection } from "./connection";
 import * as drawHelper from "./drawHelper";
 
@@ -19,6 +19,21 @@ export class ConnectionManager {
 
     constructor() {
         ConnectionManager.instance = this;
+    }
+
+    public getState() {
+        const connections = [];
+        for (const [_, connection] of this.connections) {
+            connections.push(connection.getState());
+        }
+        return connections;
+    }
+
+    public onStateMessage(message: StateMessage) {
+        for (let index = 0; index < message.connections.length; index++) {
+            const connection = message.connections[index];
+            this.onCreateMessage(connection);
+        }
     }
 
     public connect(component: Component) {

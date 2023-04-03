@@ -1,7 +1,4 @@
-import * as crypto from "crypto-js";
-
-import { CreateMessage, DeleteMessage, EditMessage, MessageType, MoveMessage, StateMessage } from "../webSocket/Message";
-import { WebSocketController } from "../webSocket/webSocketController";
+import { CreateMessage, DeleteMessage, EditMessage, MoveMessage, StateMessage } from "../webSocket/Message";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 import { ComponentType } from "./componentType";
@@ -62,19 +59,12 @@ export class ComponentManager {
         this.removeComponent(component);
     }
 
-    public onRequestStateMessage() {
+    public getState() {
         const components = [];
         for (const [_, component] of this.components) {
             components.push(component.getState());
         }
-
-        WebSocketController.instance.sent({
-            type: MessageType.STATE,
-            data: {
-                components,
-            },
-            checksum: crypto.SHA3(JSON.stringify(components)).toString(),
-        });
+        return components;
     }
 
     public onStateMessage(message: StateMessage) {
