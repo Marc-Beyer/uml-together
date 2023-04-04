@@ -38,6 +38,7 @@ nav {
     .nav-item {
         display: flex;
         flex-direction: column;
+        justify-content: center;
 
         position: relative;
 
@@ -71,6 +72,14 @@ nav {
 
         &:hover > .sub-menu {
             display: flex;
+        }
+    }
+
+    .image-item {
+        img {
+            height: $tool-nav-size / 2;
+            width: $small-nav-size / 2;
+            margin: 0 var(--size-05);
         }
     }
 

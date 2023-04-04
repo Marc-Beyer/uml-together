@@ -8,6 +8,12 @@ export function initSettings() {
     const gridInput = document.getElementById("settings-grid") as HTMLInputElement;
     const darkModeInput = document.getElementById("settings-dark-mode") as HTMLInputElement;
 
+    const quickDarkModeInput = document.getElementById("quick-settings-dark-mode") as HTMLInputElement;
+
+    quickDarkModeInput.addEventListener("change", () => {
+        Global.DARK_MODE = quickDarkModeInput.checked;
+    });
+
     document.getElementById("settings-modal-close")?.addEventListener("click", () => {
         if (settingsModal) settingsModal.style.display = "";
     });

@@ -31,6 +31,8 @@ export class Global {
             Grid.backgroundColor = "white";
             document.body.classList.remove("dark-mode");
         }
+        (document.getElementById("quick-settings-dark-mode") as HTMLInputElement).checked = Global.DARK_MODE;
+        (document.getElementById("settings-dark-mode") as HTMLInputElement).checked = Global.DARK_MODE;
         Grid.updateConnections();
     }
 
