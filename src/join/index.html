@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <link rel="icon" type="image/svg+xml" href="/img/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Join A Project</title>
+
+        <link rel="stylesheet" href="/scss/index.scss" />
+
+        <script type="module" defer src="/ts/join.ts"></script>
+    </head>
+    <body>
+        <div class="outer-container">
+            <div class="container vertical">
+                <h2>Enter a session ID or link:</h2>
+                <input type="text" name="session" id="session-input" autofocus />
+                <span id="session-error" class="error-label">The session ID or link seems to be in a invalid format</span>
+                <button id="join-btn">JOIN</button>
+            </div>
+        </div>
+    </body>
+</html>

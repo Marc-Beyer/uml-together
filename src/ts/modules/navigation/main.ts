@@ -1,8 +1,19 @@
-import { Component } from "../components/component";
 import { ComponentManager } from "../components/componentManager";
 import { ComponentType } from "../components/componentType";
 import { Grid } from "../grid";
 import { createButtons } from "./buttons";
+
+import classIcon from "/img/class-icon.svg";
+import interfaceIcon from "/img/interface-icon.svg";
+import enumIcon from "/img/enum-icon.svg";
+import primitiveIcon from "/img/primitive-icon.svg";
+import dataTypeIcon from "/img/dataType-icon.svg";
+import noteIcon from "/img/note-icon.svg";
+import associationIcon from "/img/association-icon.svg";
+import generalizationIcon from "/img/generalization-icon.svg";
+import composition from "/img/composition-icon.svg";
+import aggregationIcon from "/img/aggregation.icon.svg";
+import usageIcon from "/img/usage-icon.svg";
 
 export interface Diagram {
     id: number;
@@ -24,17 +35,17 @@ let mockupDiagram: Diagram = {
     id: 0,
     title: "ClassDiagram",
     buttons: [
-        { text: "Class", id: "class", type: ComponentType.CLASS, icon: "img/class-icon.svg" },
-        { text: "Interface", id: "interface", type: ComponentType.INTERFACE, icon: "img/interface-icon.svg" },
-        { text: "Enumeration", id: "enumeration", type: ComponentType.ENUM, icon: "img/enum-icon.svg" },
-        { text: "Primitive", id: "primitive", type: ComponentType.PRIMITIVE, icon: "img/primitive-icon.svg" },
-        { text: "DataType", id: "dataType", type: ComponentType.DATA_TYPE, icon: "img/dataType-icon.svg" },
-        { text: "Note", id: "note", type: ComponentType.NOTE, icon: "img/note-icon.svg" },
-        { text: "Association", id: "associationClass", type: ComponentType.ASSOCIATION, icon: "img/association-icon.svg" },
-        { text: "Generalization", id: "generalizationClass", type: ComponentType.GENERALIZATION, icon: "img/generalization-icon.svg" },
-        { text: "Composition", id: "composition", type: ComponentType.COMPOSITION, icon: "img/composition-icon.svg" },
-        { text: "Aggregation", id: "aggregation", type: ComponentType.AGGREGATION, icon: "img/aggregation.icon.svg" },
-        { text: "Usage", id: "usage", type: ComponentType.USAGE, icon: "img/usage-icon.svg" },
+        { text: "Class", id: "class", type: ComponentType.CLASS, icon: classIcon },
+        { text: "Interface", id: "interface", type: ComponentType.INTERFACE, icon: interfaceIcon },
+        { text: "Enumeration", id: "enumeration", type: ComponentType.ENUM, icon: enumIcon },
+        { text: "Primitive", id: "primitive", type: ComponentType.PRIMITIVE, icon: primitiveIcon },
+        { text: "DataType", id: "dataType", type: ComponentType.DATA_TYPE, icon: dataTypeIcon },
+        { text: "Note", id: "note", type: ComponentType.NOTE, icon: noteIcon },
+        { text: "Association", id: "associationClass", type: ComponentType.ASSOCIATION, icon: associationIcon },
+        { text: "Generalization", id: "generalizationClass", type: ComponentType.GENERALIZATION, icon: generalizationIcon },
+        { text: "Composition", id: "composition", type: ComponentType.COMPOSITION, icon: composition },
+        { text: "Aggregation", id: "aggregation", type: ComponentType.AGGREGATION, icon: aggregationIcon },
+        { text: "Usage", id: "usage", type: ComponentType.USAGE, icon: usageIcon },
     ],
 };
 

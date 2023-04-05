@@ -32,13 +32,10 @@ export class Connection implements GridPart {
         Grid.updateConnections();
     }
 
-    public static addActiveConnection(connection: Connection, reset: boolean = true) {
-        //if (reset) {
+    public static addActiveConnection(connection: Connection) {
         this.resetActiveConnections();
         Connection.activeConnectionList.push(connection);
         connection.isActive = true;
-        //}
-        //Input.movementMode = MovementMode.SELECTED_CONNECTION;
     }
 
     constructor(
@@ -121,22 +118,6 @@ export class Connection implements GridPart {
             endOffsetY: this.endOffset.y,
             type: this.type,
         };
-    }
-
-    private calcOffset() {
-        let startX = this.startComponent.xPos + this.startComponent.width / 2;
-        let startY = this.startComponent.yPos + this.startComponent.height / 2;
-        let startPos = new Vector2(startX, startY);
-
-        let endX = this.endComponent.xPos + this.endComponent.width / 2;
-        let endY = this.endComponent.yPos + this.endComponent.height / 2;
-        let endPos = new Vector2(endX, endY);
-
-        let startInters = this.getIntersectionPoint(startPos, endPos, this.startComponent.getCollider());
-        let endInters = this.getIntersectionPoint(startPos, endPos, this.endComponent.getCollider());
-
-        if (startInters) this.startOffset.add(startInters.sub(startPos));
-        if (endInters) this.endOffset.add(endInters.sub(endPos));
     }
 
     public updateOffset(): void {

@@ -30,11 +30,13 @@ export class NoteComponent extends ClassComponent {
 
         this.append(this.header);
 
+        /*
         if (this.operationsList) {
             for (let index = 0; index < this.operationsList.length; index++) {
                 this.addOperation(index);
             }
         }
+        */
     }
 
     public getState() {

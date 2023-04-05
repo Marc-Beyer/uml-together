@@ -77,8 +77,8 @@ nav {
 
     .image-item {
         img {
-            height: $tool-nav-size / 2;
-            width: $small-nav-size / 2;
+            height: calc($tool-nav-size / 2);
+            width: calc($small-nav-size / 2);
             margin: 0 var(--size-05);
         }
     }

@@ -21,5 +21,5 @@ async function requestNewSession() {
     const hexKey = key.toString(crypto.enc.Hex);
 
     const result = await response.json();
-    window.location.href = `main.html#${result.sessionId}#${hexKey}`;
+    window.location.href = `project#${result.sessionId}#${hexKey}`;
 }
