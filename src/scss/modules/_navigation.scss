@@ -1,18 +1,21 @@
 @use "variables";
 
+$tool-nav-size: 38px;
+$small-nav-size: 48px;
+$large-nav-size: 225px;
+
+#nav-btn-list {
+    z-index: 1000;
+}
+
 nav {
     position: absolute;
     z-index: 1000;
 
-    width: 20%;
-    min-width: 200px;
-    height: 100vh;
-    background-color: variables.$primary-color;
-
     display: flex;
-    flex-direction: column;
 
-    color: variables.$font-color;
+    background-color: var(--primary-color);
+    color: var(--font-color);
 
     button {
         color: inherit;
@@ -20,28 +23,122 @@ nav {
         border: none;
 
         text-align: left;
+
+        &:hover {
+            background-color: var(--hover-color);
+        }
+    }
+}
+
+#tool-nav {
+    width: 100%;
+    background-color: var(--primary-color-darken);
+    display: flex;
+
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        position: relative;
+
+        button {
+            flex: 1;
+            padding: 0 8px;
+        }
+
+        .sub-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            min-width: 200px;
+
+            flex-direction: column;
+
+            background-color: var(--primary-color-darken);
+            list-style: none;
+
+            hr {
+                border-top: 1px solid var(--font-color-darken);
+            }
+
+            button {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        &:hover > .sub-menu {
+            display: flex;
+        }
     }
 
-    ul{
-        li{
+    .image-item {
+        img {
+            height: calc($tool-nav-size / 2);
+            width: calc($small-nav-size / 2);
+            margin: 0 var(--size-05);
+        }
+    }
 
+    #nav-btn {
+        width: $small-nav-size;
+        height: $tool-nav-size;
+        padding: 4px 8px;
+    }
+}
+
+#main-nav {
+    width: $large-nav-size;
+    min-width: $large-nav-size;
+    height: calc(100vh - $tool-nav-size);
+    top: $tool-nav-size;
+
+    flex-direction: column;
+
+    ul {
+        overflow-x: hidden;
+        overflow-y: auto;
+        li {
             overflow: hidden;
-            button{
-                padding: variables.$size-1;
+
+            button {
+                $padding: 8px;
+
+                overflow: hidden;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                padding: $padding;
 
                 width: 100%;
                 overflow: hidden;
                 text-overflow: ellipsis;
 
-                &:hover{
-                    background: darken(variables.$primary-color, 30%);
+                .img-container {
+                    flex: 1;
+                    max-width: $small-nav-size - ($padding * 2);
+                    max-height: $small-nav-size - ($padding * 2);
+                    margin-right: var(--size-1);
                 }
             }
         }
     }
-}
 
-nav.closed {
-    width: 50px;
-    min-width: 50px;
+    &.closed {
+        width: $small-nav-size;
+        min-width: $small-nav-size;
+        ul {
+            overflow-y: hidden;
+            .img-container {
+                margin-right: 0;
+            }
+            .text-container {
+                display: none;
+            }
+        }
+    }
 }

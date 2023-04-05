@@ -1,6 +1,11 @@
 @use "modules/variables";
 @use "modules/navigation";
 @use "modules/components";
+@use "modules/chat";
+@use "modules/canvas";
+@use "modules/context";
+@use "modules/settings";
+@use "modules/toggle";
 
 *,
 ::before,
@@ -12,6 +17,7 @@
 
 body {
     width: 100%;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 svg:not([fill]) {
@@ -20,6 +26,9 @@ svg:not([fill]) {
 
 hr {
     color: currentColor;
+    width: 100%;
+    border: inherit;
+    border-bottom: none;
 }
 
 [aria-busy="true"] {

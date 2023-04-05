@@ -1,48 +1,34 @@
-import { ClassComponent } from "./modules/components/classComponent";
-import { Component } from "./modules/components/component";
-import * as navigation from "./modules/navigation";
+import { ChatController } from "./modules/chat/chatController";
+import { ComponentManager } from "./modules/components/componentManager";
+import { ConnectionManager } from "./modules/connections/connectionManager";
+import { initInput } from "./modules/input";
+import * as navigation from "./modules/navigation/main";
+import { initGlobalValues } from "./modules/settings/global";
+import * as settings from "./modules/settings/settings";
+import { WebSocketController } from "./modules/webSocket/webSocketController";
 
-navigation.initialize();
+const href = window.location.href.split("#");
 
-for (let i = 0; i < 1; i++) {
-    for (let j = 0; j < 1; j++) {
-        new Component(i * 120, j * 120, 100, 100);
-    }
+if (href.length >= 2) {
+    const sessionId = href[1];
+    const key = href[2];
+
+    new ComponentManager();
+    new ConnectionManager();
+    new ChatController(new WebSocketController(sessionId, key));
+
+    init();
 }
 
-new ClassComponent(-120, -120, 100, 100);
+function init() {
+    navigation.initialize();
+    settings.initSettings();
+    initGlobalValues();
 
-//new Component(0, 101, 100, 100);
+    //const basicComponent = new Component(120, 120, 100, 100);
+    //const classComponent = new ClassComponent(-120, -120);
 
-const zoomSensibility = -0.001;
-const container = document.getElementById("component-container");
+    //new Connection(classComponent, basicComponent, new Vector2(0, 0), new Vector2(10, 100));
 
-if (!container) {
-    throw new Error("component-container not found!");
+    initInput();
 }
-
-container.addEventListener("wheel", (event) => {
-    const zoom = zoomSensibility * event.deltaY;
-
-    Component.addZoom(zoom, zoom);
-});
-
-let x: number = 0;
-let y: number = 0;
-let isMousedown = false;
-container.addEventListener("mousedown", (event) => {
-    x = event.screenX;
-    y = event.screenY;
-    isMousedown = true;
-    Component.resetActiveComponents();
-});
-container.addEventListener("mouseup", (event) => {
-    isMousedown = false;
-});
-
-document.addEventListener("mousemove", (event) => {
-    if (!isMousedown) return;
-    Component.addOffset(x - event.screenX, y - event.screenY);
-    x = event.screenX;
-    y = event.screenY;
-});

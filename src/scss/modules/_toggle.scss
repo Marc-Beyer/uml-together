@@ -1,0 +1,58 @@
+// From: https://codepen.io/AllThingsSmitty/pen/MmxxOz/
+
+@use "variables";
+
+$bg-height: 25px;
+$bg-width: 45px;
+$handle-size: 19px;
+$handle-transform: 21px;
+$handle-margin: 3px;
+
+.switch {
+    display: inline-block;
+    height: $bg-height;
+    position: relative;
+    width: $bg-width;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    background-color: var(--primary-bg-color-darken);
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: 0.4s;
+}
+
+.slider:before {
+    background-color: var(--primary-color-darken);
+    bottom: $handle-margin;
+    content: "";
+    height: $handle-size;
+    left: $handle-margin;
+    position: absolute;
+    transition: 0.4s;
+    width: $handle-size;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX($handle-transform);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
