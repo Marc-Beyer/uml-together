@@ -4,7 +4,7 @@
 
 $bg-height: 25px;
 $bg-width: 45px;
-$handle-size: 19px;
+$handle-size: 17px;
 $handle-transform: 21px;
 $handle-margin: 3px;
 
@@ -28,6 +28,8 @@ $handle-margin: 3px;
     right: 0;
     top: 0;
     transition: 0.4s;
+
+    border: 1px solid var(--primary-color-darken);
 }
 
 .slider:before {
