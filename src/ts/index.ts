@@ -1,5 +1,7 @@
 import * as crypto from "crypto-js";
 
+const mainUrl = import.meta.env.MODE === "development" ? "http://127.0.0.1" : "";
+
 export {};
 const button = document.getElementById("button") as HTMLButtonElement;
 
@@ -8,7 +10,7 @@ button.addEventListener("click", function () {
 });
 
 async function requestNewSession() {
-    const response = await fetch("http://127.0.0.1:80/session", {
+    const response = await fetch(`${mainUrl}/session`, {
         method: "POST",
         headers: {
             Accept: "application/json",
@@ -21,5 +23,5 @@ async function requestNewSession() {
     const hexKey = key.toString(crypto.enc.Hex);
 
     const result = await response.json();
-    window.location.href = `project#${result.sessionId}#${hexKey}`;
+    window.location.href = `/project#${result.sessionId}#${hexKey}`;
 }

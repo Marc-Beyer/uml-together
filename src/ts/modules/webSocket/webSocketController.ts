@@ -8,13 +8,12 @@ import { ConnectionManager } from "../connections/connectionManager";
 export class WebSocketController {
     public static instance: WebSocketController;
 
-    private WebSocketUrl = "ws://127.0.0.1:3000";
     private socket: WebSocket;
     private key: string;
 
-    constructor(sessionId: string, key: string) {
+    constructor(wsUrl: string, sessionId: string, key: string) {
         WebSocketController.instance = this;
-        this.socket = new WebSocket(this.WebSocketUrl);
+        this.socket = new WebSocket(wsUrl);
         this.key = key;
 
         this.socket.addEventListener("open", () => {
