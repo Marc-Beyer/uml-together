@@ -1,0 +1,92 @@
+@use "variables";
+
+.edit-text {
+    &.bold {
+        .et-container {
+            .text,
+            input {
+                font-weight: bold;
+            }
+            .bold-button {
+                border: 1px solid var(--primary-color-lighten);
+            }
+        }
+    }
+
+    &.italic {
+        .et-container {
+            .text,
+            input {
+                font-style: italic;
+            }
+            .italic-button {
+                border: 1px solid var(--primary-color-lighten);
+            }
+        }
+    }
+
+    &.underlined {
+        .et-container {
+            .text,
+            input {
+                text-decoration: underline;
+            }
+            .underlined-button {
+                border: 1px solid var(--primary-color-lighten);
+            }
+        }
+    }
+
+    .et-container {
+        $et-btn-size: 1.5rem;
+
+        display: flex;
+        align-items: stretch;
+
+        .text.placeholder {
+            font-weight: lighter;
+            font-style: normal;
+            text-decoration: none;
+        }
+
+        input {
+            font-size: inherit;
+            background: none;
+            color: inherit;
+
+            border: 1px solid var(--primary-color);
+            outline: none;
+        }
+
+        .et-button {
+            //position: absolute;
+            right: -$et-btn-size;
+            width: $et-btn-size;
+            min-height: $et-btn-size;
+
+            background: var(--primary-color);
+            color: var(--font-color);
+            border: none;
+            font-size: 1rem;
+
+            &:hover {
+                background-color: var(--hover-color);
+            }
+        }
+
+        .bold-button {
+            right: -$et-btn-size;
+            font-weight: bold;
+        }
+
+        .underlined-button {
+            right: -(2 * $et-btn-size);
+            text-decoration: underline;
+        }
+
+        .italic-button {
+            right: -(3 * $et-btn-size);
+            font-style: italic;
+        }
+    }
+}

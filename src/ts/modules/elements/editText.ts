@@ -2,13 +2,61 @@ import { Input, MovementMode } from "../input";
 
 export class EditText extends HTMLElement {
     public text: string = "";
+    public placeholder: string = "";
     public inEditMode: boolean = false;
 
     private container: HTMLDivElement | undefined = undefined;
     private input: HTMLInputElement | undefined = undefined;
     private textElement: HTMLDivElement | undefined = undefined;
 
+    private boldBtn: HTMLButtonElement | undefined = undefined;
+    private underlinedBtn: HTMLButtonElement | undefined = undefined;
+    private italicBtn: HTMLButtonElement | undefined = undefined;
+
     private callback;
+
+    private _isBold: boolean = false;
+    private _isUnderlined: boolean = false;
+    private _isItalic: boolean = false;
+
+    public get isBold() {
+        return this._isBold;
+    }
+    public set isBold(value: boolean) {
+        this._isBold = value;
+        if (this._isBold) {
+            this.classList.add("bold");
+        } else {
+            this.classList.remove("bold");
+        }
+        this.refresh();
+    }
+
+    public get isUnderlined() {
+        return this._isUnderlined;
+    }
+    public set isUnderlined(value: boolean) {
+        this._isUnderlined = value;
+        if (this._isUnderlined) {
+            this.classList.add("underlined");
+        } else {
+            this.classList.remove("underlined");
+        }
+        this.refresh();
+    }
+
+    public get isItalic() {
+        return this._isItalic;
+    }
+    public set isItalic(value: boolean) {
+        this._isItalic = value;
+        if (this._isItalic) {
+            this.classList.add("italic");
+        } else {
+            this.classList.remove("italic");
+        }
+        this.refresh();
+    }
 
     constructor(text: string, inEditMode: boolean = false, callback?: (pressedEnter: boolean) => any) {
         super();
@@ -35,15 +83,21 @@ export class EditText extends HTMLElement {
 
         if (this.container === undefined) {
             this.container = document.createElement("div");
-            this.input = document.createElement("input");
-            this.input.type = "text";
-            this.input.addEventListener("focusout", () => {
+            this.container.classList.add("et-container");
+            this.container.addEventListener("focusout", (event) => {
+                if (event.currentTarget && event.relatedTarget) {
+                    if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) return;
+                }
+
                 this.inEditMode = false;
                 if (this.input) this.text = this.input.value;
                 this.connectedCallback();
                 if (this.callback !== undefined) this.callback(false);
                 Input.movementMode = MovementMode.COMPONENT;
             });
+
+            this.input = document.createElement("input");
+            this.input.type = "text";
             this.input.addEventListener("keyup", (event: KeyboardEvent) => {
                 if (event.key === "Enter" || event.keyCode === 13) {
                     this.inEditMode = false;
@@ -55,7 +109,35 @@ export class EditText extends HTMLElement {
             this.container.append(this.input);
 
             this.textElement = document.createElement("div");
+            this.textElement.classList.add("text");
             this.container.append(this.textElement);
+
+            this.boldBtn = document.createElement("button");
+            this.boldBtn.append(document.createTextNode("B"));
+            this.boldBtn.classList.add("et-button");
+            this.boldBtn.classList.add("bold-button");
+            this.boldBtn.addEventListener("click", () => {
+                this.isBold = !this.isBold;
+            });
+            this.container.append(this.boldBtn);
+
+            this.underlinedBtn = document.createElement("button");
+            this.underlinedBtn.append(document.createTextNode("U"));
+            this.underlinedBtn.classList.add("et-button");
+            this.underlinedBtn.classList.add("underlined-button");
+            this.underlinedBtn.addEventListener("click", () => {
+                this.isUnderlined = !this.isUnderlined;
+            });
+            this.container.append(this.underlinedBtn);
+
+            this.italicBtn = document.createElement("button");
+            this.italicBtn.append(document.createTextNode("I"));
+            this.italicBtn.classList.add("et-button");
+            this.italicBtn.classList.add("italic-button");
+            this.italicBtn.addEventListener("click", () => {
+                this.isItalic = !this.isItalic;
+            });
+            this.container.append(this.italicBtn);
         }
 
         this.append(this.container);
@@ -64,9 +146,24 @@ export class EditText extends HTMLElement {
             this.input.style.display = this.inEditMode ? "block" : "none";
             if (!this.inEditMode) this.input.value = this.text;
         }
+        if (this.boldBtn) {
+            this.boldBtn.style.display = this.inEditMode ? "block" : "none";
+        }
+        if (this.underlinedBtn) {
+            this.underlinedBtn.style.display = this.inEditMode ? "block" : "none";
+        }
+        if (this.italicBtn) {
+            this.italicBtn.style.display = this.inEditMode ? "block" : "none";
+        }
         if (this.textElement) {
             this.textElement.style.display = this.inEditMode ? "none" : "block";
-            this.textElement.innerText = this.text;
+            if (this.text.trim() === "") {
+                this.textElement.innerText = this.placeholder;
+                this.textElement.classList.add("placeholder");
+            } else {
+                this.textElement.innerText = this.text;
+                this.textElement.classList.remove("placeholder");
+            }
         }
 
         if (this.inEditMode) this.input?.focus();

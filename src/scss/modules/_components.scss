@@ -86,10 +86,6 @@
                 padding: 0 0.3em;
             }
 
-            input {
-                font-size: inherit;
-            }
-
             hr {
                 margin: 0.2rem 0;
             }
@@ -110,17 +106,6 @@
                 input {
                     font-weight: lighter;
                 }
-            }
-
-            .bold {
-                font-weight: bold;
-                input {
-                    font-weight: bold;
-                }
-            }
-
-            .italic {
-                font-style: italic;
             }
         }
     }

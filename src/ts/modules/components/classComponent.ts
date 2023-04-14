@@ -234,6 +234,8 @@ export class ClassComponent extends Component {
 
             this.classHeader.append(this.cType);
             this.classHeader.append(this.cName);
+            this.cName.isBold = true;
+            this.cName.placeholder = "enter name";
         }
         this.append(this.classHeader);
     }
