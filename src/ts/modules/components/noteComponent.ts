@@ -53,6 +53,22 @@ export class NoteComponent extends ClassComponent {
         if (this.header) this.header.style.top = `-${Grid.xZoom * Component.baseBorderWidth}px`;
         if (this.header) this.header.style.right = `-${Grid.xZoom * Component.baseBorderWidth}px`;
     }
+
+    // Add functionality to the custom context menu
+    protected createContextMenu(list: Element) {
+        list.append(
+            this.createContextBtn("Delete Component", "Del", () => {
+                Input.removeComponents();
+            })
+        );
+        list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));
+        list.append(document.createElement("hr"));
+        list.append(
+            this.createContextBtn("Auto Resize", "", () => {
+                this.autoResize();
+            })
+        );
+    }
 }
 
 customElements.define("uml-together-note-component", NoteComponent);

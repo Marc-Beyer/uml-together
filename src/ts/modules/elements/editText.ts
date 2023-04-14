@@ -105,6 +105,17 @@ export class EditText extends HTMLElement {
 
             this.textArea = document.createElement("textarea");
             this.textArea.style.display = "none";
+            this.textArea.addEventListener("keyup", (event: KeyboardEvent) => {
+                if ((event.key === "Enter" || event.keyCode === 13) && event.ctrlKey) {
+                    this.inEditMode = false;
+                    if (this.textArea) this.text = this.textArea.value;
+                    this.connectedCallback();
+                    if (this.callback !== undefined) this.callback(true);
+                } else if (event.key === "Delete" || event.keyCode === 46) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
             this.container.append(this.textArea);
 
             this.input = document.createElement("input");
@@ -116,6 +127,9 @@ export class EditText extends HTMLElement {
                     if (this.input) this.text = this.input.value;
                     this.connectedCallback();
                     if (this.callback !== undefined) this.callback(true);
+                } else if (event.key === "Delete" || event.keyCode === 46) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
             });
             this.container.append(this.input);
