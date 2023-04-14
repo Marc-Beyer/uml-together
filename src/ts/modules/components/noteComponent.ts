@@ -12,6 +12,9 @@ export class NoteComponent extends ClassComponent {
         this.classList.add("note-component");
         //this.classList.remove("class-component");
 
+        this.cName.placeholder = "enter text";
+        this.cName.isMultiline = true;
+
         this.connectedCallback();
     }
 
@@ -29,6 +32,7 @@ export class NoteComponent extends ClassComponent {
         }
 
         this.append(this.header);
+        this.append(this.cName);
 
         /*
         if (this.operationsList) {

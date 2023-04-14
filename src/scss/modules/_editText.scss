@@ -1,9 +1,12 @@
 @use "variables";
 
 .edit-text {
+    //display: block;
+
     &.bold {
         .et-container {
             .text,
+            textarea,
             input {
                 font-weight: bold;
             }
@@ -16,6 +19,7 @@
     &.italic {
         .et-container {
             .text,
+            textarea,
             input {
                 font-style: italic;
             }
@@ -28,6 +32,7 @@
     &.underlined {
         .et-container {
             .text,
+            textarea,
             input {
                 text-decoration: underline;
             }
@@ -43,12 +48,17 @@
         display: flex;
         align-items: stretch;
 
+        .text {
+            width: 100%;
+        }
+
         .text.placeholder {
             font-weight: lighter;
             font-style: normal;
             text-decoration: none;
         }
 
+        textarea,
         input {
             font-size: inherit;
             background: none;
@@ -56,13 +66,20 @@
 
             border: 1px solid var(--primary-color);
             outline: none;
+            width: 100%;
+        }
+
+        .btn-container {
+            width: auto;
+            display: flex;
         }
 
         .et-button {
             //position: absolute;
-            right: -$et-btn-size;
+            //right: -$et-btn-size;
             width: $et-btn-size;
             min-height: $et-btn-size;
+            max-height: $et-btn-size * 1.5;
 
             background: var(--primary-color);
             color: var(--font-color);

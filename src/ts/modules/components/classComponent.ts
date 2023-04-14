@@ -54,6 +54,7 @@ export class ClassComponent extends Component {
 
         if (this.attributeContainer === undefined) {
             this.attributeContainer = document.createElement("div");
+            this.attributeContainer.classList.add("container");
 
             for (let index = 0; index < this.attributeList.length; index++) {
                 this.attributeContainer.append(this.attributeList[index]);
@@ -66,6 +67,7 @@ export class ClassComponent extends Component {
 
         if (this.operationsContainer === undefined) {
             this.operationsContainer = document.createElement("div");
+            this.operationsContainer.classList.add("container");
 
             for (let index = 0; index < this.operationsList.length; index++) {
                 this.operationsContainer.append(this.operationsList[index]);
@@ -230,7 +232,7 @@ export class ClassComponent extends Component {
     protected addHeaderBlock() {
         if (this.classHeader === undefined) {
             this.classHeader = document.createElement("div");
-            this.classHeader.classList.add("class-head");
+            this.classHeader.classList.add("container", "class-head");
 
             this.classHeader.append(this.cType);
             this.classHeader.append(this.cName);

@@ -4,9 +4,12 @@ export class EditText extends HTMLElement {
     public text: string = "";
     public placeholder: string = "";
     public inEditMode: boolean = false;
+    public isMultiline: boolean = false;
 
     private container: HTMLDivElement | undefined = undefined;
+    private btnContainer: HTMLDivElement | undefined = undefined;
     private input: HTMLInputElement | undefined = undefined;
+    private textArea: HTMLTextAreaElement | undefined = undefined;
     private textElement: HTMLDivElement | undefined = undefined;
 
     private boldBtn: HTMLButtonElement | undefined = undefined;
@@ -90,13 +93,22 @@ export class EditText extends HTMLElement {
                 }
 
                 this.inEditMode = false;
-                if (this.input) this.text = this.input.value;
+                if (this.isMultiline) {
+                    if (this.textArea) this.text = this.textArea.value;
+                } else {
+                    if (this.input) this.text = this.input.value;
+                }
                 this.connectedCallback();
                 if (this.callback !== undefined) this.callback(false);
                 Input.movementMode = MovementMode.COMPONENT;
             });
 
+            this.textArea = document.createElement("textarea");
+            this.textArea.style.display = "none";
+            this.container.append(this.textArea);
+
             this.input = document.createElement("input");
+            this.input.style.display = "none";
             this.input.type = "text";
             this.input.addEventListener("keyup", (event: KeyboardEvent) => {
                 if (event.key === "Enter" || event.keyCode === 13) {
@@ -112,6 +124,9 @@ export class EditText extends HTMLElement {
             this.textElement.classList.add("text");
             this.container.append(this.textElement);
 
+            this.btnContainer = document.createElement("div");
+            this.btnContainer.classList.add("btn-container");
+
             this.boldBtn = document.createElement("button");
             this.boldBtn.append(document.createTextNode("B"));
             this.boldBtn.classList.add("et-button");
@@ -119,7 +134,7 @@ export class EditText extends HTMLElement {
             this.boldBtn.addEventListener("click", () => {
                 this.isBold = !this.isBold;
             });
-            this.container.append(this.boldBtn);
+            this.btnContainer.append(this.boldBtn);
 
             this.underlinedBtn = document.createElement("button");
             this.underlinedBtn.append(document.createTextNode("U"));
@@ -128,7 +143,7 @@ export class EditText extends HTMLElement {
             this.underlinedBtn.addEventListener("click", () => {
                 this.isUnderlined = !this.isUnderlined;
             });
-            this.container.append(this.underlinedBtn);
+            this.btnContainer.append(this.underlinedBtn);
 
             this.italicBtn = document.createElement("button");
             this.italicBtn.append(document.createTextNode("I"));
@@ -137,26 +152,29 @@ export class EditText extends HTMLElement {
             this.italicBtn.addEventListener("click", () => {
                 this.isItalic = !this.isItalic;
             });
-            this.container.append(this.italicBtn);
+            this.btnContainer.append(this.italicBtn);
+
+            this.container.append(this.btnContainer);
         }
 
         this.append(this.container);
 
-        if (this.input) {
-            this.input.style.display = this.inEditMode ? "block" : "none";
-            if (!this.inEditMode) this.input.value = this.text;
+        if (this.isMultiline) {
+            if (this.textArea) {
+                this.textArea.style.display = this.inEditMode ? "" : "none";
+                if (!this.inEditMode) this.textArea.value = this.text;
+            }
+        } else {
+            if (this.input) {
+                this.input.style.display = this.inEditMode ? "" : "none";
+                if (!this.inEditMode) this.input.value = this.text;
+            }
         }
-        if (this.boldBtn) {
-            this.boldBtn.style.display = this.inEditMode ? "block" : "none";
-        }
-        if (this.underlinedBtn) {
-            this.underlinedBtn.style.display = this.inEditMode ? "block" : "none";
-        }
-        if (this.italicBtn) {
-            this.italicBtn.style.display = this.inEditMode ? "block" : "none";
+        if (this.btnContainer) {
+            this.btnContainer.style.display = this.inEditMode ? "" : "none";
         }
         if (this.textElement) {
-            this.textElement.style.display = this.inEditMode ? "none" : "block";
+            this.textElement.style.display = this.inEditMode ? "none" : "";
             if (this.text.trim() === "") {
                 this.textElement.innerText = this.placeholder;
                 this.textElement.classList.add("placeholder");
@@ -166,7 +184,13 @@ export class EditText extends HTMLElement {
             }
         }
 
-        if (this.inEditMode) this.input?.focus();
+        if (this.inEditMode) {
+            if (this.isMultiline) {
+                this.textArea?.focus();
+            } else {
+                this.input?.focus();
+            }
+        }
     }
 }
 

@@ -158,8 +158,8 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.cName.text = "";
                 component.addOperation("Note");
 
-                component.width = 100;
-                component.height = 100;
+                component.width = 300;
+                component.height = 200;
 
                 component.connectedCallback();
                 component.sendEditMessage();
