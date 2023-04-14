@@ -1,4 +1,5 @@
 import { Grid } from "../grid";
+import { Input } from "../input";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
 import { ComponentType } from "./componentType";

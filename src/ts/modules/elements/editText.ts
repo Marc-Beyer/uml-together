@@ -1,5 +1,28 @@
 import { Input, MovementMode } from "../input";
 
+export interface EditTextObj {
+    text: string;
+    isBold: boolean;
+    isUnderlined: boolean;
+    isItalic: boolean;
+}
+
+export function isEditTextObj(editTextObj: any): editTextObj is EditTextObj {
+    if (editTextObj.text === undefined) {
+        return false;
+    }
+    if (editTextObj.isBold === undefined) {
+        return false;
+    }
+    if (editTextObj.isUnderlined === undefined) {
+        return false;
+    }
+    if (editTextObj.isItalic === undefined) {
+        return false;
+    }
+    return true;
+}
+
 export class EditText extends HTMLElement {
     public text: string = "";
     public placeholder: string = "";
@@ -75,6 +98,22 @@ export class EditText extends HTMLElement {
         });
 
         this.refresh();
+    }
+
+    public setValues(editTextObj: EditTextObj) {
+        this.text = editTextObj.text;
+        this.isBold = editTextObj.isBold;
+        this.isUnderlined = editTextObj.isUnderlined;
+        this.isItalic = editTextObj.isItalic;
+    }
+
+    public getValues(): EditTextObj {
+        return {
+            text: this.text,
+            isBold: this.isBold,
+            isUnderlined: this.isUnderlined,
+            isItalic: this.isItalic,
+        };
     }
 
     public refresh() {
@@ -189,6 +228,8 @@ export class EditText extends HTMLElement {
         }
         if (this.textElement) {
             this.textElement.style.display = this.inEditMode ? "none" : "";
+            console.log("this.text", this.text);
+
             if (this.text.trim() === "") {
                 this.textElement.innerText = this.placeholder;
                 this.textElement.classList.add("placeholder");

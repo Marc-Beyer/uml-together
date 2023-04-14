@@ -1,4 +1,4 @@
-import { EditText } from "../elements/editText";
+import { EditText, EditTextObj, isEditTextObj } from "../elements/editText";
 import { Input } from "../input";
 import { MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
@@ -77,7 +77,13 @@ export class ClassComponent extends Component {
     }
 
     // Add a new attribute
-    public addAttribute(text: string, inEditMode: boolean = false) {
+    public addAttribute(editTextObj: EditTextObj | string, inEditMode: boolean = false) {
+        let text: string = "";
+        if (isEditTextObj(editTextObj)) {
+            text = editTextObj.text;
+        } else {
+            text = editTextObj;
+        }
         const editText = new EditText(text, inEditMode, (pressedEnter: boolean) => {
             const newText = editText.text.trim();
 
@@ -101,12 +107,19 @@ export class ClassComponent extends Component {
             }
             this.connectedCallback();
         });
+        if (isEditTextObj(editTextObj)) editText.setValues(editTextObj);
         this.attributeList.push(editText);
         this.attributeContainer?.append(editText);
     }
 
     // Add a new operation
-    public addOperation(text: string, inEditMode: boolean = false) {
+    public addOperation(editTextObj: EditTextObj | string, inEditMode: boolean = false) {
+        let text: string = "";
+        if (isEditTextObj(editTextObj)) {
+            text = editTextObj.text;
+        } else {
+            text = editTextObj;
+        }
         const editText = new EditText(text, inEditMode, (pressedEnter: boolean) => {
             const newText = editText.text.trim();
 
@@ -126,6 +139,7 @@ export class ClassComponent extends Component {
             }
             this.connectedCallback();
         });
+        if (isEditTextObj(editTextObj)) editText.setValues(editTextObj);
         this.operationsList.push(editText);
         this.operationsContainer?.append(editText);
     }
@@ -136,13 +150,13 @@ export class ClassComponent extends Component {
             type: MessageType.EDIT_COMPONENT,
             data: {
                 id: this.componentId,
-                classType: this.cType.text,
-                className: this.cName.text,
+                classType: this.cType.getValues(),
+                className: this.cName.getValues(),
                 attributeList: this.attributeList.map((editText: EditText) => {
-                    return editText.text;
+                    return editText.getValues();
                 }),
                 operationsList: this.operationsList.map((editText: EditText) => {
-                    return editText.text;
+                    return editText.getValues();
                 }),
             },
         });
@@ -153,21 +167,21 @@ export class ClassComponent extends Component {
         return {
             ...super.getState(),
             type: ComponentType.CLASS,
-            classType: this.cType.text,
-            className: this.cName.text,
+            classType: this.cType.getValues(),
+            className: this.cName.getValues(),
             attributeList: this.attributeList.map((editText: EditText) => {
-                return editText.text;
+                return editText.getValues();
             }),
             operationsList: this.operationsList.map((editText: EditText) => {
-                return editText.text;
+                return editText.getValues();
             }),
         };
     }
 
     // Handle a EDIT_COMPONENT message
     public edit(message: any): void {
-        this.cType.text = message.classType;
-        this.cName.text = message.className;
+        this.cType.setValues(message.classType);
+        this.cName.setValues(message.className);
 
         // Clear the attributes and operations and remove them from the DOM
         for (let index = 0; index < this.attributeList.length; index++) {
