@@ -45,7 +45,7 @@ export class Input {
 
         document.addEventListener("keyup", (event) => {
             if (event.keyCode === 46 || event.key === "Delete") {
-                Input.removeComponents();
+                Input.onDelete();
             }
         });
 
@@ -161,10 +161,11 @@ export class Input {
         });
     }
 
-    public static removeComponents() {
+    public static onDelete() {
         for (const component of Component.activeComponentList) {
             ComponentManager.instance.removeComponent(component);
             component.sendDeleteMessage();
         }
+        ConnectionManager.instance.onDelete();
     }
 }

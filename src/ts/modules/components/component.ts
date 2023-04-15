@@ -341,7 +341,7 @@ export class Component extends HTMLElement implements GridPart {
     protected createContextMenu(list: Element) {
         list.append(
             this.createContextBtn("Delete Component", "DEL", () => {
-                Input.removeComponents();
+                Input.onDelete();
             })
         );
     }

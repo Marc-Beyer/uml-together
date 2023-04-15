@@ -38,6 +38,19 @@ export class ConnectionManager {
         }
     }
 
+    public onDelete() {
+        if (this.selectedNode !== null) {
+            this.selectedNode.connection.removeNode(this.selectedNode.position);
+            this.selectedNode = null;
+        } else {
+            for (let index = 0; index < Connection.activeConnectionList.length; index++) {
+                const connection = Connection.activeConnectionList[index];
+                connection.sendDeleteMessage();
+                this.delete(connection);
+            }
+        }
+    }
+
     public connect(component: Component) {
         if (this.selectedForConnection === null) {
             this.selectedForConnection = component;
@@ -228,6 +241,14 @@ export class ConnectionManager {
         if (connection === undefined) return;
 
         connection.edit(message);
+    }
+
+    public onDeleteMessage(message: any) {
+        const connection = this.connections.get(message.id);
+        if (connection === undefined) return;
+
+        this.delete(connection);
+        Grid.updateConnections();
     }
 
     public updateConnections() {

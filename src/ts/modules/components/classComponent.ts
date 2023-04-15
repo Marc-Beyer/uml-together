@@ -208,7 +208,7 @@ export class ClassComponent extends Component {
     protected createContextMenu(list: Element) {
         list.append(
             this.createContextBtn("Delete Component", "Del", () => {
-                Input.removeComponents();
+                Input.onDelete();
             })
         );
         list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));

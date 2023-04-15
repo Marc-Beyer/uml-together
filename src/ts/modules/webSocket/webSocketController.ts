@@ -94,6 +94,9 @@ export class WebSocketController {
                 case MessageType.EDIT_CONNECTION:
                     ConnectionManager.instance.onEditMessage(message.data);
                     break;
+                case MessageType.DELETE_CONNECTION:
+                    ConnectionManager.instance.onDeleteMessage(message.data);
+                    break;
                 default:
                     break;
             }

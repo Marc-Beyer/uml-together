@@ -211,15 +211,21 @@ export class Connection implements GridPart {
         ];
     }
 
-    addNode(x: number, y: number, position: number) {
+    public addNode(x: number, y: number, position: number) {
         this.nodes.splice(position, 0, new Vector2(x, y));
         Grid.updateConnections();
         this.sendEditMessage();
     }
 
-    moveNode(x: number, y: number, position: number) {
+    public moveNode(x: number, y: number, position: number) {
         this.nodes[position].x += x;
         this.nodes[position].y += y;
+    }
+
+    public removeNode(position: number) {
+        this.nodes.splice(position, 1);
+        Grid.updateConnections();
+        this.sendEditMessage();
     }
 
     public addSize(width: number, height: number, componentID: String) {
