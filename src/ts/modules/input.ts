@@ -6,9 +6,9 @@ import { ConnectionManager } from "./connections/connectionManager";
 import { Grid } from "./grid";
 
 export enum MovementMode {
-    "SCREEN",
-    "COMPONENT",
-    "RESIZE",
+    SCREEN,
+    COMPONENT,
+    RESIZE,
     EDIT,
     CONNECTION,
     SELECTED_CONNECTION,
@@ -33,8 +33,6 @@ export class Input {
     }
 
     public static set movementMode(mode: MovementMode) {
-        console.log("MovementMode", MovementMode[mode]);
-
         Input._movementMode = mode;
     }
 
@@ -46,8 +44,6 @@ export class Input {
         }
 
         document.addEventListener("keyup", (event) => {
-            console.log(event.key, "up");
-
             if (event.keyCode === 46 || event.key === "Delete") {
                 Input.removeComponents();
             }
@@ -57,6 +53,14 @@ export class Input {
             const zoom = Input.zoomSensibility * event.deltaY;
 
             Grid.addZoom(zoom, zoom);
+        });
+
+        container.addEventListener("dblclick", (event) => {
+            Input.x = event.screenX;
+            Input.y = event.screenY;
+            if (!Input.clickedOnComponent && Input.movementMode !== MovementMode.CONNECTION) {
+                ConnectionManager.instance.addNodeOnClick(event.pageX, event.pageY);
+            }
         });
 
         container.addEventListener("mousedown", (event) => {
@@ -69,6 +73,7 @@ export class Input {
                 if (Input.movementMode !== MovementMode.CONNECTION) {
                     if (ConnectionManager.instance.selectedConnectionOnClick(event.pageX, event.pageY)) {
                         Component.resetActiveComponents();
+                        Input.movementMode = MovementMode.SELECTED_CONNECTION;
                     } else {
                         Connection.resetActiveConnections();
                         Component.resetActiveComponents();
@@ -125,6 +130,11 @@ export class Input {
                         Input.x = event.screenX;
                         Input.y = event.screenY;
                         break;
+                    case MovementMode.SELECTED_CONNECTION:
+                        ConnectionManager.instance.moveConnections(Input.x - event.screenX, Input.y - event.screenY);
+                        Input.x = event.screenX;
+                        Input.y = event.screenY;
+                        break;
                     case MovementMode.RESIZE:
                         Input.scaleHandle.moveScaleHandle(event);
                         break;
@@ -135,11 +145,6 @@ export class Input {
                         Input.y = event.screenY;
 
                         ConnectionManager.instance.drawConnection(event.screenX, event.screenY);
-                        break;
-
-                    case MovementMode.EDIT:
-                        console.log("EDIT");
-
                         break;
 
                     default:

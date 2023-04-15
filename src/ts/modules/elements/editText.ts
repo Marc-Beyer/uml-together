@@ -228,7 +228,6 @@ export class EditText extends HTMLElement {
         }
         if (this.textElement) {
             this.textElement.style.display = this.inEditMode ? "none" : "";
-            console.log("this.text", this.text);
 
             if (this.text.trim() === "") {
                 this.textElement.innerText = this.placeholder;

@@ -10,8 +10,8 @@ export class Grid {
     public static zoomMin = 0.42;
     public static width: number = -1;
     public static height: number = -1;
-    public static xRaster: number = 10;
-    public static yRaster: number = 10;
+    public static xRaster: number = 20;
+    public static yRaster: number = 20;
     public static lineColor = "black";
     public static lineColorSelected = "red";
     public static backgroundColor = "white";

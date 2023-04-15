@@ -15,6 +15,7 @@ export class ConnectionManager {
     private connections: Map<string, Connection> = new Map();
 
     private selectedForConnection: Component | null = null;
+    private selectedNode: { connection: Connection; position: number } | null = null;
     public connectionType: ComponentType = ComponentType.USAGE;
 
     constructor() {
@@ -58,10 +59,17 @@ export class ConnectionManager {
 
     public selectedConnectionOnClick(x: number, y: number): boolean {
         for (const [_, connection] of this.connections) {
-            let points = connection.getPoints();
-            let distance = this.distanceToLine(this.translateX(x), this.translateY(y), points.x1, points.y1, points.x2, points.y2);
+            let info = this.distanceToConnection(this.translateX(x), this.translateY(y), connection);
 
-            if (distance < Global.CONNECTION_SELECT_TOLERANCE) {
+            if (info.distance < Global.CONNECTION_SELECT_TOLERANCE) {
+                let info2 = this.distanceToConnectionNode(this.translateX(x), this.translateY(y), connection);
+                if (info2.distance < Global.CONNECTION_SELECT_TOLERANCE) {
+                    this.selectedNode = { connection, position: info2.position - 1 };
+                    console.log("this.selectedNode", this.selectedNode);
+                } else {
+                    this.selectedNode = null;
+                }
+
                 Connection.addActiveConnection(connection);
                 Grid.updateConnections();
                 return true;
@@ -70,6 +78,71 @@ export class ConnectionManager {
         return false;
     }
 
+    public addNodeOnClick(x: number, y: number) {
+        for (let index = 0; index < Connection.activeConnectionList.length; index++) {
+            const connection = Connection.activeConnectionList[index];
+            const info = this.distanceToConnection(this.translateX(x), this.translateY(y), connection);
+
+            if (info.distance < Global.CONNECTION_SELECT_TOLERANCE) {
+                console.log("ADD POINT");
+                let translatedX = (x - Grid.xOffset) / Grid.xZoom - window.innerWidth / 2;
+                let translatedY = (y - Grid.yOffset) / Grid.yZoom - window.innerHeight / 2;
+                // connection.nodes.push(translatedX, translatedY);
+                connection.addNode(translatedX, translatedY, info.position);
+            }
+        }
+    }
+
+    // Move the selected connection
+    moveConnections(x: number, y: number) {
+        console.log("this.selectedNode", this.selectedNode);
+        this.selectedNode?.connection.moveNode(-x, -y, this.selectedNode?.position);
+        Grid.updateConnections();
+    }
+
+    private distanceToConnectionNode(x: number, y: number, connection: Connection): { distance: number; position: number } {
+        let distance = Number.MAX_SAFE_INTEGER;
+        let position = 0;
+
+        const points = connection.getPoints();
+        for (let i = 1; i < points.length - 1; i++) {
+            const point = points[i];
+
+            const curDistance = this.getDistanceToPoint(point, new Vector2(x, y));
+            if (curDistance < distance) {
+                distance = curDistance;
+                position = i;
+            }
+        }
+        return { distance, position };
+    }
+
+    private getDistanceToPoint(v1: Vector2, v2: Vector2): number {
+        const dx = v2.x - v1.x;
+        const dy = v2.y - v1.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // Calculate the distance to a connection
+    private distanceToConnection(x: number, y: number, connection: Connection): { distance: number; position: number } {
+        let distance = Number.MAX_SAFE_INTEGER;
+        let position = 0;
+
+        const points = connection.getPoints();
+        for (let i = 0; i < points.length - 1; i++) {
+            const point1 = points[i];
+            const point2 = points[i + 1];
+
+            const curDistance = this.distanceToLine(this.translateX(x), this.translateY(y), point1.x, point1.y, point2.x, point2.y);
+            if (curDistance < distance) {
+                distance = curDistance;
+                position = i;
+            }
+        }
+        return { distance, position };
+    }
+
+    // Calculate the distance to a line
     private distanceToLine(x: number, y: number, x1: number, y1: number, x2: number, y2: number): number {
         const numerator = Math.abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1);
         const denominator = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));

@@ -12,11 +12,11 @@ export class Connection implements GridPart {
     public connectionId: string = "";
     public isActive: boolean = false;
 
+    private nodes: Vector2[] = [];
     private startComponent: Component;
     private endComponent: Component;
     private startOffset: Vector2;
     private endOffset: Vector2;
-    private points: Vector2[] = [];
     private type: ComponentType;
 
     static resetActiveConnections(changeMoveMode: boolean = true) {
@@ -85,16 +85,10 @@ export class Connection implements GridPart {
         return this.connectionId;
     }
 
-    public sendMoveMessage() {
+    public sendEditMessage() {
         WebSocketController.instance.sent({
-            type: MessageType.MOVE_CONNECTION,
-            data: {
-                id: this.connectionId,
-                startOffsetX: this.startOffset.x,
-                startOffsetY: this.startOffset.y,
-                endOffsetX: this.endOffset.x,
-                endOffsetY: this.endOffset.y,
-            },
+            type: MessageType.Edit_CONNECTION,
+            data: getState(),
         });
     }
 
@@ -109,6 +103,7 @@ export class Connection implements GridPart {
 
     public getState() {
         return {
+            type: this.type,
             id: this.connectionId,
             startComponent: this.startComponent.componentId,
             endComponent: this.endComponent.componentId,
@@ -116,8 +111,25 @@ export class Connection implements GridPart {
             startOffsetY: this.startOffset.y,
             endOffsetX: this.endOffset.x,
             endOffsetY: this.endOffset.y,
-            type: this.type,
+            nodes: this.nodes.map((node) => {
+                return { x: node.x, y: node.y };
+            }),
         };
+    }
+
+    public edit(message: any): void {
+        this.type = message.type;
+
+        this.startOffset.x = message.startOffsetX;
+        this.startOffset.y = message.startOffsetY;
+        this.endOffset.x = message.endOffsetX;
+        this.endOffset.y = message.endOffsetY;
+
+        this.nodes = [];
+        for (let index = 0; index < message.nodes.length; index++) {
+            const node = message.nodes[index];
+            this.nodes.push(new Vector2(node.x, node.y));
+        }
     }
 
     public updateOffset(): void {
@@ -131,17 +143,14 @@ export class Connection implements GridPart {
     public drawConnection() {
         Grid.ctx.strokeStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
         Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
-        console.log(" this.isActive", this.isActive);
 
         Grid.ctx.lineWidth = 2 * Grid.xZoom;
 
         let startX = this.startComponent.realXPos + this.startComponent.realWidth / 2 + this.startOffset.x * Grid.yZoom;
         let startY = this.startComponent.realYPos + this.startComponent.realHeight / 2 + this.startOffset.y * Grid.yZoom;
 
-        let endX = this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.yZoom;
+        let endX = this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.xZoom;
         let endY = this.endComponent.realYPos + this.endComponent.realHeight / 2 + this.endOffset.y * Grid.yZoom;
-
-        let angle = Connection.getAngle(startX, startY, endX, endY);
 
         switch (this.type) {
             case ComponentType.USAGE:
@@ -157,26 +166,57 @@ export class Connection implements GridPart {
 
         Grid.ctx.moveTo(startX, startY);
 
-        for (let index = 0; index < this.points.length; index++) {
-            const point = this.points[index];
-            Grid.ctx.lineTo(Connection.transformXPos(point.x), Connection.transformYPos(point.y));
+        for (let index = 0; index < this.nodes.length; index++) {
+            const point = Connection.translateVector(this.nodes[index]);
+            Grid.ctx.lineTo(point.x, point.y);
         }
 
         Grid.ctx.lineTo(endX, endY);
 
         Grid.ctx.stroke();
 
-        let intersection = this.getIntersectionPoint(new Vector2(startX, startY), new Vector2(endX, endY), this.endComponent.getCollider());
+        if (this.isActive) {
+            Grid.ctx.fillStyle = Grid.backgroundColor;
+            for (let index = 0; index < this.nodes.length; index++) {
+                const point = Connection.translateVector(this.nodes[index]);
+                Grid.ctx.beginPath();
+                Grid.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                Grid.ctx.stroke();
+                Grid.ctx.fill();
+            }
+        }
+
+        let startPoint = new Vector2(startX, startY);
+        if (this.nodes.length > 0) {
+            startPoint = Connection.translateVector(this.nodes[this.nodes.length - 1]);
+        }
+        const intersection = this.getIntersectionPoint(startPoint, new Vector2(endX, endY), this.endComponent.getCollider());
+        let angle = Connection.getAngle(startPoint.x, startPoint.y, endX, endY);
         if (intersection) drawHelper.drawConnectionHead(this.type, intersection.x, intersection.y, angle);
     }
 
     public getPoints() {
-        return {
-            x1: this.startComponent.realXPos + this.startComponent.realWidth / 2 + this.startOffset.x * Grid.yZoom,
-            y1: this.startComponent.realYPos + this.startComponent.realHeight / 2 + this.startOffset.y * Grid.yZoom,
-            x2: this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.yZoom,
-            y2: this.endComponent.realYPos + this.endComponent.realHeight / 2 + this.endOffset.y * Grid.yZoom,
-        };
+        const x1 = this.startComponent.realXPos + this.startComponent.realWidth / 2 + this.startOffset.x * Grid.yZoom;
+        const y1 = this.startComponent.realYPos + this.startComponent.realHeight / 2 + this.startOffset.y * Grid.yZoom;
+        const x2 = this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.yZoom;
+        const y2 = this.endComponent.realYPos + this.endComponent.realHeight / 2 + this.endOffset.y * Grid.yZoom;
+        return [
+            new Vector2(x1, y1),
+            ...this.nodes.map((node) => {
+                return Connection.translateVector(node);
+            }),
+            new Vector2(x2, y2),
+        ];
+    }
+
+    addNode(x: number, y: number, position: number) {
+        this.nodes.splice(position, 0, new Vector2(x, y));
+        Grid.updateConnections();
+    }
+
+    moveNode(x: number, y: number, position: number) {
+        this.nodes[position].x += x;
+        this.nodes[position].y += y;
     }
 
     public addSize(width: number, height: number, componentID: String) {
@@ -240,6 +280,20 @@ export class Connection implements GridPart {
         let ny = Grid.height / 2 + (y + Grid.yOffset) * Grid.yZoom;
         if (Grid.yRaster > 0) ny = Math.round(ny / Grid.xRaster) * Grid.xRaster;
         return ny;
+    }
+
+    public static translateVector(v: Vector2): Vector2 {
+        return new Vector2(this.translateX(v.x), this.translateY(v.y));
+    }
+
+    public static translateY(y: number): number {
+        let gridYPos = Grid.yRaster > 0 ? Math.round(y / Grid.yRaster) * Grid.yRaster : y;
+        return Grid.height / 2 + (gridYPos + Grid.yOffset) * Grid.yZoom;
+    }
+
+    public static translateX(x: number): number {
+        let gridXPos = Grid.xRaster > 0 ? Math.round(x / Grid.xRaster) * Grid.xRaster : x;
+        return Grid.width / 2 + (gridXPos + Grid.xOffset) * Grid.xZoom;
     }
 
     private createId(): string {
