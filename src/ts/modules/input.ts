@@ -105,7 +105,8 @@ export class Input {
                     }
                     break;
 
-                case MovementMode.CONNECTION:
+                case MovementMode.SELECTED_CONNECTION:
+                    ConnectionManager.instance.endMove();
                     break;
 
                 default:

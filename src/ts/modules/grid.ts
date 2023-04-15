@@ -63,8 +63,6 @@ export class Grid {
             this._ctx.canvas.width = this.width;
             this._ctx.canvas.height = this.height;
             window.addEventListener("resize", () => {
-                console.log("RESIZEEEEEEEEEEEE");
-
                 this.width = canvas.offsetWidth;
                 this.height = canvas.offsetHeight;
                 if (this._ctx) {

@@ -34,6 +34,7 @@ export class ConnectionManager {
         for (let index = 0; index < message.connections.length; index++) {
             const connection = message.connections[index];
             this.onCreateMessage(connection);
+            this.onEditMessage(connection);
         }
     }
 
@@ -83,7 +84,6 @@ export class ConnectionManager {
             const info = this.distanceToConnection(this.translateX(x), this.translateY(y), connection);
 
             if (info.distance < Global.CONNECTION_SELECT_TOLERANCE) {
-                console.log("ADD POINT");
                 let translatedX = (x - Grid.xOffset - Grid.width / 2) / Grid.xZoom;
                 let translatedY = (y - Grid.yOffset - Grid.height / 2) / Grid.yZoom;
                 connection.addNode(translatedX, translatedY, info.position);
@@ -92,9 +92,16 @@ export class ConnectionManager {
     }
 
     // Move the selected connection
-    moveConnections(x: number, y: number) {
+    public moveConnections(x: number, y: number) {
         this.selectedNode?.connection.moveNode(-x / Grid.xZoom, -y / Grid.yZoom, this.selectedNode?.position);
         Grid.updateConnections();
+    }
+
+    // Called on mouseup
+    public endMove() {
+        if (this.selectedNode !== null) {
+            this.selectedNode.connection.sendEditMessage();
+        }
     }
 
     private distanceToConnectionNode(x: number, y: number, connection: Connection): { distance: number; position: number } {
@@ -154,8 +161,6 @@ export class ConnectionManager {
     }
 
     public onCreateMessage(message: CreateConnectionMessage) {
-        console.log("onCreateMessage");
-
         if (this.connections.has(message.id)) return;
 
         let startComponent = ComponentManager.instance.getComponentFromId(message.startComponent);
@@ -163,8 +168,6 @@ export class ConnectionManager {
 
         let endComponent = ComponentManager.instance.getComponentFromId(message.endComponent);
         if (endComponent === undefined) return;
-
-        console.log("onCreateMessage IS OK");
 
         this.connections.set(
             message.id,
@@ -218,6 +221,13 @@ export class ConnectionManager {
         console.log("Add connection", connection.connectionId);
 
         this.connections.set(connection.connectionId, connection);
+    }
+
+    public onEditMessage(message: any) {
+        const connection = this.connections.get(message.id);
+        if (connection === undefined) return;
+
+        connection.edit(message);
     }
 
     public updateConnections() {

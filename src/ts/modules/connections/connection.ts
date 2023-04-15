@@ -130,6 +130,8 @@ export class Connection implements GridPart {
             const node = message.nodes[index];
             this.nodes.push(new Vector2(node.x, node.y));
         }
+
+        Grid.updateConnections();
     }
 
     public updateOffset(): void {
@@ -212,6 +214,7 @@ export class Connection implements GridPart {
     addNode(x: number, y: number, position: number) {
         this.nodes.splice(position, 0, new Vector2(x, y));
         Grid.updateConnections();
+        this.sendEditMessage();
     }
 
     moveNode(x: number, y: number, position: number) {

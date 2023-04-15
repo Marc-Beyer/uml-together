@@ -90,6 +90,10 @@ export class WebSocketController {
                 case MessageType.CREATE_CONNECTION:
                     ConnectionManager.instance.onCreateMessage(message.data);
                     break;
+
+                case MessageType.EDIT_CONNECTION:
+                    ConnectionManager.instance.onEditMessage(message.data);
+                    break;
                 default:
                     break;
             }
