@@ -65,7 +65,6 @@ export class ConnectionManager {
                 let info2 = this.distanceToConnectionNode(this.translateX(x), this.translateY(y), connection);
                 if (info2.distance < Global.CONNECTION_SELECT_TOLERANCE) {
                     this.selectedNode = { connection, position: info2.position - 1 };
-                    console.log("this.selectedNode", this.selectedNode);
                 } else {
                     this.selectedNode = null;
                 }
@@ -85,9 +84,8 @@ export class ConnectionManager {
 
             if (info.distance < Global.CONNECTION_SELECT_TOLERANCE) {
                 console.log("ADD POINT");
-                let translatedX = (x - Grid.xOffset) / Grid.xZoom - window.innerWidth / 2;
-                let translatedY = (y - Grid.yOffset) / Grid.yZoom - window.innerHeight / 2;
-                // connection.nodes.push(translatedX, translatedY);
+                let translatedX = (x - Grid.xOffset - Grid.width / 2) / Grid.xZoom;
+                let translatedY = (y - Grid.yOffset - Grid.height / 2) / Grid.yZoom;
                 connection.addNode(translatedX, translatedY, info.position);
             }
         }
@@ -95,8 +93,7 @@ export class ConnectionManager {
 
     // Move the selected connection
     moveConnections(x: number, y: number) {
-        console.log("this.selectedNode", this.selectedNode);
-        this.selectedNode?.connection.moveNode(-x, -y, this.selectedNode?.position);
+        this.selectedNode?.connection.moveNode(-x / Grid.xZoom, -y / Grid.yZoom, this.selectedNode?.position);
         Grid.updateConnections();
     }
 

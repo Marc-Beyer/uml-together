@@ -87,8 +87,8 @@ export class Connection implements GridPart {
 
     public sendEditMessage() {
         WebSocketController.instance.sent({
-            type: MessageType.Edit_CONNECTION,
-            data: getState(),
+            type: MessageType.EDIT_CONNECTION,
+            data: this.getState(),
         });
     }
 
@@ -181,8 +181,8 @@ export class Connection implements GridPart {
                 const point = Connection.translateVector(this.nodes[index]);
                 Grid.ctx.beginPath();
                 Grid.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-                Grid.ctx.stroke();
                 Grid.ctx.fill();
+                Grid.ctx.stroke();
             }
         }
 
