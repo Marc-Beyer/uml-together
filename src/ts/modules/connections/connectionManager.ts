@@ -97,8 +97,8 @@ export class ConnectionManager {
             const info = this.distanceToConnection(this.translateX(x), this.translateY(y), connection);
 
             if (info.distance < Global.CONNECTION_SELECT_TOLERANCE) {
-                let translatedX = (x - Grid.xOffset - Grid.width / 2) / Grid.xZoom;
-                let translatedY = (y - Grid.yOffset - Grid.height / 2) / Grid.yZoom;
+                let translatedX = (x - Grid.width / 2) / Grid.xZoom - Grid.xOffset;
+                let translatedY = (y - Grid.height / 2) / Grid.yZoom - Grid.yOffset;
                 connection.addNode(translatedX, translatedY, info.position);
             }
         }
@@ -121,7 +121,7 @@ export class ConnectionManager {
         let distance = Number.MAX_SAFE_INTEGER;
         let position = 0;
 
-        const points = connection.getPoints();
+        const points = connection.getNodes();
         for (let i = 1; i < points.length - 1; i++) {
             const point = points[i];
 
@@ -145,7 +145,7 @@ export class ConnectionManager {
         let distance = Number.MAX_SAFE_INTEGER;
         let position = 0;
 
-        const points = connection.getPoints();
+        const points = connection.getNodes();
         for (let i = 0; i < points.length - 1; i++) {
             const point1 = points[i];
             const point2 = points[i + 1];

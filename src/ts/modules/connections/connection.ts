@@ -197,7 +197,7 @@ export class Connection implements GridPart {
         if (intersection) drawHelper.drawConnectionHead(this.type, intersection.x, intersection.y, angle);
     }
 
-    public getPoints() {
+    public getNodes() {
         const x1 = this.startComponent.realXPos + this.startComponent.realWidth / 2 + this.startOffset.x * Grid.yZoom;
         const y1 = this.startComponent.realYPos + this.startComponent.realHeight / 2 + this.startOffset.y * Grid.yZoom;
         const x2 = this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.yZoom;
