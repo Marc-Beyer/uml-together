@@ -1,6 +1,5 @@
 import { ChatController } from "./modules/chat/chatController";
 import { ComponentManager } from "./modules/components/componentManager";
-import { TextComponent } from "./modules/components/textComponent";
 import { ConnectionManager } from "./modules/connections/connectionManager";
 import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
@@ -40,11 +39,6 @@ function init() {
     navigation.initialize();
     settings.initSettings();
     initGlobalValues();
-
-    //const basicComponent = new Component(120, 120, 100, 100);
-    //const classComponent = new ClassComponent(-120, -120);
-
-    //new Connection(classComponent, basicComponent, new Vector2(0, 0), new Vector2(10, 100));
 
     initInput();
 }
