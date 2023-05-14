@@ -14,6 +14,7 @@ import generalizationIcon from "/img/generalization-icon.svg";
 import composition from "/img/composition-icon.svg";
 import aggregationIcon from "/img/aggregation.icon.svg";
 import usageIcon from "/img/usage-icon.svg";
+import { ConnectionManager } from "../connections/connectionManager";
 
 export interface Diagram {
     id: number;
@@ -61,7 +62,28 @@ export function initialize() {
 
     document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {});
     document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {});
-    document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {
+        const components = ComponentManager.instance.getState();
+        const connections = ConnectionManager.instance.getState();
+
+        const data = {
+            components,
+            connections,
+        };
+
+        const fileData = JSON.stringify(data);
+        const fileName = "data.json";
+        const fileType = "application/json";
+
+        const blob = new Blob([fileData], { type: fileType });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+    });
     document.getElementById("nav-btn-import-json")?.addEventListener("click", () => {});
     document.getElementById("nav-btn-settings")?.addEventListener("click", () => {
         if (settingsModal) settingsModal.style.display = "block";
