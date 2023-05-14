@@ -287,6 +287,7 @@ export class Component extends HTMLElement implements GridPart {
         for (const key in message) {
             if (Object.prototype.hasOwnProperty.call(message, key)) {
                 (this as any)[key] = message[key];
+                console.log(key, message[key]);
             }
         }
     }

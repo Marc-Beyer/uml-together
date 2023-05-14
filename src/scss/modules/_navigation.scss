@@ -35,6 +35,10 @@ nav {
     background-color: var(--primary-color-darken);
     display: flex;
 
+    .hidden {
+        display: none;
+    }
+
     .nav-item {
         display: flex;
         flex-direction: column;

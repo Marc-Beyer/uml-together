@@ -15,6 +15,9 @@ import composition from "/img/composition-icon.svg";
 import aggregationIcon from "/img/aggregation.icon.svg";
 import usageIcon from "/img/usage-icon.svg";
 import { ConnectionManager } from "../connections/connectionManager";
+import { Global } from "../settings/global";
+import { WebSocketController } from "../webSocket/webSocketController";
+import { MessageType } from "../webSocket/Message";
 
 export interface Diagram {
     id: number;
@@ -60,8 +63,15 @@ export function initialize() {
 
     let settingsModal = document.getElementById("settings-modal");
 
-    document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {});
-    document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {
+        window.location.href = `/`;
+    });
+    document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {
+        WebSocketController.instance.sent({
+            type: MessageType.REQUEST_STATE,
+            data: {},
+        });
+    });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {
         const components = ComponentManager.instance.getState();
         const connections = ConnectionManager.instance.getState();
@@ -72,7 +82,7 @@ export function initialize() {
         };
 
         const fileData = JSON.stringify(data);
-        const fileName = "data.json";
+        const fileName = `${Global.FILE_NAME === "" ? "uml-together" : Global.FILE_NAME}.json`;
         const fileType = "application/json";
 
         const blob = new Blob([fileData], { type: fileType });
@@ -84,7 +94,33 @@ export function initialize() {
         document.body.appendChild(link);
         link.click();
     });
-    document.getElementById("nav-btn-import-json")?.addEventListener("click", () => {});
+    document.getElementById("nav-btn-import-json")?.addEventListener("click", () => {
+        document.getElementById("upload-input")?.click();
+    });
+    document.getElementById("upload-input")?.addEventListener("change", (event: Event) => {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
+
+        if (file) {
+            console.log("Selected file:", file);
+            const reader = new FileReader();
+            reader.readAsText(file);
+
+            reader.onload = (event: ProgressEvent<FileReader>) => {
+                let result = event.target?.result;
+                if (result === null || result === undefined) return;
+                if (result instanceof ArrayBuffer) {
+                    result = new TextDecoder().decode(result);
+                }
+                const jsonResult = JSON.parse(result);
+                console.log("File content:", result);
+
+                ComponentManager.instance.onStateMessage(jsonResult);
+                ConnectionManager.instance.onStateMessage(jsonResult);
+            };
+        }
+    });
+
     document.getElementById("nav-btn-settings")?.addEventListener("click", () => {
         if (settingsModal) settingsModal.style.display = "block";
     });
