@@ -1,5 +1,6 @@
 import { ChatController } from "./modules/chat/chatController";
 import { ComponentManager } from "./modules/components/componentManager";
+import { TextComponent } from "./modules/components/textComponent";
 import { ConnectionManager } from "./modules/connections/connectionManager";
 import { initInput } from "./modules/input";
 import * as navigation from "./modules/navigation/main";
