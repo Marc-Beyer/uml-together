@@ -304,15 +304,19 @@ export class Connection implements GridPart {
             drawHelper.drawConnectionHead(this.type, endIntersection.x, endIntersection.y, angle);
 
             Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+            Grid.ctx.strokeStyle = Grid.backgroundColor;
 
             const textOffset = this.getTextOffset(endIntersection, this.endComponent);
+            Grid.ctx.strokeText(this.endText, endIntersection.x + textOffset.x, endIntersection.y + textOffset.y);
             Grid.ctx.fillText(this.endText, endIntersection.x + textOffset.x, endIntersection.y + textOffset.y);
         }
 
         if (startIntersection) {
             Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+            Grid.ctx.strokeStyle = Grid.backgroundColor;
 
             const textOffset = this.getTextOffset(startIntersection, this.startComponent);
+            Grid.ctx.strokeText(this.startText, startIntersection.x + textOffset.x, startIntersection.y + textOffset.y);
             Grid.ctx.fillText(this.startText, startIntersection.x + textOffset.x, startIntersection.y + textOffset.y);
         }
 
@@ -320,8 +324,11 @@ export class Connection implements GridPart {
         if (this.nodes.length > 0) {
             middlePos = endPoint;
         }
+        Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+        Grid.ctx.strokeStyle = Grid.backgroundColor;
         Grid.ctx.textAlign = "center";
         Grid.ctx.textBaseline = "alphabetic";
+        Grid.ctx.strokeText(this.middleText, middlePos.x, middlePos.y - this.secondaryPadding * Grid.xZoom);
         Grid.ctx.fillText(this.middleText, middlePos.x, middlePos.y - this.secondaryPadding * Grid.xZoom);
     }
 
