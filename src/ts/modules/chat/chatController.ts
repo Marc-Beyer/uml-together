@@ -1,6 +1,12 @@
 import { Message, MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 
+export enum DebugMessageType {
+    INFO,
+    WARNING,
+    Error,
+}
+
 export class ChatController {
     public static instance: ChatController;
 
@@ -14,8 +20,7 @@ export class ChatController {
     constructor(webSocketController: WebSocketController) {
         ChatController.instance = this;
 
-        if (!this.chatForm || !this.chatInput || !this.chatToggle || !this.chat || !this.messages || !this.indicator)
-            return;
+        if (!this.chatForm || !this.chatInput || !this.chatToggle || !this.chat || !this.messages || !this.indicator) return;
 
         this.chatToggle.addEventListener("click", () => {
             this.chat.classList.toggle("chat-hidden");
@@ -37,13 +42,24 @@ export class ChatController {
     }
 
     public newMessage(message: Message) {
+        this.addMessageToHtml(message.data);
+    }
+
+    public newDebugMessage(text: string, messageType: DebugMessageType = DebugMessageType.INFO) {
+        console.log(`${DebugMessageType[messageType]}: ${text}`);
+        this.addMessageToHtml(`${DebugMessageType[messageType]}: ${text}`);
+
+        this.chat.classList.remove("chat-hidden");
+    }
+
+    private addMessageToHtml(text: string) {
         const messageContainer = document.createElement("div");
         messageContainer.classList.add("message-container");
 
         const messageText = document.createElement("p");
         messageText.classList.add("message-text");
 
-        messageText.textContent = message.data;
+        messageText.textContent = text;
 
         messageContainer.append(messageText);
         this.messages.append(messageContainer);

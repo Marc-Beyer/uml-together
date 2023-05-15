@@ -81,18 +81,7 @@ export function initialize() {
             connections,
         };
 
-        const fileData = JSON.stringify(data);
-        const fileName = `${Global.FILE_NAME === "" ? "uml-together" : Global.FILE_NAME}.json`;
-        const fileType = "application/json";
-
-        const blob = new Blob([fileData], { type: fileType });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
+        downloadFile(data, `${Global.FILE_NAME === "" ? "uml-together" : Global.FILE_NAME}.json`);
     });
     document.getElementById("nav-btn-import-json")?.addEventListener("click", () => {
         document.getElementById("upload-input")?.click();
@@ -120,6 +109,17 @@ export function initialize() {
             };
         }
     });
+    document.getElementById("nav-btn-generate-code")?.addEventListener("click", () => {
+        const codes = ComponentManager.instance.getCode();
+
+        console.log(`Generated code of ${codes.length}. classes`);
+
+        for (let index = 0; index < codes.length; index++) {
+            const element = codes[index];
+            console.log(element.name, element.code);
+        }
+        //downloadFile()
+    });
 
     document.getElementById("nav-btn-settings")?.addEventListener("click", () => {
         if (settingsModal) settingsModal.style.display = "block";
@@ -146,4 +146,17 @@ export function initialize() {
                 console.error("Failed to copy text: ", error);
             });
     });
+}
+
+export function downloadFile(data: any, fileName: string = "uml-together", fileType = "application/json") {
+    const fileData = JSON.stringify(data);
+
+    const blob = new Blob([fileData], { type: fileType });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
 }

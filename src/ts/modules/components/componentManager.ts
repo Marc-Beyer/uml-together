@@ -1,3 +1,4 @@
+import { getCodeFromClassComponent } from "../codegeneration/main";
 import { CreateMessage, DeleteMessage, EditMessage, MoveMessage, StateMessage } from "../webSocket/Message";
 import { ClassComponent } from "./classComponent";
 import { Component } from "./component";
@@ -99,5 +100,16 @@ export class ComponentManager {
         for (const [_, component] of this.components) {
             component.autoResize();
         }
+    }
+
+    public getCode() {
+        let codes: { code: string; name: string }[] = [];
+        for (const [_, component] of this.components) {
+            if (component instanceof ClassComponent) {
+                const code = getCodeFromClassComponent(component);
+                if (code !== null) codes.push(code);
+            }
+        }
+        return codes;
     }
 }
