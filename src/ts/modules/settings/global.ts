@@ -1,5 +1,10 @@
 import { Grid } from "../grid";
 
+export interface ProgrammingLanguageOptions {
+    defaultVisibility: "";
+    operationBody: "";
+}
+
 export enum ProgrammingLanguage {
     "CSharp",
     "Java",
@@ -35,6 +40,8 @@ export class Global {
         (document.getElementById("settings-dark-mode") as HTMLInputElement).checked = Global.DARK_MODE;
         Grid.updateConnections();
     }
+
+    pub
 
     constructor() {}
 }

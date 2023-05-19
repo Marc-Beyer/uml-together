@@ -18,6 +18,7 @@ import { ConnectionManager } from "../connections/connectionManager";
 import { Global } from "../settings/global";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { MessageType } from "../webSocket/Message";
+import JSZip from "jszip";
 
 export interface Diagram {
     id: number;
@@ -111,14 +112,29 @@ export function initialize() {
     });
     document.getElementById("nav-btn-generate-code")?.addEventListener("click", () => {
         const codes = ComponentManager.instance.getCode();
+        const zip = new JSZip();
 
         console.log(`Generated code of ${codes.length}. classes`);
 
         for (let index = 0; index < codes.length; index++) {
             const element = codes[index];
             console.log(element.name, element.code);
+
+            const blob = new Blob([element.code], { type: "text/plain" });
+            zip.file(element.name, blob);
         }
-        //downloadFile()
+        return;
+
+        zip.generateAsync({ type: "blob" }).then((content) => {
+            const url = URL.createObjectURL(content);
+            const link = document.createElement("a");
+            link.href = url;
+
+            link.download = `${Global.FILE_NAME === "" ? "uml-together" : Global.FILE_NAME}.zip`;
+            document.body.appendChild(link);
+            link.click();
+            URL.revokeObjectURL(url);
+        });
     });
 
     document.getElementById("nav-btn-settings")?.addEventListener("click", () => {

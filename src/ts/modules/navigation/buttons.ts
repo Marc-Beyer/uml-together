@@ -100,8 +100,8 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.cType.text = "<<enumeration>>";
                 component.cName.text = "Enum";
 
-                component.addAttribute("literal1");
-                component.addAttribute("literal2");
+                component.addAttribute("LITERAL_1");
+                component.addAttribute("LITERAL_2");
 
                 component.width = 200;
                 component.height = 125;

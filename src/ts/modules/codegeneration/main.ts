@@ -1,138 +1,173 @@
 import { ChatController, DebugMessageType } from "../chat/chatController";
 import { ClassComponent } from "../components/classComponent";
-import { Connection } from "../connections/connection";
+import { EditText } from "../elements/editText";
+import { Global, ProgrammingLanguage } from "../settings/global";
+import { ClassAttribute, ClassOperation, ClassOperationParameter, ClassStructure, Enumeration, Modifier, Visibility } from "./interfaces";
+import { getJavaClass, getJavaEnum } from "./java";
 
 export function getCodeFromClassComponent(classComponent: ClassComponent): { name: string; code: string } | null {
-    const isStatic = classComponent.cName.isUnderlined;
-    const className = classComponent.cName.text;
-    const attributes = classComponent.attributeList.map((attribute) => attribute.text);
-    const operations = classComponent.operationsList.map((operation) => operation.text);
-    const stereotype = classComponent.cType.text;
-    switch (stereotype.toLowerCase()) {
-        case "<<interface>>":
-            return getClassCode(className, attributes, operations, classComponent.connections, "interface");
-            break;
-        case "<<enum>>":
-        case "<<enumeration>>":
-            return getEnumCode(className, attributes);
-            break;
-        case "<<abstract>>":
-            return getClassCode(className, attributes, operations, classComponent.connections, "abstract class");
-            break;
-        case "":
-            return getClassCode(className, attributes, operations, classComponent.connections, `${isStatic ? "static " : ""}class`);
-            break;
-        case "<<utility>>":
-        case "<<static>>":
-            return getClassCode(className, attributes, operations, classComponent.connections, "static class");
-            break;
+    const { element, isClass } = getClassStructureOrEnum(classComponent);
 
-        default:
-            ChatController.instance.newDebugMessage(`Unknown stereotype '${stereotype}'! It will be ignored!`, DebugMessageType.WARNING);
-            return getClassCode(className, attributes, operations, classComponent.connections, `${isStatic ? "static " : ""}class`);
+    switch (Global.PROGRAMMING_LANG) {
+        case ProgrammingLanguage.Java:
+            if (isClass) {
+                return { name: `${element.name}.java`, code: getJavaClass(element as ClassStructure) };
+            } else {
+                return { name: `${element.name}.java`, code: getJavaEnum(element as Enumeration) };
+            }
             break;
     }
+
+    ChatController.instance.newDebugMessage(`${ProgrammingLanguage[Global.PROGRAMMING_LANG]} is not supported yet!`);
     return null;
 }
 
-function getClassCode(
-    className: string,
-    attributes: string[],
-    operations: string[],
-    connections: Connection[],
-    classType = "class"
-): { name: string; code: string } {
-    let { visibility, clearedName } = getVisibility(className);
-    className = clearedName;
+function getClassStructureOrEnum(classComponent: ClassComponent): { element: ClassStructure | Enumeration; isClass: boolean } {
+    let modifier: Modifier = Modifier.NONE;
 
-    let code = `${visibility}${classType} ${className} {`;
-
-    for (let index = 0; index < attributes.length; index++) {
-        let { visibility, clearedName } = getVisibility(attributes[index]);
-        let attrSplit = clearedName.split(":");
-        let attrName = attrSplit[0];
-        let attrType = attrSplit[1];
-        code += `\n\t${visibility}${attrType.replace(/^\s*/g, "")} ${attrName};`;
+    if (classComponent.cName.isUnderlined) {
+        modifier = Modifier.STATIC;
+    } else if (classComponent.cName.isItalic) {
+        modifier = Modifier.ABSTRACT;
     }
-    if (attributes.length > 0) code += "\n";
 
-    for (let index = 0; index < operations.length; index++) {
-        let { visibility, clearedName } = getVisibility(operations[index]);
-        let operationSplit = clearedName.split("(");
-        let operationName = operationSplit[0];
-        let operationRest = operationSplit[1];
-        if (operationRest == undefined) {
-            ChatController.instance.newDebugMessage(
-                `The operations ${operations[index]} of '${className}' will be skipped!`,
-                DebugMessageType.WARNING
-            );
-            continue;
-        }
-        let operationParameter = operationRest.split(")")[0];
-        operationParameter = getParameter(operationParameter);
+    const stereotype = classComponent.cType.text;
 
-        let operationType = operationRest.split(")")[1] ?? "void";
-        operationType = operationType.replace(/^[:\s]*/g, "");
-        if (operationType.trim() === "") operationType = "void";
-
-        code += `\n\t${visibility}${operationType} ${operationName}(${operationParameter}){}`;
+    switch (stereotype.toLowerCase()) {
+        case "<<interface>>":
+            modifier = Modifier.INTERFACE;
+            break;
+        case "<<abstract>>":
+            modifier = Modifier.ABSTRACT;
+            break;
+        case "<<utility>>":
+        case "<<static>>":
+            modifier = Modifier.STATIC;
+            break;
+        case "<<enum>>":
+        case "<<enumeration>>":
+            return { element: getEnumFromClass(classComponent), isClass: false };
+            break;
     }
-    if (attributes.length > 0) code += "\n";
 
-    code += `}`;
-    return { code, name: className };
+    return { element: getClassStructure(classComponent, modifier), isClass: true };
 }
 
-function getEnumCode(enumName: string, enumValues: string[]): { code: string; name: string } {
-    const { visibility, clearedName } = getVisibility(enumName);
+function getClassStructure(classComponent: ClassComponent, modifier: Modifier): ClassStructure {
+    let { visibility, clearedName } = getVisibility(classComponent.cName.text);
+    return {
+        name: clearedName,
+        modifier,
+        visibility,
+        attributes: getClassAttributes(classComponent.attributeList),
+        operations: getClassOperations(classComponent.operationsList),
+    };
+}
 
-    let code = `${visibility}enum ${clearedName} {`;
-    for (let index = 0; index < enumValues.length; index++) {
-        let enumValue = enumValues[index];
-        if (!/^[a-zA-Z]+[a-zA-Z0-9_]*$/.test(enumValue)) {
-            ChatController.instance.newDebugMessage(
-                `The enum value '${enumName}.${enumValue}' is not valid!
-            An enum value can contain any combination of letters, digits, and underscores (_), and must begin with a letter.
-            It will be filtered!`,
-                DebugMessageType.WARNING
-            );
-            enumValue = enumValue.replaceAll(/[^a-zA-Z0-9]/g, "");
-            enumValue = enumValue.replace(/^[0-9]+/g, "");
+function getClassAttributes(attributeList: EditText[]) {
+    const attributes: ClassAttribute[] = [];
+    for (let index = 0; index < attributeList.length; index++) {
+        const { visibility, clearedName } = getVisibility(attributeList[index].text);
+        const attrSplit = clearedName.split(":");
+        const attrName = attrSplit[0];
+        let attrType = attrSplit[1];
+        let attrDefaultValue = null;
+        const attrTypeSplit = attrType.split("=");
+        if (attrTypeSplit.length > 1) {
+            attrType = attrTypeSplit[0];
+            attrDefaultValue = attrTypeSplit[1].replace(/^\s*/g, "");
         }
-        if (enumValue.length === 0) {
-            ChatController.instance.newDebugMessage(`The ${index}. enum value of '${enumName}' will be skipped!`, DebugMessageType.WARNING);
-        }
-        code += `\n\t${enumValue.toUpperCase()}${index !== enumValues.length - 1 ? "," : ""}`;
+        attributes.push({
+            visibility,
+            name: attrName,
+            type: attrType.replaceAll(/\s*/g, ""),
+            isStatic: attributeList[index].isUnderlined,
+            defaultValue: attrDefaultValue,
+        });
     }
-    code += `${enumValues.length > 0 ? "\n" : ""}}`;
-    return { code, name: clearedName };
+    return attributes;
+}
+
+function getParameter(operationParameter: string): ClassOperationParameter[] {
+    if (operationParameter.trim() === "") return [];
+
+    let parameter: ClassOperationParameter[] = [];
+
+    for (const para of operationParameter.split(",")) {
+        const paraSplit = para.split(":");
+
+        let operationType = paraSplit[1];
+        let operationDefaultValue = null;
+        const operationTypeSplit = operationType.split("=");
+        if (operationTypeSplit.length > 1) {
+            operationType = operationTypeSplit[0];
+            operationDefaultValue = operationTypeSplit[1].replace(/^\s*/g, "");
+        }
+
+        parameter.push({
+            type: operationType.replaceAll(/\s*/g, ""),
+            name: paraSplit[0].replaceAll(/\s*/g, ""),
+            defaultValue: operationDefaultValue,
+        });
+    }
+
+    return parameter;
+}
+
+function getClassOperations(operationsList: EditText[]) {
+    const operations: ClassOperation[] = [];
+    for (let index = 0; index < operationsList.length; index++) {
+        const { visibility, clearedName } = getVisibility(operationsList[index].text);
+        const operationSplit = clearedName.split("(");
+        const operationName = operationSplit[0];
+        const operationRest = operationSplit[1];
+
+        if (operationRest == undefined) {
+            ChatController.instance.newDebugMessage(`The operations ${clearedName} will be skipped!`, DebugMessageType.WARNING);
+            continue;
+        }
+
+        const operationParameter = operationRest.split(")")[0];
+        let operationType = operationRest.split(")")[1] ?? "void";
+        if (operationType.trim() === "") {
+            operationType = "void";
+        } else {
+            operationType = operationType.replace(/^[:\s]*/g, "");
+        }
+
+        operations.push({
+            visibility,
+            type: operationType,
+            name: operationName,
+            isAbstract: operationsList[index].isItalic,
+            isStatic: operationsList[index].isUnderlined,
+            parameter: getParameter(operationParameter),
+        });
+    }
+    return operations;
+}
+
+function getEnumFromClass(enumeration: ClassComponent): Enumeration {
+    const { visibility, clearedName } = getVisibility(enumeration.cName.text);
+    return {
+        name: clearedName,
+        visibility,
+        values: enumeration.attributeList.map((attribute) => attribute.text),
+    };
 }
 
 function getVisibility(name: string) {
-    let visibility = "";
+    let visibility = Visibility.DEFAULT;
     if (name.startsWith("-")) {
-        visibility = "private ";
+        visibility = Visibility.PRIVATE;
     } else if (name.startsWith("+")) {
-        visibility = "public ";
+        visibility = Visibility.PUBLIC;
     } else if (name.startsWith("#")) {
-        visibility = "protected ";
+        visibility = Visibility.PROTECTED;
     }
 
     return {
         visibility,
         clearedName: name.replace(/^[+\-#]+\s*/g, ""),
     };
-}
-
-function getParameter(operationParameter: string): string {
-    if (operationParameter.trim() === "") return "";
-
-    let parameter = "";
-
-    for (const para of operationParameter.split(",")) {
-        const paraSplit = para.split(":");
-        parameter += `${paraSplit[1].replace(/^\s*/g, "")} ${paraSplit[0]},`;
-    }
-
-    return parameter.slice(0, -1);
 }
