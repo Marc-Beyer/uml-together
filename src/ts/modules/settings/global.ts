@@ -41,8 +41,6 @@ export class Global {
         Grid.updateConnections();
     }
 
-    pub
-
     constructor() {}
 }
 
