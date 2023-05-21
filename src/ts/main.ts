@@ -42,7 +42,7 @@ function init() {
 
     initInput();
 
-    window.addEventListener("beforeunload", function (e) {
+    window.addEventListener("beforeunload", function () {
         WebSocketController.instance.sentSaveMessage();
     });
 }
