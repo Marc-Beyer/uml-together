@@ -1,19 +1,19 @@
-import { ComponentType } from "../components/componentType";
 import { Grid } from "../grid";
+import { ConnectionHead } from "./connectionHead";
 
-export function drawConnectionHead(type: ComponentType, x: number, y: number, angle: number) {
+export function drawConnectionHead(type: ConnectionHead, x: number, y: number, angle: number, isActive = false) {
     switch (type) {
-        case ComponentType.GENERALIZATION:
-            drawRotatedTriangle(x, y, angle);
+        case ConnectionHead.ARROW_STROKE:
+            drawRotatedTriangle(x, y, angle, false, isActive);
             break;
-        case ComponentType.ASSOCIATION:
-            drawRotatedTriangle(x, y, angle, true);
+        case ConnectionHead.ARROW_FILLED:
+            drawRotatedTriangle(x, y, angle, true, isActive);
             break;
-        case ComponentType.AGGREGATION:
-            drawRotatedRectangle(x, y, angle);
+        case ConnectionHead.ROTATED_SQUARE_STROKE:
+            drawRotatedRectangle(x, y, angle, false, isActive);
             break;
-        case ComponentType.COMPOSITION:
-            drawRotatedRectangle(x, y, angle, true);
+        case ConnectionHead.ROTATED_SQUARE_FILLED:
+            drawRotatedRectangle(x, y, angle, true, isActive);
             break;
 
         default:
@@ -21,7 +21,7 @@ export function drawConnectionHead(type: ComponentType, x: number, y: number, an
     }
 }
 
-export function drawRotatedTriangle(x: number, y: number, angle: number, filled: boolean = false) {
+export function drawRotatedTriangle(x: number, y: number, angle: number, filled: boolean = false, isActive = false) {
     angle += (Math.PI / 4) * 3;
     const x1 = x;
     const y1 = y;
@@ -56,12 +56,12 @@ export function drawRotatedTriangle(x: number, y: number, angle: number, filled:
     Grid.ctx.closePath();
 
     // Fill the triangle
-    Grid.ctx.fillStyle = filled ? Grid.lineColor : Grid.backgroundColor;
+    Grid.ctx.fillStyle = filled ? (isActive ? Grid.lineColorSelected : Grid.lineColor) : Grid.backgroundColor;
     Grid.ctx.fill();
     Grid.ctx.stroke();
 }
 
-export function drawRotatedRectangle(x: number, y: number, angle: number, filled: boolean = false) {
+export function drawRotatedRectangle(x: number, y: number, angle: number, filled: boolean = false, isActive = false) {
     angle += (Math.PI / 4) * 3;
     const x1 = x;
     const y1 = y;
@@ -101,7 +101,7 @@ export function drawRotatedRectangle(x: number, y: number, angle: number, filled
     Grid.ctx.closePath();
 
     // Fill the triangle
-    Grid.ctx.fillStyle = filled ? Grid.lineColor : Grid.backgroundColor;
+    Grid.ctx.fillStyle = filled ? (isActive ? Grid.lineColorSelected : Grid.lineColor) : Grid.backgroundColor;
     Grid.ctx.fill();
     Grid.ctx.stroke();
 }

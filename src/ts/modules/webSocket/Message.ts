@@ -1,4 +1,6 @@
 import { ComponentType } from "../components/componentType";
+import { ConnectionHead } from "../connections/connectionHead";
+import { ConnectionLine } from "../connections/connectionLine";
 
 export enum MessageType {
     JOIN,
@@ -61,7 +63,6 @@ export type CreateMessage = {
 };
 
 export type CreateConnectionMessage = {
-    type: ComponentType;
     id: string;
     startComponent: string;
     endComponent: string;
@@ -69,6 +70,9 @@ export type CreateConnectionMessage = {
     startOffsetY: number;
     endOffsetX: number;
     endOffsetY: number;
+    startHead: ConnectionHead;
+    endHead: ConnectionHead;
+    line: ConnectionLine;
 };
 
 export type MoveMessage = {

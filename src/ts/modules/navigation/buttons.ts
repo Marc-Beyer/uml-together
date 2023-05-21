@@ -6,6 +6,8 @@ import { NoteComponent } from "../components/noteComponent";
 import { Input, MovementMode } from "../input";
 import { Component } from "../components/component";
 import { ConnectionManager } from "../connections/connectionManager";
+import { ConnectionHead } from "../connections/connectionHead";
+import { ConnectionLine } from "../connections/connectionLine";
 
 const navList = document.getElementById("nav-btn-list");
 
@@ -166,107 +168,53 @@ function createButton(diagramButton: DiagramButton): HTMLButtonElement {
                 component.sendMoveMessage();
             });
             break;
-        case ComponentType.GENERALIZATION:
-        case ComponentType.USAGE:
         case ComponentType.ASSOCIATION:
+        case ComponentType.DIRECTED_ASSOCIATION:
+        case ComponentType.GENERALIZATION:
         case ComponentType.AGGREGATION:
         case ComponentType.COMPOSITION:
+        case ComponentType.REALIZATION:
+        case ComponentType.USAGE:
             button.addEventListener("click", () => {
-                ConnectionManager.instance.connectionType = diagramButton.type;
+                let startHead: ConnectionHead = ConnectionHead.NONE;
+                let endHead: ConnectionHead = ConnectionHead.NONE;
+                let line: ConnectionLine = ConnectionLine.SOLID;
+
+                switch (diagramButton.type) {
+                    case ComponentType.ASSOCIATION:
+                        break;
+                    case ComponentType.DIRECTED_ASSOCIATION:
+                        endHead = ConnectionHead.ARROW_FILLED;
+                        break;
+                    case ComponentType.GENERALIZATION:
+                        endHead = ConnectionHead.ARROW_STROKE;
+                        break;
+                    case ComponentType.COMPOSITION:
+                        startHead = ConnectionHead.ROTATED_SQUARE_FILLED;
+                        break;
+                    case ComponentType.AGGREGATION:
+                        startHead = ConnectionHead.ROTATED_SQUARE_STROKE;
+                        break;
+                    case ComponentType.REALIZATION:
+                        line = ConnectionLine.DASHED;
+                        endHead = ConnectionHead.ARROW_STROKE;
+                        break;
+                    case ComponentType.USAGE:
+                        line = ConnectionLine.DASHED;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                ConnectionManager.instance.startHead = startHead;
+                ConnectionManager.instance.endHead = endHead;
+                ConnectionManager.instance.line = line;
                 Input.movementMode = MovementMode.CONNECTION;
                 Component.resetActiveComponents();
             });
             break;
     }
 
-    /*
-    switch (diagramButton.id) {
-        //========================
-        // Class diagram Buttons
-        //========================
-        case "class":
-            button.addEventListener("click", () => {
-                new ClassComponent();
-            });
-            break;
-        case "interface":
-            button.addEventListener("click", () => {
-                new InterfaceComponent();
-            });
-            break;
-        case "enumeration":
-            button.addEventListener("click", () => {
-                new EnumerationComponent();
-            });
-            break;
-        case "primitive":
-            button.addEventListener("click", () => {
-                new PrimitiveComponent();
-            });
-            break;
-        case "generalizationClass":
-            break;
-        case "usage":
-            break;
-        case "associationClass":
-            break;
-        case "aggregation":
-            break;
-        case "composition":
-            break;
-        //========================
-        //Use case diagram Buttons
-        //========================
-        case "useCase":
-            break;
-        case "associationUseCase":
-            break;
-        case "actor":
-            break;
-        case "system":
-            break;
-        case "include":
-            break;
-        case "exclude":
-            break;
-        case "dependency":
-            break;
-        case "generalizationUseCase":
-            break;
-        //========================
-        //    Activity Buttons
-        //========================
-        case "activity":
-            break;
-        case "action":
-            break;
-        case "acceptEventAction":
-            break;
-        case "acceptTimeEventAction":
-            break;
-        case "sendSignalAction":
-            break;
-        case "decisionNode":
-            break;
-        case "forkNode":
-            break;
-        case "initialNode":
-            break;
-        case "activityFinalNode":
-            break;
-        case "controlFlow":
-            break;
-        case "exceptionHandler":
-            break;
-        //========================
-        //    General Buttons
-        //========================
-        case "note":
-            break;
-        default:
-            button.textContent = "NON FUNCTIONAL BUTTON";
-            break;
-    }
-    */
     return button;
 }

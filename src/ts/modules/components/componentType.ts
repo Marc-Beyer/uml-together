@@ -9,6 +9,8 @@ export enum ComponentType {
     GENERALIZATION,
     USAGE,
     ASSOCIATION,
+    DIRECTED_ASSOCIATION,
     AGGREGATION,
     COMPOSITION,
+    REALIZATION,
 }

@@ -10,10 +10,12 @@ import primitiveIcon from "/img/primitive-icon.svg";
 import dataTypeIcon from "/img/dataType-icon.svg";
 import noteIcon from "/img/note-icon.svg";
 import associationIcon from "/img/association-icon.svg";
+import directedAssociationIcon from "/img/directed-association-icon.svg";
 import generalizationIcon from "/img/generalization-icon.svg";
 import composition from "/img/composition-icon.svg";
 import aggregationIcon from "/img/aggregation.icon.svg";
 import usageIcon from "/img/usage-icon.svg";
+import realizationIcon from "/img/realization-icon.svg";
 import { ConnectionManager } from "../connections/connectionManager";
 import { Global } from "../settings/global";
 import { WebSocketController } from "../webSocket/webSocketController";
@@ -46,9 +48,16 @@ let mockupDiagram: Diagram = {
         { text: "DataType", id: "dataType", type: ComponentType.DATA_TYPE, icon: dataTypeIcon },
         { text: "Note", id: "note", type: ComponentType.NOTE, icon: noteIcon },
         { text: "Association", id: "associationClass", type: ComponentType.ASSOCIATION, icon: associationIcon },
+        {
+            text: "Directed Association",
+            id: "directed-associationClass",
+            type: ComponentType.DIRECTED_ASSOCIATION,
+            icon: directedAssociationIcon,
+        },
         { text: "Generalization", id: "generalizationClass", type: ComponentType.GENERALIZATION, icon: generalizationIcon },
         { text: "Composition", id: "composition", type: ComponentType.COMPOSITION, icon: composition },
         { text: "Aggregation", id: "aggregation", type: ComponentType.AGGREGATION, icon: aggregationIcon },
+        { text: "Realization", id: "realization", type: ComponentType.REALIZATION, icon: realizationIcon },
         { text: "Usage", id: "usage", type: ComponentType.USAGE, icon: usageIcon },
     ],
 };

@@ -79,7 +79,7 @@ export class Input {
                         Component.resetActiveComponents();
                     }
                 } else {
-                    if (event.button === 1) {
+                    if (event.button !== 1) {
                         ConnectionManager.instance.stopConnecting();
                     }
                     Connection.resetActiveConnections();

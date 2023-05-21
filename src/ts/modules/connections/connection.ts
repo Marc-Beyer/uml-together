@@ -1,11 +1,13 @@
 import { Component, Line } from "../components/component";
-import { ComponentType } from "../components/componentType";
 import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
 import { Vector2 } from "../vector2";
 import { MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
+import { ConnectionHead } from "./connectionHead";
+import { ConnectionLine } from "./connectionLine";
 import * as drawHelper from "./drawHelper";
+import { fillInspector } from "./inspector";
 
 export class Connection implements GridPart {
     public static activeConnectionList: Connection[] = [];
@@ -16,6 +18,10 @@ export class Connection implements GridPart {
     public middleText: string = "";
     public endText: string = "";
 
+    public startHead: ConnectionHead = ConnectionHead.NONE;
+    public endHead: ConnectionHead = ConnectionHead.NONE;
+    public line: ConnectionLine = ConnectionLine.SOLID;
+
     public mainPadding: number = 25;
     public secondaryPadding: number = 5;
 
@@ -24,7 +30,6 @@ export class Connection implements GridPart {
     private endComponent: Component;
     private startOffset: Vector2;
     private endOffset: Vector2;
-    private type: ComponentType;
 
     static resetActiveConnections(changeMoveMode: boolean = true) {
         for (let index = 0; index < Connection.activeConnectionList.length; index++) {
@@ -49,111 +54,33 @@ export class Connection implements GridPart {
         Connection.activeConnectionList.push(connection);
         connection.isActive = true;
 
-        const inspector = document.getElementById("inspector-container");
-        if (inspector) {
-            inspector.classList.remove("hidden");
-            inspector.innerHTML = "";
-
-            const inspectorHeading = document.createElement("h2");
-            inspectorHeading.textContent = "Connection Settings";
-            inspector.append(inspectorHeading);
-
-            // Start Text
-
-            const optionContainerStart = document.createElement("div");
-            optionContainerStart.classList.add("option-container");
-
-            const startTextLabel = document.createElement("label");
-            startTextLabel.textContent = "Start Text";
-            startTextLabel.htmlFor = "startTextInput";
-
-            const startTextInput = document.createElement("input");
-            startTextInput.value = connection.startText;
-            startTextInput.id = "startTextInput";
-            startTextInput.addEventListener("change", () => {
-                connection.startText = startTextInput.value;
-                Grid.addOffset(0, 0);
-                connection.sendEditMessage();
-            });
-
-            optionContainerStart.append(startTextLabel);
-            optionContainerStart.append(startTextInput);
-            inspector.append(optionContainerStart);
-
-            // Middle Text
-
-            const optionContainerMiddle = document.createElement("div");
-            optionContainerMiddle.classList.add("option-container");
-
-            const middleTextLabel = document.createElement("label");
-            middleTextLabel.textContent = "Middle Text";
-            middleTextLabel.htmlFor = "middleTextInput";
-
-            const middleTextInput = document.createElement("input");
-            middleTextInput.value = connection.middleText;
-            middleTextInput.id = "middleTextInput";
-            middleTextInput.addEventListener("change", () => {
-                connection.middleText = middleTextInput.value;
-                Grid.addOffset(0, 0);
-                connection.sendEditMessage();
-            });
-
-            optionContainerMiddle.append(middleTextLabel);
-            optionContainerMiddle.append(middleTextInput);
-            inspector.append(optionContainerMiddle);
-
-            // End Text
-
-            const optionContainerEnd = document.createElement("div");
-            optionContainerEnd.classList.add("option-container");
-
-            const endTextLabel = document.createElement("label");
-            endTextLabel.textContent = "End Text";
-            endTextLabel.htmlFor = "endTextInput";
-
-            const endTextInput = document.createElement("input");
-            endTextInput.value = connection.endText;
-            endTextInput.id = "endTextInput";
-            endTextInput.addEventListener("change", () => {
-                connection.endText = endTextInput.value;
-                Grid.addOffset(0, 0);
-                connection.sendEditMessage();
-            });
-
-            optionContainerEnd.append(endTextLabel);
-            optionContainerEnd.append(endTextInput);
-            inspector.append(optionContainerEnd);
-        }
+        fillInspector(connection);
     }
 
     constructor(
         startComponent: Component,
         endComponent: Component,
-        type: ComponentType,
-        startOffset?: Vector2,
-        endOffset?: Vector2,
+        startHead: ConnectionHead,
+        endHead: ConnectionHead,
+        line: ConnectionLine,
+        startOffset: Vector2 = new Vector2(0, 0),
+        endOffset: Vector2 = new Vector2(0, 0),
         id?: string
     ) {
+        this.startOffset = startOffset;
+        this.endOffset = endOffset;
+
         this.endComponent = endComponent;
         this.startComponent = startComponent;
-        if (endOffset === undefined) {
-            this.endOffset = new Vector2(0, 0);
-        } else {
-            this.endOffset = endOffset;
-        }
-        if (startOffset === undefined) {
-            this.startOffset = new Vector2(0, 0);
-            //this.calcOffset();
-        } else {
-            this.startOffset = startOffset;
-        }
-        this.type = type;
+
+        this.startHead = startHead;
+        this.endHead = endHead;
+        this.line = line;
+
         this.connectionId = id ?? this.createId();
 
         this.startComponent.connections.push(this);
         this.endComponent.connections.push(this);
-
-        //this.endText = new TextComponent(0, 0, 100, 100);
 
         this.updateZoom();
     }
@@ -162,7 +89,6 @@ export class Connection implements GridPart {
         WebSocketController.instance.sent({
             type: MessageType.CREATE_CONNECTION,
             data: {
-                type: this.type,
                 id: this.connectionId,
                 startComponent: this.startComponent.componentId,
                 endComponent: this.endComponent.componentId,
@@ -170,6 +96,9 @@ export class Connection implements GridPart {
                 startOffsetY: this.startOffset.y,
                 endOffsetX: this.endOffset.x,
                 endOffsetY: this.endOffset.y,
+                startHead: this.startHead,
+                endHead: this.endHead,
+                line: this.line,
             },
         });
         return this.connectionId;
@@ -193,7 +122,6 @@ export class Connection implements GridPart {
 
     public getState() {
         return {
-            type: this.type,
             id: this.connectionId,
             startComponent: this.startComponent.componentId,
             endComponent: this.endComponent.componentId,
@@ -204,6 +132,9 @@ export class Connection implements GridPart {
             startText: this.startText,
             middleText: this.middleText,
             endText: this.endText,
+            startHead: this.startHead,
+            endHead: this.endHead,
+            line: this.line,
             nodes: this.nodes.map((node) => {
                 return { x: node.x, y: node.y };
             }),
@@ -211,7 +142,7 @@ export class Connection implements GridPart {
     }
 
     public edit(message: any): void {
-        this.type = message.type;
+        console.log(this);
 
         this.startOffset.x = message.startOffsetX;
         this.startOffset.y = message.startOffsetY;
@@ -221,6 +152,10 @@ export class Connection implements GridPart {
         this.startText = message.startText;
         this.middleText = message.middleText;
         this.endText = message.endText;
+
+        this.startHead = message.startHead;
+        this.endHead = message.endHead;
+        this.line = message.line;
 
         this.nodes = [];
         for (let index = 0; index < message.nodes.length; index++) {
@@ -251,9 +186,12 @@ export class Connection implements GridPart {
         let endX = this.endComponent.realXPos + this.endComponent.realWidth / 2 + this.endOffset.x * Grid.xZoom;
         let endY = this.endComponent.realYPos + this.endComponent.realHeight / 2 + this.endOffset.y * Grid.yZoom;
 
-        switch (this.type) {
-            case ComponentType.USAGE:
+        switch (this.line) {
+            case ConnectionLine.DASHED:
                 Grid.ctx.setLineDash([5, 5]);
+                break;
+            case ConnectionLine.DOTTED:
+                Grid.ctx.setLineDash([2, 2]);
                 break;
 
             default:
@@ -274,6 +212,8 @@ export class Connection implements GridPart {
 
         Grid.ctx.stroke();
 
+        Grid.ctx.setLineDash([]);
+
         if (this.isActive) {
             Grid.ctx.fillStyle = Grid.backgroundColor;
             for (let index = 0; index < this.nodes.length; index++) {
@@ -293,15 +233,33 @@ export class Connection implements GridPart {
         if (this.nodes.length > 0) {
             endPoint = Connection.translateVector(this.nodes[0]);
         }
-        const endIntersection = this.getIntersectionPoint(startPoint, new Vector2(endX, endY), this.endComponent.getCollider());
-        const startIntersection = this.getIntersectionPoint(endPoint, new Vector2(startX, startY), this.startComponent.getCollider());
+        const endIntersection = Connection.getIntersectionPoint(startPoint, new Vector2(endX, endY), this.endComponent.getCollider());
+        const startIntersection = Connection.getIntersectionPoint(endPoint, new Vector2(startX, startY), this.startComponent.getCollider());
 
-        let angle = Connection.getAngle(startPoint.x, startPoint.y, endX, endY);
+        let endAngle = Connection.getAngle(startPoint.x, startPoint.y, endX, endY);
+        let startAngle = Connection.getAngle(endPoint.x, endPoint.y, startX, startY);
 
         Grid.ctx.font = 12 * Grid.xZoom + "px sans-serif";
 
+        if (startIntersection) {
+            Grid.ctx.strokeStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+            Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+
+            drawHelper.drawConnectionHead(this.startHead, startIntersection.x, startIntersection.y, startAngle, this.isActive);
+
+            Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+            Grid.ctx.strokeStyle = Grid.backgroundColor;
+
+            const textOffset = this.getTextOffset(startIntersection, this.startComponent);
+            Grid.ctx.strokeText(this.startText, startIntersection.x + textOffset.x, startIntersection.y + textOffset.y);
+            Grid.ctx.fillText(this.startText, startIntersection.x + textOffset.x, startIntersection.y + textOffset.y);
+        }
+
         if (endIntersection) {
-            drawHelper.drawConnectionHead(this.type, endIntersection.x, endIntersection.y, angle);
+            Grid.ctx.strokeStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+            Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
+
+            drawHelper.drawConnectionHead(this.endHead, endIntersection.x, endIntersection.y, endAngle, this.isActive);
 
             Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
             Grid.ctx.strokeStyle = Grid.backgroundColor;
@@ -309,15 +267,6 @@ export class Connection implements GridPart {
             const textOffset = this.getTextOffset(endIntersection, this.endComponent);
             Grid.ctx.strokeText(this.endText, endIntersection.x + textOffset.x, endIntersection.y + textOffset.y);
             Grid.ctx.fillText(this.endText, endIntersection.x + textOffset.x, endIntersection.y + textOffset.y);
-        }
-
-        if (startIntersection) {
-            Grid.ctx.fillStyle = this.isActive ? Grid.lineColorSelected : Grid.lineColor;
-            Grid.ctx.strokeStyle = Grid.backgroundColor;
-
-            const textOffset = this.getTextOffset(startIntersection, this.startComponent);
-            Grid.ctx.strokeText(this.startText, startIntersection.x + textOffset.x, startIntersection.y + textOffset.y);
-            Grid.ctx.fillText(this.startText, startIntersection.x + textOffset.x, startIntersection.y + textOffset.y);
         }
 
         let middlePos = new Vector2((startPoint.x + endPoint.x) / 2, (startPoint.y + endPoint.y) / 2);
@@ -404,7 +353,7 @@ export class Connection implements GridPart {
         }
     }
 
-    private getIntersectionPoint(startPoint: Vector2, endPoint: Vector2, collider: Line[]) {
+    public static getIntersectionPoint(startPoint: Vector2, endPoint: Vector2, collider: Line[]) {
         for (let index = 0; index < collider.length; index++) {
             let point = this.getLineIntersection(startPoint, endPoint, collider[index]);
             if (point !== null) return point;
@@ -412,7 +361,7 @@ export class Connection implements GridPart {
         return null;
     }
 
-    private getLineIntersection(start1: Vector2, end1: Vector2, line: Line) {
+    public static getLineIntersection(start1: Vector2, end1: Vector2, line: Line) {
         const x1 = start1.x;
         const y1 = start1.y;
         const x2 = end1.x;

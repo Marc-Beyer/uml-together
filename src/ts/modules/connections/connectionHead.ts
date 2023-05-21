@@ -1,0 +1,7 @@
+export enum ConnectionHead {
+    NONE,
+    ARROW_STROKE,
+    ARROW_FILLED,
+    ROTATED_SQUARE_STROKE,
+    ROTATED_SQUARE_FILLED,
+}

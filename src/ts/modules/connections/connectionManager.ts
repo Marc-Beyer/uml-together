@@ -1,6 +1,5 @@
 import { Component } from "../components/component";
 import { ComponentManager } from "../components/componentManager";
-import { ComponentType } from "../components/componentType";
 import { Global } from "../settings/global";
 import { Grid } from "../grid";
 import { Input, MovementMode } from "../input";
@@ -8,15 +7,19 @@ import { Vector2 } from "../vector2";
 import { CreateConnectionMessage, StateMessage } from "../webSocket/Message";
 import { Connection } from "./connection";
 import * as drawHelper from "./drawHelper";
+import { ConnectionHead } from "./connectionHead";
+import { ConnectionLine } from "./connectionLine";
 
 export class ConnectionManager {
     public static instance: ConnectionManager;
 
-    private connections: Map<string, Connection> = new Map();
+    public startHead: ConnectionHead = ConnectionHead.NONE;
+    public endHead: ConnectionHead = ConnectionHead.NONE;
+    public line: ConnectionLine = ConnectionLine.SOLID;
 
+    private connections: Map<string, Connection> = new Map();
     private selectedForConnection: Component | null = null;
     private selectedNode: { connection: Connection; position: number } | null = null;
-    public connectionType: ComponentType = ComponentType.USAGE;
 
     constructor() {
         ConnectionManager.instance = this;
@@ -57,7 +60,7 @@ export class ConnectionManager {
         } else {
             if (this.selectedForConnection === component) return;
 
-            let connection = new Connection(this.selectedForConnection, component, this.connectionType);
+            let connection = new Connection(this.selectedForConnection, component, this.startHead, this.endHead, this.line);
             connection.sendCreatedMessage();
             this.addConnection(connection);
 
@@ -187,7 +190,9 @@ export class ConnectionManager {
             new Connection(
                 startComponent,
                 endComponent,
-                message.type,
+                message.startHead,
+                message.endHead,
+                message.line,
                 new Vector2(message.startOffsetX, message.startOffsetY),
                 new Vector2(message.endOffsetX, message.endOffsetY),
                 message.id
@@ -209,9 +214,12 @@ export class ConnectionManager {
         Grid.ctx.strokeStyle = Grid.lineColor;
         Grid.ctx.lineWidth = 2 * Grid.xZoom;
 
-        switch (this.connectionType) {
-            case ComponentType.USAGE:
+        switch (this.line) {
+            case ConnectionLine.DASHED:
                 Grid.ctx.setLineDash([5, 5]);
+                break;
+            case ConnectionLine.DOTTED:
+                Grid.ctx.setLineDash([2, 2]);
                 break;
 
             default:
@@ -224,8 +232,24 @@ export class ConnectionManager {
         Grid.ctx.lineTo(x2, y2);
         Grid.ctx.stroke();
 
-        let angle = Connection.getAngle(x1, y1, x2, y2);
-        drawHelper.drawConnectionHead(this.connectionType, x2, y2, angle);
+        Grid.ctx.setLineDash([]);
+
+        const startIntersection = Connection.getIntersectionPoint(
+            new Vector2(
+                this.selectedForConnection.realXPos + this.selectedForConnection.realWidth / 2,
+                this.selectedForConnection.realYPos + this.selectedForConnection.realHeight / 2
+            ),
+            new Vector2(x2, y2),
+            this.selectedForConnection.getCollider()
+        );
+
+        let endAngle = Connection.getAngle(x1, y1, x2, y2);
+        let startAngle = Connection.getAngle(x2, y2, x1, y1);
+
+        if (startIntersection) {
+            drawHelper.drawConnectionHead(this.startHead, startIntersection.x, startIntersection.y, startAngle);
+        }
+        drawHelper.drawConnectionHead(this.endHead, x2, y2, endAngle);
     }
 
     public addConnection(connection: Connection) {
