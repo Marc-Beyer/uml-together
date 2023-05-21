@@ -17,7 +17,6 @@ import usageIcon from "/img/usage-icon.svg";
 import { ConnectionManager } from "../connections/connectionManager";
 import { Global } from "../settings/global";
 import { WebSocketController } from "../webSocket/webSocketController";
-import { MessageType } from "../webSocket/Message";
 import JSZip from "jszip";
 
 export interface Diagram {
@@ -68,10 +67,7 @@ export function initialize() {
         window.location.href = `/`;
     });
     document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {
-        WebSocketController.instance.sent({
-            type: MessageType.REQUEST_STATE,
-            data: {},
-        });
+        WebSocketController.instance.sentSaveMessage();
     });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {
         const components = ComponentManager.instance.getState();
@@ -123,7 +119,6 @@ export function initialize() {
             const blob = new Blob([element.code], { type: "text/plain" });
             zip.file(element.name, blob);
         }
-        return;
 
         zip.generateAsync({ type: "blob" }).then((content) => {
             const url = URL.createObjectURL(content);

@@ -41,4 +41,8 @@ function init() {
     initGlobalValues();
 
     initInput();
+
+    window.addEventListener("beforeunload", function (e) {
+        WebSocketController.instance.sentSaveMessage();
+    });
 }

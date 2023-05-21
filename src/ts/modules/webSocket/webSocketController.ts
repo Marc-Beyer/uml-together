@@ -67,13 +67,7 @@ export class WebSocketController {
                     break;
 
                 case MessageType.REQUEST_STATE:
-                    const components = ComponentManager.instance.getState();
-                    const connections = ConnectionManager.instance.getState();
-
-                    const data = {
-                        components,
-                        connections,
-                    };
+                    const data = this.getStateData();
 
                     WebSocketController.instance.sent({
                         type: MessageType.STATE,
@@ -111,11 +105,34 @@ export class WebSocketController {
         });
     }
 
+    public sentSaveMessage() {
+        const data = this.getStateData();
+
+        this.sent({
+            type: MessageType.REQUEST_STATE,
+            data,
+            checksum: crypto.SHA3(JSON.stringify(data)).toString(),
+        });
+    }
+
     public sent(message: Message) {
+        console.log(`Sent ${MessageType[message.type]}-message`);
+
         if (message.type !== MessageType.JOIN && Global.USE_ENCRYPTION) {
             message.data = crypto.AES.encrypt(JSON.stringify(message.data), this.key).toString();
         }
 
         this.socket.send(JSON.stringify(message));
+    }
+
+    private getStateData() {
+        const components = ComponentManager.instance.getState();
+        const connections = ConnectionManager.instance.getState();
+
+        const data = {
+            components,
+            connections,
+        };
+        return data;
     }
 }
