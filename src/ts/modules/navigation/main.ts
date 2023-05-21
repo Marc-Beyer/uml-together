@@ -66,8 +66,10 @@ export function initialize() {
     document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {
         window.location.href = `/`;
     });
-    document.getElementById("nav-btn-save-sever")?.addEventListener("click", () => {
+    document.getElementById("nav-btn-save-sever")?.addEventListener("click", async () => {
         WebSocketController.instance.sentSaveMessage();
+
+        hideSubMenus();
     });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {
         const components = ComponentManager.instance.getState();
@@ -156,6 +158,8 @@ export function initialize() {
             .catch((error) => {
                 console.error("Failed to copy text: ", error);
             });
+
+        hideSubMenus();
     });
 }
 
@@ -170,4 +174,24 @@ export function downloadFile(data: any, fileName: string = "uml-together", fileT
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
+}
+
+export async function delay(ms: number) {
+    await new Promise<void>((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, ms);
+    });
+}
+
+async function hideSubMenus() {
+    const subMenus = document.getElementsByClassName("sub-menu");
+    for (let index = 0; index < subMenus.length; index++) {
+        const subMenu = subMenus[index] as HTMLElement;
+        subMenu.style.display = "none";
+
+        await delay(10);
+
+        subMenu.style.display = "";
+    }
 }
