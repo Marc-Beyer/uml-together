@@ -109,7 +109,6 @@ function createLineDropDownOption(labelText: string, curValue: ConnectionLine, c
     });
 
     for (const key in ConnectionLine) {
-        / /g, "-";
         if (!Number.isNaN(Number(key)) && Object.prototype.hasOwnProperty.call(ConnectionLine, key)) {
             select.append(createOption(key, ConnectionLine[key] ?? ""));
         }

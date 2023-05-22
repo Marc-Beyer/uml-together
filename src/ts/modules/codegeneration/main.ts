@@ -124,7 +124,7 @@ function getClassAttributes(classComponent: ClassComponent): {
 
         if (!(other instanceof ClassComponent)) continue;
 
-        const { visibility, clearedName } = getVisibility(other.cName.text);
+        const { clearedName } = getVisibility(other.cName.text);
         const attributeName = connection.middleText.replaceAll(/ /g, "").trim();
 
         switch (type) {
