@@ -1,4 +1,6 @@
+import { ConnectionAnnotation, ConnectionSide } from "../codegeneration/main";
 import { Component, Line } from "../components/component";
+import { ComponentType } from "../components/componentType";
 import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
 import { Vector2 } from "../vector2";
@@ -387,6 +389,87 @@ export class Connection implements GridPart {
         const intersectionY = y1 + ua * (y2 - y1);
 
         return new Vector2(intersectionX, intersectionY);
+    }
+
+    public getTypeAndDirection(): { type: ComponentType | undefined; isFlipped: boolean } {
+        let isFlipped = false;
+        let type = this.getType(this.startHead, this.endHead);
+
+        if (type === undefined) {
+            isFlipped = true;
+            type = this.getType(this.endHead, this.startHead);
+        }
+
+        return { type, isFlipped };
+    }
+
+    private getType(startHead: ConnectionHead, endHead: ConnectionHead): ComponentType | undefined {
+        if (this.line === ConnectionLine.SOLID) {
+            if (startHead === ConnectionHead.NONE) {
+                if (endHead === ConnectionHead.NONE) {
+                    return ComponentType.ASSOCIATION;
+                } else if (endHead === ConnectionHead.ARROW_STROKE) {
+                    return ComponentType.GENERALIZATION;
+                } else if (endHead === ConnectionHead.ARROW_FILLED) {
+                    return ComponentType.DIRECTED_ASSOCIATION;
+                }
+            } else if (startHead === ConnectionHead.ROTATED_SQUARE_FILLED) {
+                if (endHead === ConnectionHead.NONE) {
+                    return ComponentType.AGGREGATION;
+                }
+            } else if (startHead === ConnectionHead.ROTATED_SQUARE_STROKE) {
+                if (endHead === ConnectionHead.NONE) {
+                    return ComponentType.COMPOSITION;
+                }
+            }
+        } else {
+            if (startHead === ConnectionHead.NONE) {
+                if (endHead === ConnectionHead.ARROW_STROKE) {
+                    return ComponentType.REALIZATION;
+                } else if (endHead === ConnectionHead.NONE) {
+                    return ComponentType.USAGE;
+                } else if (endHead === ConnectionHead.ARROW_FILLED) {
+                    return ComponentType.DEPENDENCY;
+                }
+            }
+        }
+
+        return undefined;
+    }
+
+    public getSide(component: Component, isFlipped: boolean): { side: ConnectionSide; other: Component; annotation: ConnectionAnnotation } {
+        let side: ConnectionSide = ConnectionSide.NONE;
+        let other: Component = component;
+        let annotation: ConnectionAnnotation = ConnectionAnnotation.NONE;
+
+        if (component === this.endComponent && component === this.startComponent) {
+            side = ConnectionSide.BOTH;
+            annotation = this.textToAnnotation(this.endText);
+        } else if (component === this.endComponent) {
+            side = isFlipped ? ConnectionSide.START : ConnectionSide.END;
+            other = this.startComponent;
+            annotation = this.textToAnnotation(this.startText);
+        } else if (component === this.startComponent) {
+            side = isFlipped ? ConnectionSide.END : ConnectionSide.START;
+            other = this.endComponent;
+            annotation = this.textToAnnotation(this.endText);
+        }
+
+        return { side, other, annotation };
+    }
+
+    private textToAnnotation(text: string): ConnectionAnnotation {
+        const clearedText = text.replaceAll(/ /g, "").trim();
+        if (/^[0-9\*]\.\.[0-9\*]$/.test(clearedText)) {
+            return ConnectionAnnotation.MULTIPLE;
+        }
+        if (/^[2-9\*]$/.test(clearedText)) {
+            return ConnectionAnnotation.MULTIPLE;
+        }
+        if (/^1$/.test(clearedText)) {
+            return ConnectionAnnotation.SINGLE;
+        }
+        return ConnectionAnnotation.NONE;
     }
 
     public static getSlope(x1: number, y1: number, x2: number, y2: number) {

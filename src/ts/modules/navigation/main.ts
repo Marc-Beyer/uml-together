@@ -131,6 +131,7 @@ export function initialize() {
             zip.file(element.name, blob);
         }
 
+        return;
         zip.generateAsync({ type: "blob" }).then((content) => {
             const url = URL.createObjectURL(content);
             const link = document.createElement("a");

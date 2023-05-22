@@ -1,9 +1,23 @@
 import { ChatController, DebugMessageType } from "../chat/chatController";
 import { ClassComponent } from "../components/classComponent";
+import { ComponentType } from "../components/componentType";
 import { EditText } from "../elements/editText";
 import { Global, ProgrammingLanguage } from "../settings/global";
 import { ClassAttribute, ClassOperation, ClassOperationParameter, ClassStructure, Enumeration, Modifier, Visibility } from "./interfaces";
 import { getJavaClass, getJavaEnum } from "./java";
+
+export enum ConnectionSide {
+    NONE,
+    START,
+    END,
+    BOTH,
+}
+
+export enum ConnectionAnnotation {
+    NONE,
+    SINGLE,
+    MULTIPLE,
+}
 
 export function getCodeFromClassComponent(classComponent: ClassComponent): { name: string; code: string } | null {
     const { element, isClass } = getClassStructureOrEnum(classComponent);
@@ -54,20 +68,30 @@ function getClassStructureOrEnum(classComponent: ClassComponent): { element: Cla
 }
 
 function getClassStructure(classComponent: ClassComponent, modifier: Modifier): ClassStructure {
-    let { visibility, clearedName } = getVisibility(classComponent.cName.text);
+    const { visibility, clearedName } = getVisibility(classComponent.cName.text);
+    const { realization, inheritance, attributes } = getClassAttributes(classComponent);
     return {
         name: clearedName,
         modifier,
         visibility,
-        attributes: getClassAttributes(classComponent.attributeList),
+        realization,
+        inheritance,
+        attributes,
         operations: getClassOperations(classComponent.operationsList),
     };
 }
 
-function getClassAttributes(attributeList: EditText[]) {
+function getClassAttributes(classComponent: ClassComponent): {
+    realization: string[];
+    inheritance: string[];
+    attributes: ClassAttribute[];
+} {
     const attributes: ClassAttribute[] = [];
-    for (let index = 0; index < attributeList.length; index++) {
-        const { visibility, clearedName } = getVisibility(attributeList[index].text);
+    let realization: string[] = [];
+    let inheritance: string[] = [];
+
+    for (let index = 0; index < classComponent.attributeList.length; index++) {
+        const { visibility, clearedName } = getVisibility(classComponent.attributeList[index].text);
         const attrSplit = clearedName.split(":");
         const attrName = attrSplit[0];
         let attrType = attrSplit[1];
@@ -81,11 +105,86 @@ function getClassAttributes(attributeList: EditText[]) {
             visibility,
             name: attrName,
             type: attrType.replaceAll(/\s*/g, ""),
-            isStatic: attributeList[index].isUnderlined,
+            isStatic: classComponent.attributeList[index].isUnderlined,
             defaultValue: attrDefaultValue,
         });
     }
-    return attributes;
+
+    for (const connection of classComponent.connections) {
+        const { type, isFlipped } = connection.getTypeAndDirection();
+        if (type === undefined) {
+            ChatController.instance.newDebugMessage(
+                `One connection of ${classComponent.cName.text} will be skipped!`,
+                DebugMessageType.WARNING
+            );
+            continue;
+        }
+
+        const { side, other, annotation } = connection.getSide(classComponent, isFlipped);
+
+        if (!(other instanceof ClassComponent)) continue;
+
+        const { visibility, clearedName } = getVisibility(other.cName.text);
+        const attributeName = connection.middleText.replaceAll(/ /g, "").trim();
+
+        switch (type) {
+            case ComponentType.GENERALIZATION:
+                if (side === ConnectionSide.START) inheritance.push(clearedName);
+                break;
+            case ComponentType.REALIZATION:
+                if (side === ConnectionSide.START) realization.push(clearedName);
+
+                break;
+            case ComponentType.ASSOCIATION:
+                if (annotation === ConnectionAnnotation.SINGLE) {
+                    attributes.push({
+                        visibility: Visibility.PRIVATE,
+                        name: attributeName !== "" ? attributeName : `${clearedName.charAt(0).toLowerCase()}${clearedName.slice(1)}`,
+                        type: clearedName,
+                        isStatic: false,
+                        defaultValue: null,
+                    });
+                } else if (annotation === ConnectionAnnotation.MULTIPLE) {
+                    attributes.push({
+                        visibility: Visibility.PRIVATE,
+                        name: attributeName !== "" ? attributeName : `${clearedName.charAt(0).toLowerCase()}${clearedName.slice(1)}`,
+                        type: `${clearedName}[]`,
+                        isStatic: false,
+                        defaultValue: null,
+                    });
+                }
+                break;
+            case ComponentType.AGGREGATION:
+            case ComponentType.DIRECTED_ASSOCIATION:
+            case ComponentType.COMPOSITION:
+                if (side === ConnectionSide.END) continue;
+
+                if (annotation === ConnectionAnnotation.MULTIPLE) {
+                    attributes.push({
+                        visibility: Visibility.PRIVATE,
+                        name: attributeName !== "" ? attributeName : `${clearedName.charAt(0).toLowerCase()}${clearedName.slice(1)}`,
+                        type: `${clearedName}[]`,
+                        isStatic: false,
+                        defaultValue: null,
+                    });
+                } else {
+                    attributes.push({
+                        visibility: Visibility.PRIVATE,
+                        name: attributeName !== "" ? attributeName : `${clearedName.charAt(0).toLowerCase()}${clearedName.slice(1)}`,
+                        type: clearedName,
+                        isStatic: false,
+                        defaultValue: null,
+                    });
+                }
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return { realization, inheritance, attributes };
 }
 
 function getParameter(operationParameter: string): ClassOperationParameter[] {

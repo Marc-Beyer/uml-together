@@ -38,6 +38,8 @@ export interface ClassOperation {
 export interface ClassStructure {
     name: string;
     modifier: Modifier;
+    inheritance: string[];
+    realization: string[];
     visibility: Visibility;
     attributes: ClassAttribute[];
     operations: ClassOperation[];

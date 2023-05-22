@@ -44,7 +44,7 @@ export function fillInspector(connection: Connection) {
         inspector.append(inspectorHeading2);
 
         // Start Head
-        const startHeadOption = createHeadDropDownOption("Line Start Cap", connection.startHead, (value: string) => {
+        const startHeadOption = createHeadDropDownOption("Line Start Head", connection.startHead, (value: string) => {
             connection.startHead = Number(value);
             Grid.addOffset(0, 0);
             connection.sendEditMessage();
@@ -60,7 +60,7 @@ export function fillInspector(connection: Connection) {
         inspector.append(lineOption);
 
         // End Head
-        const endHeadOption = createHeadDropDownOption("Line End Cap", connection.endHead, (value: string) => {
+        const endHeadOption = createHeadDropDownOption("Line End Head", connection.endHead, (value: string) => {
             connection.endHead = Number(value);
             Grid.addOffset(0, 0);
             connection.sendEditMessage();
@@ -70,7 +70,7 @@ export function fillInspector(connection: Connection) {
 }
 
 function createTextOption(labelText: string, curValue: string, callback: (value: string) => void) {
-    const id = `${labelText.replaceAll(/ /g, "_")}Input`;
+    const id = `${labelText.replaceAll(/ /g, "-")}-input`.toLowerCase();
 
     const optionContainer = document.createElement("div");
     optionContainer.classList.add("option-container");
@@ -93,7 +93,7 @@ function createTextOption(labelText: string, curValue: string, callback: (value:
 }
 
 function createLineDropDownOption(labelText: string, curValue: ConnectionLine, callback: (value: string) => void) {
-    const id = `${labelText.replaceAll(/ /g, "_")}Input`;
+    const id = `${labelText.replaceAll(/ /g, "-")}-input`.toLowerCase();
 
     const optionContainer = document.createElement("div");
     optionContainer.classList.add("option-container");
@@ -109,6 +109,7 @@ function createLineDropDownOption(labelText: string, curValue: ConnectionLine, c
     });
 
     for (const key in ConnectionLine) {
+        / /g, "-";
         if (!Number.isNaN(Number(key)) && Object.prototype.hasOwnProperty.call(ConnectionLine, key)) {
             select.append(createOption(key, ConnectionLine[key] ?? ""));
         }
@@ -123,7 +124,7 @@ function createLineDropDownOption(labelText: string, curValue: ConnectionLine, c
 }
 
 function createHeadDropDownOption(labelText: string, curValue: ConnectionHead, callback: (value: string) => void) {
-    const id = `${labelText.replaceAll(/ /g, "_")}Input`;
+    const id = `${labelText.replaceAll(/ /g, "-")}-input`.toLowerCase();
 
     const optionContainer = document.createElement("div");
     optionContainer.classList.add("option-container");

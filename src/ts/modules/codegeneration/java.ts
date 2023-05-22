@@ -33,19 +33,35 @@ export function getJavaClass(classStructure: ClassStructure): string {
     let code = `${visibilityToString(classStructure.visibility)}`;
     switch (classStructure.modifier) {
         case Modifier.STATIC:
-            code += `static class ${classStructure.name} {`;
+            code += `static class ${classStructure.name}`;
             break;
         case Modifier.INTERFACE:
-            code += `interface ${classStructure.name} {`;
+            code += `interface ${classStructure.name}`;
             break;
         case Modifier.ABSTRACT:
-            code += `abstract class ${classStructure.name} {`;
+            code += `abstract class ${classStructure.name}`;
             break;
 
         default:
-            code += `class ${classStructure.name} {`;
+            code += `class ${classStructure.name}`;
             break;
     }
+
+    if (classStructure.inheritance.length > 0) {
+        if (classStructure.inheritance.length > 1) {
+            ChatController.instance.newDebugMessage(
+                `The class '${classStructure.name}' has multiple superclasses! Thats not possible in Java! Only ${classStructure.inheritance[0]} will be used.`,
+                DebugMessageType.WARNING
+            );
+        }
+        code += ` extends ${classStructure.inheritance[0]}`;
+    }
+
+    if (classStructure.realization.length > 0) {
+        code += ` implements ${classStructure.realization.join(", ")}`;
+    }
+
+    code += ` {`;
 
     for (let index = 0; index < classStructure.attributes.length; index++) {
         const attribute = classStructure.attributes[index];

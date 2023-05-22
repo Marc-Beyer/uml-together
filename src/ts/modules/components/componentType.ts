@@ -13,4 +13,5 @@ export enum ComponentType {
     AGGREGATION,
     COMPOSITION,
     REALIZATION,
+    DEPENDENCY,
 }
