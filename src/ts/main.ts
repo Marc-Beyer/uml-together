@@ -10,7 +10,7 @@ import { WebSocketController } from "./modules/webSocket/webSocketController";
 const mainUrl = import.meta.env.MODE === "development" ? "http://127.0.0.1" : "";
 
 (async function main() {
-    const href = window.location.href.split("#");
+    const href = window.location.href.replace("%23", "#").split("#");
 
     if (href.length >= 2) {
         const sessionId = href[1];

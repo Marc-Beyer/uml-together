@@ -11,7 +11,7 @@ joinButton.addEventListener("click", () => {
         return;
     }
 
-    const splitSession = sessionInput.value.split("#");
+    const splitSession = sessionInput.value.replace("%23", "#").split("#");
     let sessionId = "";
     let hexKey = "";
 
