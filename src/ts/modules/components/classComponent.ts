@@ -74,6 +74,8 @@ export class ClassComponent extends Component {
             }
         }
         this.append(this.operationsContainer);
+
+        this.classList.toggle("vertical-center", this.attributeList.length === 0 && this.operationsList.length === 0);
     }
 
     // Add a new attribute

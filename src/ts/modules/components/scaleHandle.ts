@@ -42,11 +42,11 @@ export class ScaleHandle extends HTMLElement {
         });
     }
 
-    public moveScaleHandle(event: MouseEvent) {
-        let x = Input.x - event.screenX;
-        let y = Input.y - event.screenY;
-        Input.x = event.screenX;
-        Input.y = event.screenY;
+    public moveScaleHandle(screenX: number, screenY: number) {
+        let x = Input.x - screenX;
+        let y = Input.y - screenY;
+        Input.x = screenX;
+        Input.y = screenY;
 
         switch (this.scaleHandlePosition) {
             case ScaleHandlePosition.TOP_LEFT:

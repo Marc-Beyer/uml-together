@@ -79,6 +79,13 @@
             text-align: left;
             height: auto;
             width: auto;
+            padding-bottom: 0.2rem;
+
+            &.vertical-center {
+                .class-head {
+                    flex: 1;
+                }
+            }
 
             .edit-text,
             input {
@@ -100,6 +107,11 @@
             }
 
             .class-head {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
                 text-align: center;
                 padding: 0.3em;
 

@@ -63,15 +63,34 @@ export class Input {
             }
         });
 
-        container.addEventListener("mousedown", (event) => {
-            if (event.button !== 0 && event.button !== 1) return;
-            Input.x = event.screenX;
-            Input.y = event.screenY;
+        Input.addEventListener(container, ["mousedown", "touchstart"], (event) => {
+            let button = 1;
+            let pageX = 0;
+            let pageY = 0;
+
+            if (event instanceof MouseEvent) {
+                button = event.button;
+
+                if (button !== 0 && button !== 1) return;
+
+                Input.x = event.screenX;
+                Input.y = event.screenY;
+                pageX = event.pageX;
+                pageY = event.pageY;
+            } else if (event instanceof TouchEvent) {
+                Input.x = event.touches[0].screenX;
+                Input.y = event.touches[0].screenY;
+                pageX = event.touches[0].pageX;
+                pageY = event.touches[0].pageY;
+            } else {
+                return;
+            }
+
             Input.isMousedown = true;
 
             if (!Input.clickedOnComponent) {
                 if (Input.movementMode !== MovementMode.CONNECTION) {
-                    if (ConnectionManager.instance.selectedConnectionOnClick(event.pageX, event.pageY)) {
+                    if (ConnectionManager.instance.selectedConnectionOnClick(pageX, pageY)) {
                         Component.resetActiveComponents();
                         Input.movementMode = MovementMode.SELECTED_CONNECTION;
                     } else {
@@ -79,7 +98,7 @@ export class Input {
                         Component.resetActiveComponents();
                     }
                 } else {
-                    if (event.button !== 1) {
+                    if (button !== 1) {
                         ConnectionManager.instance.stopConnecting();
                     }
                     Connection.resetActiveConnections();
@@ -91,8 +110,8 @@ export class Input {
             }
         });
 
-        container.addEventListener("mouseup", (event) => {
-            if (event.button != 0 && event.button != 1) return;
+        Input.addEventListener(container, ["mouseup", "touchend", "touchcancel"], (event) => {
+            if (event instanceof MouseEvent && event.button != 0 && event.button != 1) return;
             Input.isMousedown = false;
 
             switch (Input.movementMode) {
@@ -114,38 +133,57 @@ export class Input {
             }
         });
 
-        document.addEventListener("mousemove", (event) => {
+        Input.addEventListener(document, ["mousemove", "touchmove"], (event: Event) => {
+            let screenX = 0;
+            let screenY = 0;
+            let pageX = 0;
+            let pageY = 0;
+
+            if (event instanceof MouseEvent) {
+                screenX = event.screenX;
+                screenY = event.screenY;
+                pageX = event.pageX;
+                pageY = event.pageY;
+            } else if (event instanceof TouchEvent) {
+                screenX = event.touches[0].screenX;
+                screenY = event.touches[0].screenY;
+                pageX = event.touches[0].pageX;
+                pageY = event.touches[0].pageY;
+            } else {
+                return;
+            }
+
             if (Input.isMousedown) {
                 switch (Input.movementMode) {
                     case MovementMode.SCREEN:
-                        Grid.addOffset(Input.x - event.screenX, Input.y - event.screenY);
-                        Input.x = event.screenX;
-                        Input.y = event.screenY;
+                        Grid.addOffset(Input.x - screenX, Input.y - screenY);
+                        Input.x = screenX;
+                        Input.y = screenY;
                         break;
                     case MovementMode.COMPONENT:
-                        const x = Input.x - event.screenX;
-                        const y = Input.y - event.screenY;
+                        const x = Input.x - screenX;
+                        const y = Input.y - screenY;
                         for (const component of Component.activeComponentList) {
                             component.addPos(x, y);
                         }
-                        Input.x = event.screenX;
-                        Input.y = event.screenY;
+                        Input.x = screenX;
+                        Input.y = screenY;
                         break;
                     case MovementMode.SELECTED_CONNECTION:
-                        ConnectionManager.instance.moveConnections(Input.x - event.screenX, Input.y - event.screenY);
-                        Input.x = event.screenX;
-                        Input.y = event.screenY;
+                        ConnectionManager.instance.moveConnections(Input.x - screenX, Input.y - screenY);
+                        Input.x = screenX;
+                        Input.y = screenY;
                         break;
                     case MovementMode.RESIZE:
-                        Input.scaleHandle.moveScaleHandle(event);
+                        Input.scaleHandle.moveScaleHandle(screenX, screenY);
                         break;
 
                     case MovementMode.CONNECTION:
-                        Grid.addOffset(Input.x - event.screenX, Input.y - event.screenY);
-                        Input.x = event.screenX;
-                        Input.y = event.screenY;
+                        Grid.addOffset(Input.x - screenX, Input.y - screenY);
+                        Input.x = screenX;
+                        Input.y = screenY;
 
-                        ConnectionManager.instance.drawConnection(event.screenX, event.screenY);
+                        ConnectionManager.instance.drawConnection(screenX, screenY);
                         break;
 
                     default:
@@ -154,11 +192,19 @@ export class Input {
             } else {
                 switch (Input.movementMode) {
                     case MovementMode.CONNECTION:
-                        ConnectionManager.instance.drawConnection(event.pageX, event.pageY);
+                        ConnectionManager.instance.drawConnection(pageX, pageY);
                         break;
                 }
             }
         });
+    }
+
+    public static addEventListener(element: HTMLElement | Document, type: string[], listener: (event: Event) => void) {
+        for (let index = 0; index < type.length; index++) {
+            element.addEventListener(type[index], (event) => {
+                listener(event);
+            });
+        }
     }
 
     public static onDelete() {
