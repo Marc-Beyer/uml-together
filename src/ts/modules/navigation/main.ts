@@ -13,7 +13,7 @@ import associationIcon from "/img/association-icon.svg";
 import directedAssociationIcon from "/img/directed-association-icon.svg";
 import generalizationIcon from "/img/generalization-icon.svg";
 import composition from "/img/composition-icon.svg";
-import aggregationIcon from "/img/aggregation.icon.svg";
+import aggregationIcon from "/img/aggregation-icon.svg";
 import usageIcon from "/img/usage-icon.svg";
 import realizationIcon from "/img/realization-icon.svg";
 import { ConnectionManager } from "../connections/connectionManager";
