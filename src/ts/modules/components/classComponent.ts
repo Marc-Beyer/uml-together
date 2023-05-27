@@ -86,29 +86,34 @@ export class ClassComponent extends Component {
         } else {
             text = editTextObj;
         }
-        const editText = new EditText(text, inEditMode, (pressedEnter: boolean) => {
-            const newText = editText.text.trim();
+        const editText = new EditText(
+            text,
+            inEditMode,
+            (pressedEnter: boolean) => {
+                const newText = editText.text.trim();
 
-            // Filter out all empty editTexts
-            this.attributeList = this.attributeList.filter((editText: EditText) => {
-                if (editText.text.trim() === "" && !editText.inEditMode) {
-                    editText.remove();
-                    return false;
+                // Filter out all empty editTexts
+                this.attributeList = this.attributeList.filter((editText: EditText) => {
+                    if (editText.text.trim() === "" && !editText.inEditMode) {
+                        editText.remove();
+                        return false;
+                    }
+                    return true;
+                });
+
+                this.sendEditMessage();
+
+                if (pressedEnter) {
+                    if (newText === "") {
+                        this.addOperation("", true);
+                    } else {
+                        this.addAttribute("", true);
+                    }
                 }
-                return true;
-            });
-
-            this.sendEditMessage();
-
-            if (pressedEnter) {
-                if (newText === "") {
-                    this.addOperation("", true);
-                } else {
-                    this.addAttribute("", true);
-                }
-            }
-            this.connectedCallback();
-        });
+                this.connectedCallback();
+            },
+            inEditMode
+        );
         if (isEditTextObj(editTextObj)) editText.setValues(editTextObj);
         this.attributeList.push(editText);
         this.attributeContainer?.append(editText);
@@ -122,25 +127,30 @@ export class ClassComponent extends Component {
         } else {
             text = editTextObj;
         }
-        const editText = new EditText(text, inEditMode, (pressedEnter: boolean) => {
-            const newText = editText.text.trim();
+        const editText = new EditText(
+            text,
+            inEditMode,
+            (pressedEnter: boolean) => {
+                const newText = editText.text.trim();
 
-            // Filter out all empty editTexts
-            this.operationsList = this.operationsList.filter((editText: EditText) => {
-                if (editText.text.trim() === "" && !editText.inEditMode) {
-                    editText.remove();
-                    return false;
+                // Filter out all empty editTexts
+                this.operationsList = this.operationsList.filter((editText: EditText) => {
+                    if (editText.text.trim() === "" && !editText.inEditMode) {
+                        editText.remove();
+                        return false;
+                    }
+                    return true;
+                });
+
+                this.sendEditMessage();
+
+                if (pressedEnter && newText !== "") {
+                    this.addOperation("", true);
                 }
-                return true;
-            });
-
-            this.sendEditMessage();
-
-            if (pressedEnter && newText !== "") {
-                this.addOperation("", true);
-            }
-            this.connectedCallback();
-        });
+                this.connectedCallback();
+            },
+            inEditMode
+        );
         if (isEditTextObj(editTextObj)) editText.setValues(editTextObj);
         this.operationsList.push(editText);
         this.operationsContainer?.append(editText);
@@ -213,14 +223,20 @@ export class ClassComponent extends Component {
                 Input.onDelete();
             })
         );
-        list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));
+        //list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));
 
         list.append(document.createElement("hr"));
 
         list.append(
-            this.createContextBtn("Add Attribute", "", () => {
+            this.createContextBtn("Add Attribute", "", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
                 this.addAttribute("", true);
                 this.connectedCallback();
+
+                const contextMenu = document.getElementById("context-menu");
+                if (contextMenu) contextMenu.style.display = "";
             })
         );
         list.append(

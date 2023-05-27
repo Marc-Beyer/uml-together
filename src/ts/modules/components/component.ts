@@ -287,7 +287,6 @@ export class Component extends HTMLElement implements GridPart {
         for (const key in message) {
             if (Object.prototype.hasOwnProperty.call(message, key)) {
                 (this as any)[key] = message[key];
-                console.log(key, message[key]);
             }
         }
     }
@@ -347,7 +346,7 @@ export class Component extends HTMLElement implements GridPart {
         );
     }
 
-    protected createContextBtn(text: string, shortcut: string = "", listener: () => any) {
+    protected createContextBtn(text: string, shortcut: string = "", listener: (event: Event) => any) {
         let li = document.createElement("li");
         let btn = document.createElement("button");
         let div1 = document.createElement("div");

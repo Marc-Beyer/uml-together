@@ -40,6 +40,8 @@ export class EditText extends HTMLElement {
     private italicBtn: HTMLButtonElement | undefined = undefined;
 
     private callback;
+    private lastClick = 0;
+    public refocus = 0;
 
     private _isBold: boolean = false;
     private _isUnderlined: boolean = false;
@@ -84,17 +86,27 @@ export class EditText extends HTMLElement {
         this.refresh();
     }
 
-    constructor(text: string, inEditMode: boolean = false, callback?: (pressedEnter: boolean) => any) {
+    constructor(text: string, inEditMode: boolean = false, callback?: (pressedEnter: boolean) => any, refocus?: boolean) {
         super();
         this.text = text ?? "";
         this.inEditMode = inEditMode;
+
         this.classList.add("edit-text");
         this.callback = callback;
+        if (refocus) {
+            this.refocus = new Date().getTime();
+        }
 
-        this.addEventListener("dblclick", () => {
-            Input.movementMode = MovementMode.EDIT;
-            this.inEditMode = true;
-            this.connectedCallback();
+        this.addEventListener("mousedown", (event) => {
+            if (new Date().getTime() - this.lastClick > 1000) {
+                this.lastClick = new Date().getTime();
+            } else {
+                event.preventDefault();
+                event.stopPropagation();
+                Input.movementMode = MovementMode.EDIT;
+                this.inEditMode = true;
+                this.connectedCallback();
+            }
         });
 
         this.refresh();
@@ -125,8 +137,18 @@ export class EditText extends HTMLElement {
 
         if (this.container === undefined) {
             this.container = document.createElement("div");
+            this.textArea = document.createElement("textarea");
+            this.input = document.createElement("input");
+
             this.container.classList.add("et-container");
+            this.tabIndex = 0;
+
             this.container.addEventListener("focusout", (event) => {
+                // Workaround for chrome
+                if (new Date().getTime() - this.refocus < 500) {
+                    return;
+                }
+
                 if (event.currentTarget && event.relatedTarget) {
                     if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) return;
                 }
@@ -137,13 +159,14 @@ export class EditText extends HTMLElement {
                 } else {
                     if (this.input) this.text = this.input.value;
                 }
+
                 this.connectedCallback();
                 if (this.callback !== undefined) this.callback(false);
                 Input.movementMode = MovementMode.COMPONENT;
             });
 
-            this.textArea = document.createElement("textarea");
             this.textArea.style.display = "none";
+            this.textArea.tabIndex = 0;
             this.textArea.addEventListener("keyup", (event: KeyboardEvent) => {
                 if ((event.key === "Enter" || event.keyCode === 13) && event.ctrlKey) {
                     this.inEditMode = false;
@@ -157,7 +180,6 @@ export class EditText extends HTMLElement {
             });
             this.container.append(this.textArea);
 
-            this.input = document.createElement("input");
             this.input.style.display = "none";
             this.input.type = "text";
             this.input.addEventListener("keyup", (event: KeyboardEvent) => {
@@ -214,13 +236,23 @@ export class EditText extends HTMLElement {
 
         if (this.isMultiline) {
             if (this.textArea) {
-                this.textArea.style.display = this.inEditMode ? "" : "none";
-                if (!this.inEditMode) this.textArea.value = this.text;
+                if (this.inEditMode) {
+                    this.textArea.focus();
+                    this.textArea.style.display = "";
+                } else {
+                    this.textArea.style.display = "none";
+                    this.textArea.value = this.text;
+                }
             }
         } else {
             if (this.input) {
-                this.input.style.display = this.inEditMode ? "" : "none";
-                if (!this.inEditMode) this.input.value = this.text;
+                if (this.inEditMode) {
+                    this.input.focus();
+                    this.input.style.display = "";
+                } else {
+                    this.input.style.display = "none";
+                    this.input.value = this.text;
+                }
             }
         }
         if (this.btnContainer) {
