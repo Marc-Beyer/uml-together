@@ -1,0 +1,122 @@
+@use "variables";
+
+// Mixins
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@mixin flex-row {
+    display: flex;
+    justify-content: center;
+}
+
+// Keyframes
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+// CSS
+
+dialog {
+    margin: auto;
+    z-index: 10000;
+
+    .modal-container {
+        @include flex-column();
+        min-height: 200px;
+        min-width: 360px;
+        background-color: var(--background-color);
+
+        .loading {
+            display: block;
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto;
+
+            border: 10px solid var(--primary-color);
+            border-left: 10px solid rgba(0, 0, 0, 0);
+            border-radius: 100%;
+
+            animation: rotate 1s linear infinite;
+        }
+
+        button {
+            height: 36px;
+            margin: 4px;
+            min-width: 88px;
+
+            background-color: var(--primary-color);
+            color: var(--primary-font-color);
+            border: none;
+
+            font-size: 1.1rem;
+            cursor: pointer;
+
+            &:hover {
+                background-color: var(--hover-color);
+            }
+
+            &.secondary-btn {
+                background: none;
+                color: var(--primary-color);
+            }
+
+            &.close-btn {
+                background: none;
+                color: var(--font-color);
+                min-width: 40px;
+            }
+        }
+
+        .modal-header {
+            @include flex-row();
+            justify-content: space-between;
+            align-items: start;
+            align-content: start;
+            color: var(--font-color);
+
+            h1 {
+                font-size: 1.4rem;
+
+                padding: 1rem;
+            }
+        }
+
+        .modal-content {
+            flex: 1;
+            padding: 1rem;
+            color: var(--font-color);
+
+            h3 {
+                padding: 1rem 0 0 0;
+            }
+
+            label {
+                color: var(--font-color-deactivated);
+
+                &.error {
+                    display: block;
+                    color: var(--error-color);
+                    margin-top: 0.2rem;
+                }
+            }
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: row-reverse;
+            padding: 1rem;
+            color: var(--font-color);
+        }
+    }
+}

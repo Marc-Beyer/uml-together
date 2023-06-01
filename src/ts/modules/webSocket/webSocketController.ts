@@ -4,12 +4,15 @@ import { isMessage, Message, MessageType } from "./Message";
 import * as crypto from "crypto-js";
 import { Global } from "../settings/global";
 import { ConnectionManager } from "../connections/connectionManager";
+import { closeModal, showError, showErrorWithReload } from "../modal/main";
 
 export class WebSocketController {
     public static instance: WebSocketController;
 
     private socket: WebSocket;
     private key: string;
+
+    private isJoining = true;
 
     constructor(wsUrl: string, sessionId: string, key: string) {
         WebSocketController.instance = this;
@@ -44,6 +47,10 @@ export class WebSocketController {
             }
 
             console.log("decrypted message", MessageType[message.type], message);
+
+            if (this.isJoining) {
+                closeModal();
+            }
 
             switch (message.type) {
                 case MessageType.CHAT_MESSAGE:
@@ -98,10 +105,16 @@ export class WebSocketController {
 
         this.socket.addEventListener("close", () => {
             console.log("Closed WebSocket connection");
+
+            closeModal();
+            showError("The connection to the server failed!");
         });
 
         this.socket.addEventListener("error", () => {
             console.log("Error with the WebSocket connection");
+
+            closeModal();
+            showErrorWithReload("The connection to the server failed!");
         });
     }
 

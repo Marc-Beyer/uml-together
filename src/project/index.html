@@ -16,6 +16,23 @@
         <script type="module" defer src="/ts/main.ts"></script>
     </head>
     <body>
+        <!-- Modal for displaying messages -->
+        <dialog id="modal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h1 id="modal-name">Popup</h1>
+                    <button id="modal-close-btn" class="close-btn">✕</button>
+                </div>
+                <div id="modal-content" class="modal-content">
+                    <div class="loading"></div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="modal-primary-btn">Create</button>
+                    <button id="modal-secondary-btn" class="secondary-btn">Cancel</button>
+                </div>
+            </div>
+        </dialog>
+
         <div id="context-menu">
             <ul>
                 <li><button>Option 1</button></li>
@@ -97,10 +114,12 @@
                 </div>
             </div>
             <div class="nav-item image-item">
-                <label for="quick-settings-dark-mode"><img src="/img/darkMode-icon.svg" alt="Dark Mode" /></label>
+                <label for="quick-settings-dark-mode">
+                    <img src="/img/darkMode-icon.svg" alt="Dark Mode" title="Toggle Dark/Light Mode" />
+                </label>
             </div>
             <div class="nav-item">
-                <label class="switch" for="quick-settings-dark-mode">
+                <label class="switch" for="quick-settings-dark-mode" title="Toggle Dark/Light Mode">
                     <input type="checkbox" id="quick-settings-dark-mode" />
                     <div class="slider round"></div>
                 </label>

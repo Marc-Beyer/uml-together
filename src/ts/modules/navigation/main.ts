@@ -20,6 +20,7 @@ import { ConnectionManager } from "../connections/connectionManager";
 import { Global } from "../settings/global";
 import { WebSocketController } from "../webSocket/webSocketController";
 import JSZip from "jszip";
+import { closeModal, showLoading, showModal } from "../modal/main";
 
 export interface Diagram {
     id: number;
@@ -78,9 +79,12 @@ export function initialize() {
     document.getElementById("nav-btn-save-sever")?.addEventListener("click", async () => {
         WebSocketController.instance.sentSaveMessage();
 
-        hideSubMenus();
+        showLoading("Saving on Server...");
+        await delay(1000);
+        closeModal();
     });
-    document.getElementById("nav-btn-export-json")?.addEventListener("click", () => {
+    document.getElementById("nav-btn-export-json")?.addEventListener("click", async () => {
+        showLoading("Exporting...");
         const components = ComponentManager.instance.getState();
         const connections = ConnectionManager.instance.getState();
 
@@ -90,11 +94,15 @@ export function initialize() {
         };
 
         downloadFile(data, `${Global.FILE_NAME === "" ? "uml-together" : Global.FILE_NAME}.json`);
+
+        await delay(1000);
+        closeModal();
     });
     document.getElementById("nav-btn-import-json")?.addEventListener("click", () => {
+        showLoading("Importing JSON...");
         document.getElementById("upload-input")?.click();
     });
-    document.getElementById("upload-input")?.addEventListener("change", (event: Event) => {
+    document.getElementById("upload-input")?.addEventListener("change", async (event: Event) => {
         const target = event.target as HTMLInputElement;
         const file = target.files?.[0];
 
@@ -115,9 +123,13 @@ export function initialize() {
                 ComponentManager.instance.onStateMessage(jsonResult);
                 ConnectionManager.instance.onStateMessage(jsonResult);
             };
+            await delay(1000);
+            closeModal();
         }
     });
-    document.getElementById("nav-btn-generate-code")?.addEventListener("click", () => {
+    document.getElementById("nav-btn-generate-code")?.addEventListener("click", async () => {
+        showLoading("Generating Source Code...");
+
         const codes = ComponentManager.instance.getCode();
         const zip = new JSZip();
 
@@ -131,7 +143,7 @@ export function initialize() {
             zip.file(element.name, blob);
         }
 
-        zip.generateAsync({ type: "blob" }).then((content) => {
+        zip.generateAsync({ type: "blob" }).then(async (content) => {
             const url = URL.createObjectURL(content);
             const link = document.createElement("a");
             link.href = url;
@@ -140,6 +152,9 @@ export function initialize() {
             document.body.appendChild(link);
             link.click();
             URL.revokeObjectURL(url);
+
+            await delay(1000);
+            closeModal();
         });
     });
 
@@ -156,7 +171,8 @@ export function initialize() {
         ComponentManager.instance.autoResizeAll();
     });
     document.getElementById("nav-btn-reset-file")?.addEventListener("click", () => {});
-    document.getElementById("nav-btn-copy-link")?.addEventListener("click", () => {
+    document.getElementById("nav-btn-copy-link")?.addEventListener("click", async () => {
+        showModal("Copied link to clipboard!", "Others can join and edit the diagram via this link.");
         const currentUrl = window.location.href;
 
         navigator.clipboard
@@ -167,8 +183,6 @@ export function initialize() {
             .catch((error) => {
                 console.error("Failed to copy text: ", error);
             });
-
-        hideSubMenus();
     });
 }
 

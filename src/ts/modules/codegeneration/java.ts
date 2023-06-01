@@ -112,6 +112,9 @@ function visibilityToString(visibility: Visibility): string {
         case Visibility.PUBLIC:
             return "public ";
             break;
+        case Visibility.PACKAGE:
+            return "";
+            break;
         case Visibility.DEFAULT:
             return "";
             break;

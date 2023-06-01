@@ -41,7 +41,7 @@ function getClassStructureOrEnum(classComponent: ClassComponent): { element: Cla
 
     if (classComponent.cName.isUnderlined) {
         modifier = Modifier.STATIC;
-    } else if (classComponent.cName.isItalic) {
+    } else if (classComponent.cName.isItalic || classComponent.cName.text.toLowerCase().includes("{abstract}")) {
         modifier = Modifier.ABSTRACT;
     }
 
@@ -50,9 +50,6 @@ function getClassStructureOrEnum(classComponent: ClassComponent): { element: Cla
     switch (stereotype.toLowerCase()) {
         case "<<interface>>":
             modifier = Modifier.INTERFACE;
-            break;
-        case "<<abstract>>":
-            modifier = Modifier.ABSTRACT;
             break;
         case "<<utility>>":
         case "<<static>>":
@@ -238,7 +235,7 @@ function getClassOperations(operationsList: EditText[]) {
             visibility,
             type: operationType,
             name: operationName,
-            isAbstract: operationsList[index].isItalic,
+            isAbstract: operationsList[index].isItalic || operationsList[index].text.toLowerCase().includes("{abstract}"),
             isStatic: operationsList[index].isUnderlined,
             parameter: getParameter(operationParameter),
         });
@@ -257,16 +254,19 @@ function getEnumFromClass(enumeration: ClassComponent): Enumeration {
 
 function getVisibility(name: string) {
     let visibility = Visibility.DEFAULT;
+
     if (name.startsWith("-")) {
         visibility = Visibility.PRIVATE;
     } else if (name.startsWith("+")) {
         visibility = Visibility.PUBLIC;
     } else if (name.startsWith("#")) {
         visibility = Visibility.PROTECTED;
+    } else if (name.startsWith("~")) {
+        visibility = Visibility.PACKAGE;
     }
 
     return {
         visibility,
-        clearedName: name.replace(/^[+\-#]+\s*/g, ""),
+        clearedName: name.replace(/^[+\-#]+\s*/g, "").replace(/\s*{.*}\s*/g, ""),
     };
 }

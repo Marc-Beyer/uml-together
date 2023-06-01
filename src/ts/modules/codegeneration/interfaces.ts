@@ -10,6 +10,7 @@ export enum Visibility {
     PRIVATE,
     PROTECTED,
     PUBLIC,
+    PACKAGE,
 }
 
 export interface ClassAttribute {

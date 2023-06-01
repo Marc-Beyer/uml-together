@@ -2,6 +2,7 @@ import { ChatController } from "./modules/chat/chatController";
 import { ComponentManager } from "./modules/components/componentManager";
 import { ConnectionManager } from "./modules/connections/connectionManager";
 import { initInput } from "./modules/input";
+import { showLoading } from "./modules/modal/main";
 import * as navigation from "./modules/navigation/main";
 import { initGlobalValues } from "./modules/settings/global";
 import * as settings from "./modules/settings/settings";
@@ -36,6 +37,8 @@ const mainUrl = import.meta.env.MODE === "development" ? "http://127.0.0.1" : ""
 })();
 
 function init() {
+    showLoading("Joining the Session...");
+
     navigation.initialize();
     settings.initSettings();
     initGlobalValues();
