@@ -39,7 +39,11 @@ export class EditText extends HTMLElement {
     private underlinedBtn: HTMLButtonElement | undefined = undefined;
     private italicBtn: HTMLButtonElement | undefined = undefined;
 
+    private upBtn: HTMLButtonElement | undefined = undefined;
+    private downBtn: HTMLButtonElement | undefined = undefined;
+
     private callback;
+    private canMove: boolean;
     private lastClick = 0;
     public refocus = 0;
 
@@ -86,10 +90,17 @@ export class EditText extends HTMLElement {
         this.refresh();
     }
 
-    constructor(text: string, inEditMode: boolean = false, callback?: (pressedEnter: boolean) => any, refocus?: boolean) {
+    constructor(
+        text: string,
+        inEditMode: boolean = false,
+        canMove = false,
+        callback?: (pressedEnter: boolean, moved?: number) => any,
+        refocus?: boolean
+    ) {
         super();
         this.text = text ?? "";
         this.inEditMode = inEditMode;
+        this.canMove = canMove;
 
         this.classList.add("edit-text");
         this.callback = callback;
@@ -229,8 +240,29 @@ export class EditText extends HTMLElement {
             });
             this.btnContainer.append(this.italicBtn);
 
+            this.upBtn = document.createElement("button");
+            this.upBtn.append(document.createTextNode("⇧"));
+            this.upBtn.classList.add("et-button");
+            this.upBtn.classList.add("up-button");
+            this.upBtn.addEventListener("click", () => {
+                if (this.callback) this.callback(false, 1);
+            });
+            this.btnContainer.append(this.upBtn);
+
+            this.downBtn = document.createElement("button");
+            this.downBtn.append(document.createTextNode("⇩"));
+            this.downBtn.classList.add("et-button");
+            this.downBtn.classList.add("down-button");
+            this.downBtn.addEventListener("click", () => {
+                if (this.callback) this.callback(false, 2);
+            });
+            this.btnContainer.append(this.downBtn);
+
             this.container.append(this.btnContainer);
         }
+
+        if (this.downBtn) this.downBtn.style.display = this.canMove ? "" : "none";
+        if (this.upBtn) this.upBtn.style.display = this.canMove ? "" : "none";
 
         this.append(this.container);
 

@@ -2,7 +2,7 @@ import { EditText } from "../elements/editText";
 import { Component } from "./component";
 
 export class TextComponent extends Component {
-    public text = new EditText("1..0", false, () => {
+    public text = new EditText("1..0", false, false, () => {
         //this.sendEditMessage();
         this.connectedCallback();
     });

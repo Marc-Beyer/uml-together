@@ -206,15 +206,3 @@ export async function delay(ms: number) {
         }, ms);
     });
 }
-
-async function hideSubMenus() {
-    const subMenus = document.getElementsByClassName("sub-menu");
-    for (let index = 0; index < subMenus.length; index++) {
-        const subMenu = subMenus[index] as HTMLElement;
-        subMenu.style.display = "none";
-
-        await delay(10);
-
-        subMenu.style.display = "";
-    }
-}

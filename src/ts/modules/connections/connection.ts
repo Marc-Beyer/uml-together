@@ -378,15 +378,15 @@ export class Connection implements GridPart {
             return null;
         }
 
-        const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
-        const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
+        const relativeIntersection1 = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator;
+        const relativeIntersection2 = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator;
 
-        if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+        if (relativeIntersection1 < 0 || relativeIntersection1 > 1 || relativeIntersection2 < 0 || relativeIntersection2 > 1) {
             return null;
         }
 
-        const intersectionX = x1 + ua * (x2 - x1);
-        const intersectionY = y1 + ua * (y2 - y1);
+        const intersectionX = x1 + relativeIntersection1 * (x2 - x1);
+        const intersectionY = y1 + relativeIntersection1 * (y2 - y1);
 
         return new Vector2(intersectionX, intersectionY);
     }

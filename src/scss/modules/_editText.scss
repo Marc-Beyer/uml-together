@@ -46,6 +46,7 @@
         $et-btn-size: 1.5rem;
 
         display: flex;
+        flex-direction: column;
         align-items: stretch;
 
         .text {
@@ -72,6 +73,8 @@
         .btn-container {
             width: auto;
             display: flex;
+            margin-top: 0.3rem;
+            margin-left: -0.3rem;
         }
 
         .et-button {
@@ -80,6 +83,7 @@
             width: $et-btn-size;
             min-height: $et-btn-size;
             max-height: $et-btn-size * 1.5;
+            margin: 0 0.3rem 0 0;
 
             background: var(--primary-color);
             color: var(--font-color);

@@ -11,14 +11,14 @@ export type EditTextHolder = {
 };
 
 export class ClassComponent extends Component {
-    public cType = new EditText("", false, (pressedEnter) => {
+    public cType = new EditText("", false, false, (pressedEnter) => {
         this.sendEditMessage();
         if (pressedEnter) {
             this.addAttribute("", true);
         }
         this.connectedCallback();
     });
-    public cName = new EditText("", false, (pressedEnter) => {
+    public cName = new EditText("", false, false, (pressedEnter) => {
         this.sendEditMessage();
         if (pressedEnter) {
             this.cType.inEditMode = true;
@@ -89,7 +89,30 @@ export class ClassComponent extends Component {
         const editText = new EditText(
             text,
             inEditMode,
-            (pressedEnter: boolean) => {
+            true,
+            (pressedEnter: boolean, moved?: number) => {
+                if (moved && moved === 1) {
+                    const index = this.attributeList.findIndex((et) => et === editText);
+                    if (index > 0) {
+                        [this.attributeList[index - 1], this.attributeList[index]] = [
+                            this.attributeList[index],
+                            this.attributeList[index - 1],
+                        ];
+                        editText.parentElement?.insertBefore(editText, editText.previousElementSibling);
+                    }
+                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", this.attributeList);
+                } else if (moved && moved === 2) {
+                    const index = this.attributeList.findIndex((et) => et === editText);
+                    if (index < this.attributeList.length - 1) {
+                        [this.attributeList[index + 1], this.attributeList[index]] = [
+                            this.attributeList[index],
+                            this.attributeList[index + 1],
+                        ];
+                        if (editText.nextElementSibling) editText.parentElement?.insertBefore(editText.nextElementSibling, editText);
+                    }
+                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", this.attributeList);
+                }
+
                 const newText = editText.text.trim();
 
                 // Filter out all empty editTexts
@@ -130,7 +153,30 @@ export class ClassComponent extends Component {
         const editText = new EditText(
             text,
             inEditMode,
-            (pressedEnter: boolean) => {
+            true,
+            (pressedEnter: boolean, moved?: number) => {
+                if (moved && moved === 1) {
+                    const index = this.operationsList.findIndex((et) => et === editText);
+                    if (index > 0) {
+                        [this.operationsList[index - 1], this.operationsList[index]] = [
+                            this.operationsList[index],
+                            this.operationsList[index - 1],
+                        ];
+                        editText.parentElement?.insertBefore(editText, editText.previousElementSibling);
+                    }
+                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", this.operationsList);
+                } else if (moved && moved === 2) {
+                    const index = this.operationsList.findIndex((et) => et === editText);
+                    if (index < this.operationsList.length - 1) {
+                        [this.operationsList[index + 1], this.operationsList[index]] = [
+                            this.operationsList[index],
+                            this.operationsList[index + 1],
+                        ];
+                        if (editText.nextElementSibling) editText.parentElement?.insertBefore(editText.nextElementSibling, editText);
+                    }
+                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", this.operationsList);
+                }
+
                 const newText = editText.text.trim();
 
                 // Filter out all empty editTexts
