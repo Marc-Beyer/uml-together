@@ -21,6 +21,7 @@ import { Global } from "../settings/global";
 import { WebSocketController } from "../webSocket/webSocketController";
 import JSZip from "jszip";
 import { closeModal, showLoading, showModal } from "../modal/main";
+import { openSettings } from "../settings/settings";
 
 export interface Diagram {
     id: number;
@@ -70,8 +71,6 @@ export function initialize() {
         nav?.classList.toggle("closed");
     });
     createButtons(mockupDiagram);
-
-    let settingsModal = document.getElementById("settings-modal");
 
     document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {
         window.location.href = `/`;
@@ -163,7 +162,7 @@ export function initialize() {
     });
 
     document.getElementById("nav-btn-settings")?.addEventListener("click", () => {
-        if (settingsModal) settingsModal.style.display = "block";
+        openSettings();
     });
     document.getElementById("nav-btn-center-view")?.addEventListener("click", () => {
         Grid.resetOffset();

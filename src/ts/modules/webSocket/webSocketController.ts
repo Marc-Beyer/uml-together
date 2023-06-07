@@ -2,7 +2,7 @@ import { ChatController } from "../chat/chatController";
 import { ComponentManager } from "../components/componentManager";
 import { isMessage, Message, MessageType, SettingsMessage, StateMessage } from "./Message";
 import * as crypto from "crypto-js";
-import { getSettingState, onSettingsMessage, saveLocalSettings } from "../settings/settings";
+import { getSettingState, onSettingsMessage, openSettings, saveLocalSettings } from "../settings/settings";
 import { Global } from "../settings/global";
 import { ConnectionManager } from "../connections/connectionManager";
 import { closeModal, showError, showErrorWithReload } from "../modal/main";
@@ -99,6 +99,9 @@ export class WebSocketController {
                     break;
                 case MessageType.SETTINGS:
                     onSettingsMessage(message.data as SettingsMessage);
+                    break;
+                case MessageType.JOIN:
+                    openSettings();
                     break;
                 default:
                     break;

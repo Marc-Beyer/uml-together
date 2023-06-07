@@ -6,9 +6,9 @@ import { Global, ProgrammingLanguage } from "./global";
 const filenameInput = document.getElementById("settings-filename") as HTMLInputElement;
 const programmingLangSelect = document.getElementById("settings-programming-language") as HTMLSelectElement;
 const gridInput = document.getElementById("settings-grid") as HTMLInputElement;
+const settingsModal = document.getElementById("settings-modal");
 
 export function initSettings() {
-    const settingsModal = document.getElementById("settings-modal");
     const darkModeInput = document.getElementById("settings-dark-mode") as HTMLInputElement;
 
     const quickDarkModeInput = document.getElementById("quick-settings-dark-mode") as HTMLInputElement;
@@ -87,4 +87,8 @@ export function saveLocalSettings() {
     localStorage.setItem(Global.SESSION_ID, JSON.stringify(stored));
     console.log("SAVE", stored);
     console.log("SAVE", localStorage.getItem(Global.SESSION_ID));
+}
+
+export function openSettings() {
+    if (settingsModal) settingsModal.style.display = "block";
 }
