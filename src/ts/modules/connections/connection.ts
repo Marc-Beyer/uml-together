@@ -4,7 +4,7 @@ import { ComponentType } from "../components/componentType";
 import { Grid, GridPart } from "../grid";
 import { Input, MovementMode } from "../input";
 import { Vector2 } from "../vector2";
-import { MessageType } from "../webSocket/Message";
+import { CreateConnectionMessage, MessageType } from "../webSocket/Message";
 import { WebSocketController } from "../webSocket/webSocketController";
 import { ConnectionHead } from "./connectionHead";
 import { ConnectionLine } from "./connectionLine";
@@ -122,7 +122,7 @@ export class Connection implements GridPart {
         });
     }
 
-    public getState() {
+    public getState(): CreateConnectionMessage {
         return {
             id: this.connectionId,
             startComponent: this.startComponent.componentId,

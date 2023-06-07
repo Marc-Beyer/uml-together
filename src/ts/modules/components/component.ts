@@ -239,14 +239,16 @@ export class Component extends HTMLElement implements GridPart {
         });
     }
 
-    public getState() {
-        return {
+    public getState(): CreateMessage {
+        const state: CreateMessage = {
+            type: ComponentType.CLASS,
             id: this.componentId,
             x: this._xPos,
             y: this._yPos,
             width: this._width,
             height: this._height,
         };
+        return state;
     }
 
     private createId(): string {
@@ -334,8 +336,18 @@ export class Component extends HTMLElement implements GridPart {
         let height = rect.height;
 
         this.width = width / Grid.xZoom + Grid.xRaster;
-        this.height = height / Grid.yZoom;
+        this.height = height / Grid.yZoom + Grid.yRaster;
         this.sendMoveMessage();
+    }
+
+    public adjustHeightIfNeeded() {
+        this.style.height = "";
+        const rect = this.getBoundingClientRect();
+        let height = rect.height;
+        height = height / Grid.yZoom + Grid.yRaster;
+        console.log("height", height, this.height);
+
+        this.height = height > this.height ? height : this.height;
     }
 
     protected createContextMenu(list: Element) {

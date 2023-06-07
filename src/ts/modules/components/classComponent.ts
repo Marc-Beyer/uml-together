@@ -100,7 +100,6 @@ export class ClassComponent extends Component {
                         ];
                         editText.parentElement?.insertBefore(editText, editText.previousElementSibling);
                     }
-                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", this.attributeList);
                 } else if (moved && moved === 2) {
                     const index = this.attributeList.findIndex((et) => et === editText);
                     if (index < this.attributeList.length - 1) {
@@ -110,7 +109,6 @@ export class ClassComponent extends Component {
                         ];
                         if (editText.nextElementSibling) editText.parentElement?.insertBefore(editText.nextElementSibling, editText);
                     }
-                    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", this.attributeList);
                 }
 
                 const newText = editText.text.trim();
@@ -140,6 +138,10 @@ export class ClassComponent extends Component {
         if (isEditTextObj(editTextObj)) editText.setValues(editTextObj);
         this.attributeList.push(editText);
         this.attributeContainer?.append(editText);
+
+        if (inEditMode) {
+            this.adjustHeightIfNeeded();
+        }
     }
 
     // Add a new operation
@@ -269,7 +271,7 @@ export class ClassComponent extends Component {
                 Input.onDelete();
             })
         );
-        //list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));
+        list.append(this.createContextBtn("Copy Component", "Ctrl+C", () => {}));
 
         list.append(document.createElement("hr"));
 

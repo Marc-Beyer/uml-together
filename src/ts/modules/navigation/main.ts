@@ -83,6 +83,10 @@ export function initialize() {
         await delay(1000);
         closeModal();
     });
+    document.getElementById("nav-btn-export-img-json")?.addEventListener("click", async () => {
+        const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+        const componentContainer = document.getElementById("component-container") as HTMLDivElement;
+    });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", async () => {
         showLoading("Exporting...");
         const components = ComponentManager.instance.getState();

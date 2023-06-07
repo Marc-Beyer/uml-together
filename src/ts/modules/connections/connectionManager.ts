@@ -25,7 +25,7 @@ export class ConnectionManager {
         ConnectionManager.instance = this;
     }
 
-    public getState() {
+    public getState(): CreateConnectionMessage[] {
         const connections = [];
         for (const [_, connection] of this.connections) {
             connections.push(connection.getState());

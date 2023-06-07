@@ -168,6 +168,9 @@ export class Input {
                         }
                         Input.x = screenX;
                         Input.y = screenY;
+
+                        event.preventDefault();
+                        event.stopPropagation();
                         break;
                     case MovementMode.SELECTED_CONNECTION:
                         ConnectionManager.instance.moveConnections(Input.x - screenX, Input.y - screenY);

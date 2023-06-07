@@ -1,7 +1,8 @@
 import { ChatController } from "../chat/chatController";
 import { ComponentManager } from "../components/componentManager";
-import { isMessage, Message, MessageType } from "./Message";
+import { isMessage, Message, MessageType, SettingsMessage, StateMessage } from "./Message";
 import * as crypto from "crypto-js";
+import { getSettingState, onSettingsMessage, saveLocalSettings } from "../settings/settings";
 import { Global } from "../settings/global";
 import { ConnectionManager } from "../connections/connectionManager";
 import { closeModal, showError, showErrorWithReload } from "../modal/main";
@@ -48,10 +49,6 @@ export class WebSocketController {
 
             console.log("decrypted message", MessageType[message.type], message);
 
-            if (this.isJoining) {
-                closeModal();
-            }
-
             switch (message.type) {
                 case MessageType.CHAT_MESSAGE:
                     ChatController.instance.newMessage(message);
@@ -86,6 +83,8 @@ export class WebSocketController {
                 case MessageType.STATE:
                     ComponentManager.instance.onStateMessage(message.data);
                     ConnectionManager.instance.onStateMessage(message.data);
+                    message.data;
+                    onSettingsMessage(message.data.settings as SettingsMessage);
                     break;
 
                 case MessageType.CREATE_CONNECTION:
@@ -98,8 +97,19 @@ export class WebSocketController {
                 case MessageType.DELETE_CONNECTION:
                     ConnectionManager.instance.onDeleteMessage(message.data);
                     break;
+                case MessageType.SETTINGS:
+                    onSettingsMessage(message.data as SettingsMessage);
+                    break;
                 default:
                     break;
+            }
+
+            if (this.isJoining) {
+                const storedString = localStorage.getItem(sessionId);
+                if (storedString === null || storedString.trim().length < 1) {
+                    saveLocalSettings();
+                }
+                closeModal();
             }
         });
 
@@ -138,13 +148,15 @@ export class WebSocketController {
         this.socket.send(JSON.stringify(message));
     }
 
-    private getStateData() {
+    private getStateData(): StateMessage {
         const components = ComponentManager.instance.getState();
         const connections = ConnectionManager.instance.getState();
+        const settings = getSettingState();
 
-        const data = {
+        const data: StateMessage = {
             components,
             connections,
+            settings,
         };
         return data;
     }

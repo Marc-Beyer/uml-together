@@ -1,6 +1,7 @@
 import { ComponentType } from "../components/componentType";
 import { ConnectionHead } from "../connections/connectionHead";
 import { ConnectionLine } from "../connections/connectionLine";
+import { ProgrammingLanguage } from "../settings/global";
 
 export enum MessageType {
     JOIN,
@@ -14,6 +15,7 @@ export enum MessageType {
     CREATE_CONNECTION,
     EDIT_CONNECTION,
     DELETE_CONNECTION,
+    SETTINGS,
 }
 
 export type Message = {
@@ -48,9 +50,17 @@ export function isJoinMessage(message: any): message is JoinMessage {
     return true;
 }
 
+export type SettingsMessage = {
+    FILE_NAME: string;
+    PROGRAMMING_LANG: ProgrammingLanguage;
+    xRaster: number;
+    yRaster: number;
+};
+
 export type StateMessage = {
     components: CreateMessage[];
     connections: CreateConnectionMessage[];
+    settings: SettingsMessage;
 };
 
 export type CreateMessage = {
@@ -73,6 +83,10 @@ export type CreateConnectionMessage = {
     startHead: ConnectionHead;
     endHead: ConnectionHead;
     line: ConnectionLine;
+    startText?: string;
+    middleText?: string;
+    endText?: string;
+    nodes?: { x: number; y: number }[];
 };
 
 export type MoveMessage = {

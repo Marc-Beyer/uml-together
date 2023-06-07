@@ -60,8 +60,8 @@ export class ComponentManager {
         this.removeComponent(component);
     }
 
-    public getState() {
-        const components = [];
+    public getState(): CreateMessage[] {
+        const components: CreateMessage[] = [];
         for (const [_, component] of this.components) {
             components.push(component.getState());
         }

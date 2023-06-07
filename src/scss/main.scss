@@ -61,3 +61,13 @@ button {
         transition-duration: 0s !important;
     }
 }
+
+@media print {
+    nav,
+    #chat,
+    #inspector-container,
+    #settings-modal,
+    #modal {
+        display: none !important;
+    }
+}
