@@ -78,6 +78,36 @@ nav {
         margin: 4rem auto;
     }
 
+    #stored-sessions {
+        width: 100%;
+        display: none;
+        flex-direction: column;
+
+        padding-top: 5rem;
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            width: 100%;
+            background-color: variables.$primary-color;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 1rem 1.5rem;
+            margin: 0.2rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease-in-out;
+
+            &:hover {
+                background-color: darken(variables.$primary-color, 10%);
+            }
+        }
+    }
+
     .container {
         max-width: 900px;
         margin: var(--size-1) auto;
@@ -85,6 +115,7 @@ nav {
 
         img {
             width: 900px;
+            max-width: 100%;
             margin: 2rem 0;
         }
         p {
