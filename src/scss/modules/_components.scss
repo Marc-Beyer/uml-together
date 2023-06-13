@@ -106,11 +106,9 @@
             }
 
             hr {
-                margin: 0.2rem calc(-0.5 * var(--border-size));
-                width: calc(100% + var(--border-size));
-                border: none;
-                background: var(--primary-line-color);
-                height: var(--border-size);
+                width: 100%;
+                margin: 0.2rem 0;
+                border-top: var(--border-size) solid var(--primary-line-color);
             }
 
             .class-head {
@@ -152,15 +150,84 @@
     }
 
     .scale-handle {
+        --handle-size: calc(8px + var(--border-size) * 2);
+        --handle-offset: calc((var(--handle-size) + var(--border-size)) / 2 * -1);
+
         z-index: 150;
         position: absolute;
 
-        width: 16px;
-        height: 16px;
+        width: var(--handle-size);
+        height: var(--handle-size);
 
         border-radius: 100%;
-        border: 2px solid var(--primary-line-color);
+        border: var(--border-size) solid var(--primary-line-color);
 
         background-color: var(--primary-bg-color);
+
+        &.top-left {
+            top: var(--handle-offset);
+            left: var(--handle-offset);
+            cursor: nw-resize;
+        }
+        &.top {
+            top: var(--handle-offset);
+            left: 0px;
+            right: 0px;
+            margin: 0 auto;
+            cursor: n-resize;
+        }
+        &.top-right {
+            top: var(--handle-offset);
+            right: var(--handle-offset);
+            cursor: ne-resize;
+        }
+        &.right {
+            top: 0px;
+            bottom: 0px;
+            right: var(--handle-offset);
+            margin: auto 0;
+            cursor: e-resize;
+        }
+        &.bottom-right {
+            bottom: var(--handle-offset);
+            right: var(--handle-offset);
+            cursor: se-resize;
+        }
+        &.bottom {
+            bottom: var(--handle-offset);
+            left: 0px;
+            right: 0px;
+            margin: 0 auto;
+            cursor: s-resize;
+        }
+        &.bottom-left {
+            bottom: var(--handle-offset);
+            left: var(--handle-offset);
+            cursor: sw-resize;
+        }
+        &.left {
+            left: var(--handle-offset);
+            top: 0px;
+            bottom: 0px;
+            margin: auto 0;
+            cursor: w-resize;
+        }
+    }
+
+    &.generate-img {
+        .component {
+            &.class-component {
+                hr {
+                    width: calc(100% + var(--border-size));
+                    height: var(--border-size);
+
+                    margin: 0.2rem calc(-0.5 * var(--border-size));
+
+                    border: none;
+
+                    background: var(--primary-line-color);
+                }
+            }
+        }
     }
 }

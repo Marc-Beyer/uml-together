@@ -221,7 +221,7 @@ export class Connection implements GridPart {
             for (let index = 0; index < this.nodes.length; index++) {
                 const point = Connection.translateVector(this.nodes[index]);
                 Grid.ctx.beginPath();
-                Grid.ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                Grid.ctx.arc(point.x, point.y, 4 + 2 * Grid.xZoom, 0, 2 * Math.PI);
                 Grid.ctx.fill();
                 Grid.ctx.stroke();
             }

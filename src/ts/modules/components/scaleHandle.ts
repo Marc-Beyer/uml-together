@@ -23,8 +23,8 @@ export class ScaleHandle extends HTMLElement {
         this.component = component;
 
         this.classList.add("scale-handle");
-        this.style.width = `${this.handleSize}px`;
-        this.style.height = `${this.handleSize}px`;
+        //this.style.width = `${this.handleSize}px`;
+        //this.style.height = `${this.handleSize}px`;
 
         const handleOffset = this.handleSize / 2;
 
@@ -86,6 +86,8 @@ export class ScaleHandle extends HTMLElement {
     }
 
     private setStyle(scaleHandlePosition: number, handleOffset: number) {
+        this.classList.add(ScaleHandlePosition[scaleHandlePosition].toLowerCase().replaceAll("_", "-"));
+        return;
         switch (scaleHandlePosition) {
             case ScaleHandlePosition.TOP_LEFT:
                 this.style.top = `-${handleOffset}px`;
