@@ -19,6 +19,7 @@ export class Global {
     public static CONNECTION_SELECT_TOLERANCE = 15;
     public static SESSION_ID = "";
     public static KEY = "";
+    public static STORED_LOCALLY: boolean;
 
     private static fileName = "";
     public static get FILE_NAME() {
@@ -48,6 +49,7 @@ export class Global {
         console.log("STORED VALUES storedString", storedString);
         if (storedString === null || storedString.trim().length < 1) {
             Global.DARK_MODE = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+            Global.STORED_LOCALLY = true;
             return;
         }
         const stored = JSON.parse(storedString);
@@ -56,6 +58,7 @@ export class Global {
 
         Global.darkMode = stored.DARK_MODE ?? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
         Global.fileName = stored.FILE_NAME ?? "";
+        Global.STORED_LOCALLY = stored.STORED_LOCALLY ?? true;
 
         Global.updateDarkMode();
         Global.updateFileName();

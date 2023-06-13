@@ -40,8 +40,8 @@ function init(sessionId: string, key: string) {
     showLoading("Joining the Session...");
 
     navigation.initialize();
-    settings.initSettings();
     Global.INIT(sessionId, key);
+    settings.initSettings();
 
     initInput();
 

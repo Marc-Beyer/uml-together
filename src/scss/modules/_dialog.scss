@@ -29,12 +29,12 @@
 dialog {
     margin: auto;
     z-index: 10000;
+    background-color: var(--background-color);
 
     .modal-container {
         @include flex-column();
         min-height: 200px;
         min-width: 360px;
-        background-color: var(--background-color);
 
         .loading {
             display: block;
@@ -89,6 +89,10 @@ dialog {
                 font-size: 1.4rem;
 
                 padding: 1rem;
+            }
+
+            button:focus {
+                outline: none;
             }
         }
 

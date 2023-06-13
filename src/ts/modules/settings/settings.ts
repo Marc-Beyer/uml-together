@@ -7,6 +7,7 @@ const filenameInput = document.getElementById("settings-filename") as HTMLInputE
 const programmingLangSelect = document.getElementById("settings-programming-language") as HTMLSelectElement;
 const gridInput = document.getElementById("settings-grid") as HTMLInputElement;
 const settingsModal = document.getElementById("settings-modal");
+const storeLocallyToggle = document.getElementById("settings-store-locally") as HTMLInputElement;
 
 export function initSettings() {
     const darkModeInput = document.getElementById("settings-dark-mode") as HTMLInputElement;
@@ -31,11 +32,14 @@ export function initSettings() {
             Grid.xRaster = 0;
             Grid.yRaster = 0;
         }
+        Global.STORED_LOCALLY = storeLocallyToggle.checked;
         Global.DARK_MODE = darkModeInput.checked;
         sendSettingsMessage();
     });
 
     filenameInput.value = Global.FILE_NAME;
+    storeLocallyToggle.checked = Global.STORED_LOCALLY;
+    console.log("STORED_LOCALLY", Global.STORED_LOCALLY);
 
     for (const key in ProgrammingLanguage) {
         if (Object.prototype.hasOwnProperty.call(ProgrammingLanguage, key) && typeof ProgrammingLanguage[key] === "string") {
@@ -78,12 +82,25 @@ export function onSettingsMessage(message: SettingsMessage) {
     gridInput.value = `${Grid.xRaster}`;
 }
 
+export interface StoredObject {
+    DARK_MODE: boolean;
+    FILE_NAME?: string;
+    KEY?: string;
+    STORED_LOCALLY?: boolean;
+}
+
 export function saveLocalSettings() {
-    const stored = {
+    let stored: StoredObject = {
         DARK_MODE: Global.DARK_MODE,
-        FILE_NAME: Global.FILE_NAME,
-        KEY: Global.KEY,
     };
+
+    if (Global.STORED_LOCALLY) {
+        stored.FILE_NAME = Global.FILE_NAME;
+        stored.KEY = Global.KEY;
+    } else {
+        stored.STORED_LOCALLY = Global.STORED_LOCALLY;
+    }
+
     localStorage.setItem(Global.SESSION_ID, JSON.stringify(stored));
     console.log("SAVE", stored);
     console.log("SAVE", localStorage.getItem(Global.SESSION_ID));

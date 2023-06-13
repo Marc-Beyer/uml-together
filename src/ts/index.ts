@@ -10,6 +10,7 @@ button.addEventListener("click", function () {
 });
 
 const storedSessions = document.getElementById("stored-sessions");
+let storedSessionsCount = 0;
 for (let index = 0; index < localStorage.length; index++) {
     const sessionId = localStorage.key(index);
     if (sessionId === null) continue;
@@ -17,14 +18,27 @@ for (let index = 0; index < localStorage.length; index++) {
     if (storedString === null) continue;
     const stored = JSON.parse(storedString);
 
+    if (stored.STORED_LOCALLY === false) continue;
+
+    const div = document.createElement("div");
+
     const a = document.createElement("a");
     a.textContent = `${stored.FILE_NAME ? stored.FILE_NAME : sessionId}`;
-
     a.href = `/project#${sessionId}#${stored.KEY}`;
+    div.append(a);
 
-    storedSessions?.append(a);
+    const button = document.createElement("button");
+    button.textContent = "✕";
+    button.addEventListener("click", () => {
+        localStorage.removeItem(sessionId);
+        div.remove();
+    });
+    div.append(button);
+
+    storedSessions?.append(div);
+    storedSessionsCount++;
 }
-if (storedSessions && localStorage.length > 0) {
+if (storedSessions && storedSessionsCount > 0) {
     storedSessions.style.display = "flex";
 }
 

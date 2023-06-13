@@ -41,6 +41,8 @@ nav {
             padding: 0 1rem;
             color: inherit;
             font-size: inherit;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
 
             &:hover {
                 background: variables.$primary-color-darken;
@@ -82,6 +84,8 @@ nav {
         width: 100%;
         display: none;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
 
         padding-top: 5rem;
 
@@ -89,21 +93,48 @@ nav {
             margin-bottom: 1rem;
         }
 
-        a {
+        div {
+            display: flex;
             width: 100%;
-            background-color: variables.$primary-color;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            padding: 1rem 1.5rem;
-            margin: 0.2rem;
-            font-size: 1.1rem;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.3s ease-in-out;
+            max-width: 900px;
 
-            &:hover {
-                background-color: darken(variables.$primary-color, 10%);
+            a {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                background-color: variables.$primary-color;
+                color: #fff;
+                border: none;
+                border-radius: 3px;
+                padding: 0.6rem 1.5rem;
+                margin: 0.2rem;
+                font-size: 1.1rem;
+                cursor: pointer;
+                text-decoration: none;
+                transition: background-color 0.3s ease-in-out;
+
+                &:hover {
+                    background-color: darken(variables.$primary-color, 10%);
+                }
+            }
+
+            button {
+                background: none;
+                border: none;
+                font-size: large;
+                cursor: pointer;
+                padding: 1rem;
+                transition: background-color 0.3s ease-in-out;
+                margin: 0.2rem 0;
+
+                &:hover {
+                    background-color: variables.$primary-color;
+                    border: none;
+                    border-radius: 3px;
+                    color: #fff;
+                }
             }
         }
     }

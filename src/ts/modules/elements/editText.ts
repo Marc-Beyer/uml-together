@@ -154,11 +154,19 @@ export class EditText extends HTMLElement {
             this.container.classList.add("et-container");
             this.tabIndex = 0;
 
+            [this.input, this.textArea].forEach((element) => {
+                element.addEventListener("mousedown", (event) => {
+                    event.stopPropagation();
+                });
+            });
+
             this.container.addEventListener("focusout", (event) => {
                 // Workaround for chrome
                 if (new Date().getTime() - this.refocus < 500) {
                     return;
                 }
+
+                console.log("focusout", event);
 
                 if (event.currentTarget && event.relatedTarget) {
                     if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) return;
@@ -217,7 +225,8 @@ export class EditText extends HTMLElement {
             this.boldBtn.append(document.createTextNode("B"));
             this.boldBtn.classList.add("et-button");
             this.boldBtn.classList.add("bold-button");
-            this.boldBtn.addEventListener("click", () => {
+            this.boldBtn.addEventListener("mousedown", (event) => {
+                event.stopPropagation();
                 this.isBold = !this.isBold;
             });
             this.btnContainer.append(this.boldBtn);
@@ -226,7 +235,8 @@ export class EditText extends HTMLElement {
             this.underlinedBtn.append(document.createTextNode("U"));
             this.underlinedBtn.classList.add("et-button");
             this.underlinedBtn.classList.add("underlined-button");
-            this.underlinedBtn.addEventListener("click", () => {
+            this.underlinedBtn.addEventListener("mousedown", (event) => {
+                event.stopPropagation();
                 this.isUnderlined = !this.isUnderlined;
             });
             this.btnContainer.append(this.underlinedBtn);
@@ -235,7 +245,8 @@ export class EditText extends HTMLElement {
             this.italicBtn.append(document.createTextNode("I"));
             this.italicBtn.classList.add("et-button");
             this.italicBtn.classList.add("italic-button");
-            this.italicBtn.addEventListener("click", () => {
+            this.italicBtn.addEventListener("mousedown", (event) => {
+                event.stopPropagation();
                 this.isItalic = !this.isItalic;
             });
             this.btnContainer.append(this.italicBtn);
@@ -244,7 +255,8 @@ export class EditText extends HTMLElement {
             this.upBtn.append(document.createTextNode("⇧"));
             this.upBtn.classList.add("et-button");
             this.upBtn.classList.add("up-button");
-            this.upBtn.addEventListener("click", () => {
+            this.upBtn.addEventListener("mousedown", (event) => {
+                event.stopPropagation();
                 if (this.callback) this.callback(false, 1);
             });
             this.btnContainer.append(this.upBtn);
@@ -253,7 +265,8 @@ export class EditText extends HTMLElement {
             this.downBtn.append(document.createTextNode("⇩"));
             this.downBtn.classList.add("et-button");
             this.downBtn.classList.add("down-button");
-            this.downBtn.addEventListener("click", () => {
+            this.downBtn.addEventListener("mousedown", (event) => {
+                event.stopPropagation();
                 if (this.callback) this.callback(false, 2);
             });
             this.btnContainer.append(this.downBtn);
