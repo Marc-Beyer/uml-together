@@ -2,6 +2,7 @@ import { ComponentManager } from "../components/componentManager";
 import { ComponentType } from "../components/componentType";
 import { Grid } from "../grid";
 import { createButtons } from "./buttons";
+import { documentToSVG, elementToSVG, inlineResources, formatXML } from "dom-to-svg";
 
 import classIcon from "/img/class-icon.svg";
 import interfaceIcon from "/img/interface-icon.svg";
@@ -83,8 +84,34 @@ export function initialize() {
         closeModal();
     });
     document.getElementById("nav-btn-export-img-json")?.addEventListener("click", async () => {
-        //const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
-        //const componentContainer = document.getElementById("component-container") as HTMLDivElement;
+        showLoading("Exporting Image...");
+
+        const componentContainer = document.getElementById("component-container") as HTMLDivElement;
+        const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+
+        const svgDocument = elementToSVG(componentContainer);
+        const svgString = new XMLSerializer().serializeToString(svgDocument);
+
+        let svg = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        let domURL = self.URL || self.webkitURL || self;
+        let url = domURL.createObjectURL(svg);
+        let img = new Image();
+
+        img.addEventListener("load", async () => {
+            Grid.ctx.drawImage(img, 0, 0);
+            domURL.revokeObjectURL(url);
+            const canvasUrl = mainCanvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = canvasUrl;
+            link.download = `${Global.FILE_NAME.trim().length > 0 ? Global.FILE_NAME : "UML-Together"}.png`;
+            document.body.appendChild(link);
+            link.click();
+
+            await delay(1000);
+            closeModal();
+        });
+
+        img.src = url;
     });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", async () => {
         showLoading("Exporting...");
@@ -193,7 +220,8 @@ export function downloadFile(data: any, fileName: string = "uml-together", fileT
     const fileData = JSON.stringify(data);
 
     const blob = new Blob([fileData], { type: fileType });
-    const url = URL.createObjectURL(blob);
+    let domURL = self.URL || self.webkitURL || self;
+    const url = domURL.createObjectURL(blob);
 
     const link = document.createElement("a");
     link.href = url;

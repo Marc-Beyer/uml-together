@@ -280,8 +280,8 @@ export class Component extends HTMLElement implements GridPart {
         this.width = this.width;
         this.height = this.height;
         this.updateOffset();
-        this.style.fontSize = `${Grid.xZoom * Component.baseFontSize}px`;
-        this.style.borderWidth = `${Grid.xZoom * Component.baseBorderWidth}px`;
+        //this.style.fontSize = `${Grid.xZoom * Component.baseFontSize}px`;
+        //this.style.borderWidth = `${Grid.xZoom * Component.baseBorderWidth}px`;
         this.updateCSSOnZoom();
     }
 

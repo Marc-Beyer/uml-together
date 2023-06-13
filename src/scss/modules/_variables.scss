@@ -27,6 +27,8 @@ body {
     --font-color: #ffffff;
     --font-color-darken: #{darken(#ffffff, 30%)};
     --font-color-deactivated: rgb(92, 92, 92);
+
+    --zoom-size: 1px;
 }
 
 .dark-mode {
