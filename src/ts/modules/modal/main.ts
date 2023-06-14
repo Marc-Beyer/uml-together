@@ -82,11 +82,11 @@ export function showErrorWithReload(errorMsg: string) {
 
     resetModal();
 
-    modalPrimaryBtn.textContent = "RELOAD";
+    modalPrimaryBtn.textContent = "Reload";
     modalContent.append(document.createTextNode(errorMsg));
 
     modalPrimaryBtn.addEventListener("click", () => {
-        window.location.href = "/";
+        location.reload();
     });
 
     modalSecondaryBtn.style.display = "none";

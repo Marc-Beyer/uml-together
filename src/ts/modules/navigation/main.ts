@@ -26,6 +26,8 @@ import realizationIcon from "/img/realization-icon.svg";
 
 import transparentLightImg from "/img/transparent-light.png";
 import transparentDarkImg from "/img/transparent-dark.png";
+import { Component } from "../components/component";
+import { Connection } from "../connections/connection";
 
 const componentContainer = document.getElementById("component-container") as HTMLDivElement;
 const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
@@ -131,43 +133,32 @@ export function initialize() {
             diagramSize.right === undefined ||
             diagramSize.bottom === undefined
         ) {
+            showErrorWithReload("Could not find diagram!");
             return;
         }
 
-        console.log("diagramSize", diagramSize);
-        console.log("width/height", Grid.width, Grid.height);
+        Component.resetActiveComponents();
+        Connection.resetActiveConnections();
 
-        const zoom = Grid.zoomMax;
-        const leftOffset = 10;
-        const rightOffset = 10;
-        const topOffset = 15;
-        const bottomOffset = 15;
-
-        Grid.xZoom = zoom;
-        Grid.yZoom = zoom;
+        Grid.xZoom = Global.IMG_EXP_ZOOM;
+        Grid.yZoom = Global.IMG_EXP_ZOOM;
         Grid.addZoom(0, 0);
 
-        document.getElementById("main-nav")!.style.display = "none";
-        document.getElementById("tool-nav")!.style.display = "none";
-
-        const startX = -diagramSize.left - Grid.width / (2 * zoom) + leftOffset;
-        const startY = -diagramSize.top - Grid.height / (2 * zoom) + topOffset;
-        const endX = -diagramSize.right + Grid.width / (2 * zoom) - leftOffset - rightOffset;
-        const endY = -diagramSize.bottom + Grid.height / (2 * zoom) - topOffset - bottomOffset;
-        const stepX = 2 * (Grid.width / (2 * zoom));
-        const stepY = 2 * (Grid.height / (2 * zoom));
+        const startX = -diagramSize.left - Grid.width / (2 * Global.IMG_EXP_ZOOM) + Global.IMG_EXP_LEFT_OFFSET;
+        const startY = -diagramSize.top - Grid.height / (2 * Global.IMG_EXP_ZOOM) + Global.IMG_EXP_TOP_OFFSET;
+        const endX = -diagramSize.right + Grid.width / (2 * Global.IMG_EXP_ZOOM) - Global.IMG_EXP_LEFT_OFFSET - Global.IMG_EXP_RIGHT_OFFSET;
+        const endY =
+            -diagramSize.bottom + Grid.height / (2 * Global.IMG_EXP_ZOOM) - Global.IMG_EXP_TOP_OFFSET - Global.IMG_EXP_BOTTOM_OFFSET;
+        const stepX = 2 * (Grid.width / (2 * Global.IMG_EXP_ZOOM));
+        const stepY = 2 * (Grid.height / (2 * Global.IMG_EXP_ZOOM));
         const imgNrX = Math.ceil((startX - endX) / stepX) + 1;
         const imgNrY = Math.ceil((startY - endY) / stepY) + 1;
 
         const canvas = document.createElement("canvas");
-        canvas.style.display = "block";
-        canvas.style.margin = "0 auto";
         canvas.style.backgroundImage = `url(${Global.DARK_MODE ? transparentDarkImg : transparentLightImg})`;
         const ctx = canvas.getContext("2d");
         if (ctx === null) {
             showErrorWithReload("Could not create canvas!");
-            document.getElementById("main-nav")!.style.display = "";
-            document.getElementById("tool-nav")!.style.display = "";
             return;
         }
 
@@ -177,6 +168,8 @@ export function initialize() {
         const modal = document.getElementById("modal-content") as HTMLDivElement;
         const modalPrimaryBtn = document.getElementById("modal-primary-btn") as HTMLButtonElement;
         const modalSecondaryBtn = document.getElementById("modal-secondary-btn") as HTMLButtonElement;
+        const modalCloseBtn = document.getElementById("modal-close-btn") as HTMLButtonElement;
+
         let cancel = false;
 
         modal?.append(canvas);
@@ -193,10 +186,12 @@ export function initialize() {
                 cancel = true;
             });
         }
-
-        console.log("startX", startX, "endX", endX, "x", imgNrX);
-        console.log("startY", startY, "endY", endY, "y", imgNrY);
-        console.log("stepX", stepX, "stepY", stepY);
+        if (modalCloseBtn) {
+            modalCloseBtn.addEventListener("click", () => {
+                closeModal();
+                cancel = true;
+            });
+        }
 
         for (let x = 0; x < imgNrX; x++) {
             for (let y = 0; y < imgNrY; y++) {
@@ -207,8 +202,6 @@ export function initialize() {
                     Grid.yOffset = 0;
                     Grid.addZoom(0, 0);
                     componentContainer.classList.remove("generate-img");
-                    document.getElementById("main-nav")!.style.display = "";
-                    document.getElementById("tool-nav")!.style.display = "";
                     return;
                 }
                 await takeImageAt(startX - stepX * x, startY - stepY * y);
@@ -217,7 +210,6 @@ export function initialize() {
         }
 
         const dataUrl = canvas.toDataURL("image/png");
-
         const link = document.createElement("a");
         link.href = dataUrl;
         link.download = `${Global.FILE_NAME.trim().length > 0 ? Global.FILE_NAME : "UML-Together"}.png`;
@@ -241,8 +233,6 @@ export function initialize() {
 
         await delay(1000);
         componentContainer.classList.remove("generate-img");
-        document.getElementById("main-nav")!.style.display = "";
-        document.getElementById("tool-nav")!.style.display = "";
     });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", async () => {
         showLoading("Exporting...");

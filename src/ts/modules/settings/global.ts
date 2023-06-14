@@ -21,6 +21,13 @@ export class Global {
     public static KEY = "";
     public static STORED_LOCALLY: boolean;
 
+    // Image export
+    public static IMG_EXP_ZOOM = Grid.zoomMax;
+    public static IMG_EXP_LEFT_OFFSET = 10;
+    public static IMG_EXP_RIGHT_OFFSET = 10;
+    public static IMG_EXP_TOP_OFFSET = 15;
+    public static IMG_EXP_BOTTOM_OFFSET = 15;
+
     private static fileName = "";
     public static get FILE_NAME() {
         return Global.fileName;

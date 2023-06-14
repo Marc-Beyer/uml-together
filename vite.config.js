@@ -38,7 +38,6 @@ export default defineConfig({
             input: {
                 main: path.resolve(__dirname, "src/index.html"),
                 join: path.resolve(__dirname, "src/join/index.html"),
-                newProject: path.resolve(__dirname, "src/new-project/index.html"),
                 project: path.resolve(__dirname, "src/project/index.html"),
             },
         },
