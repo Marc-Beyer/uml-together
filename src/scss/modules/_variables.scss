@@ -28,6 +28,8 @@ body {
     --font-color-darken: #{darken(#ffffff, 30%)};
     --font-color-deactivated: rgb(92, 92, 92);
 
+    --secondary-font-color: #141414;
+
     --zoom-size: 1px;
 }
 
@@ -47,4 +49,6 @@ body {
     --font-color: #ffffff;
     --font-color-darken: #{darken(#ffffff, 30%)};
     --font-color-deactivated: rgb(92, 92, 92);
+
+    --secondary-font-color: #ffffff;
 }

@@ -2,7 +2,13 @@ import { ComponentManager } from "../components/componentManager";
 import { ComponentType } from "../components/componentType";
 import { Grid } from "../grid";
 import { createButtons } from "./buttons";
-import { documentToSVG, elementToSVG, inlineResources, formatXML } from "dom-to-svg";
+import { elementToSVG } from "dom-to-svg";
+import { ConnectionManager } from "../connections/connectionManager";
+import { Global } from "../settings/global";
+import { WebSocketController } from "../webSocket/webSocketController";
+import JSZip from "jszip";
+import { closeModal, showErrorWithReload, showLoading, showModal } from "../modal/main";
+import { openSettings } from "../settings/settings";
 
 import classIcon from "/img/class-icon.svg";
 import interfaceIcon from "/img/interface-icon.svg";
@@ -17,12 +23,14 @@ import composition from "/img/composition-icon.svg";
 import aggregationIcon from "/img/aggregation-icon.svg";
 import usageIcon from "/img/usage-icon.svg";
 import realizationIcon from "/img/realization-icon.svg";
-import { ConnectionManager } from "../connections/connectionManager";
-import { Global } from "../settings/global";
-import { WebSocketController } from "../webSocket/webSocketController";
-import JSZip from "jszip";
-import { closeModal, showLoading, showModal } from "../modal/main";
-import { openSettings } from "../settings/settings";
+
+import transparentLightImg from "/img/transparent-light.png";
+import transparentDarkImg from "/img/transparent-dark.png";
+
+const componentContainer = document.getElementById("component-container") as HTMLDivElement;
+const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+
+const imageDelay = 500;
 
 export interface Diagram {
     id: number;
@@ -65,6 +73,36 @@ let mockupDiagram: Diagram = {
     ],
 };
 
+async function takeImageAt(x: number, y: number): Promise<string> {
+    Grid.xOffset = x;
+    Grid.yOffset = y;
+    Grid.addZoom(0, 0);
+
+    await delay(imageDelay);
+
+    componentContainer.classList.add("generate-img");
+
+    const svgDocument = elementToSVG(componentContainer);
+    const svgString = new XMLSerializer().serializeToString(svgDocument);
+
+    let svg = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    let domURL = self.URL || self.webkitURL || self;
+    let url = domURL.createObjectURL(svg);
+    let img = new Image();
+
+    img.src = url;
+
+    return new Promise((resolve, reject) => {
+        img.addEventListener("load", async () => {
+            Grid.ctx.drawImage(img, 0, 0);
+            domURL.revokeObjectURL(url);
+            const canvasUrl = mainCanvas.toDataURL("image/png");
+            resolve(canvasUrl);
+        });
+        img.addEventListener("error", reject);
+    });
+}
+
 export function initialize() {
     const nav = document.getElementById("main-nav");
 
@@ -86,32 +124,125 @@ export function initialize() {
     document.getElementById("nav-btn-export-img-json")?.addEventListener("click", async () => {
         showLoading("Exporting Image...");
 
-        const componentContainer = document.getElementById("component-container") as HTMLDivElement;
-        const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+        const diagramSize = ComponentManager.instance.getDiagramSize();
+        if (
+            diagramSize.top === undefined ||
+            diagramSize.left === undefined ||
+            diagramSize.right === undefined ||
+            diagramSize.bottom === undefined
+        ) {
+            return;
+        }
 
-        const svgDocument = elementToSVG(componentContainer);
-        const svgString = new XMLSerializer().serializeToString(svgDocument);
+        console.log("diagramSize", diagramSize);
+        console.log("width/height", Grid.width, Grid.height);
 
-        let svg = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-        let domURL = self.URL || self.webkitURL || self;
-        let url = domURL.createObjectURL(svg);
-        let img = new Image();
+        const zoom = Grid.zoomMax;
+        const leftOffset = 10;
+        const rightOffset = 10;
+        const topOffset = 15;
+        const bottomOffset = 15;
 
-        img.addEventListener("load", async () => {
-            Grid.ctx.drawImage(img, 0, 0);
-            domURL.revokeObjectURL(url);
-            const canvasUrl = mainCanvas.toDataURL("image/png");
-            const link = document.createElement("a");
-            link.href = canvasUrl;
-            link.download = `${Global.FILE_NAME.trim().length > 0 ? Global.FILE_NAME : "UML-Together"}.png`;
-            document.body.appendChild(link);
+        Grid.xZoom = zoom;
+        Grid.yZoom = zoom;
+        Grid.addZoom(0, 0);
+
+        document.getElementById("main-nav")!.style.display = "none";
+        document.getElementById("tool-nav")!.style.display = "none";
+
+        const startX = -diagramSize.left - Grid.width / (2 * zoom) + leftOffset;
+        const startY = -diagramSize.top - Grid.height / (2 * zoom) + topOffset;
+        const endX = -diagramSize.right + Grid.width / (2 * zoom) - leftOffset - rightOffset;
+        const endY = -diagramSize.bottom + Grid.height / (2 * zoom) - topOffset - bottomOffset;
+        const stepX = 2 * (Grid.width / (2 * zoom));
+        const stepY = 2 * (Grid.height / (2 * zoom));
+        const imgNrX = Math.ceil((startX - endX) / stepX) + 1;
+        const imgNrY = Math.ceil((startY - endY) / stepY) + 1;
+
+        const canvas = document.createElement("canvas");
+        canvas.style.display = "block";
+        canvas.style.margin = "0 auto";
+        canvas.style.backgroundImage = `url(${Global.DARK_MODE ? transparentDarkImg : transparentLightImg})`;
+        const ctx = canvas.getContext("2d");
+        if (ctx === null) {
+            showErrorWithReload("Could not create canvas!");
+            document.getElementById("main-nav")!.style.display = "";
+            document.getElementById("tool-nav")!.style.display = "";
+            return;
+        }
+
+        canvas.width = ((startX - endX) / stepX + 1) * Grid.width;
+        canvas.height = ((startY - endY) / stepY + 1) * Grid.height;
+
+        const modal = document.getElementById("modal-content") as HTMLDivElement;
+        const modalPrimaryBtn = document.getElementById("modal-primary-btn") as HTMLButtonElement;
+        const modalSecondaryBtn = document.getElementById("modal-secondary-btn") as HTMLButtonElement;
+        let cancel = false;
+
+        modal?.append(canvas);
+        if (modalPrimaryBtn) {
+            modalPrimaryBtn.style.display = "";
+            modalPrimaryBtn.textContent = "Download Image";
+            modalPrimaryBtn.disabled = true;
+        }
+        if (modalSecondaryBtn) {
+            modalSecondaryBtn.style.display = "";
+            modalSecondaryBtn.textContent = "Cancel";
+            modalSecondaryBtn.addEventListener("click", () => {
+                closeModal();
+                cancel = true;
+            });
+        }
+
+        console.log("startX", startX, "endX", endX, "x", imgNrX);
+        console.log("startY", startY, "endY", endY, "y", imgNrY);
+        console.log("stepX", stepX, "stepY", stepY);
+
+        for (let x = 0; x < imgNrX; x++) {
+            for (let y = 0; y < imgNrY; y++) {
+                if (cancel) {
+                    Grid.xZoom = 1;
+                    Grid.yZoom = 1;
+                    Grid.xOffset = 0;
+                    Grid.yOffset = 0;
+                    Grid.addZoom(0, 0);
+                    componentContainer.classList.remove("generate-img");
+                    document.getElementById("main-nav")!.style.display = "";
+                    document.getElementById("tool-nav")!.style.display = "";
+                    return;
+                }
+                await takeImageAt(startX - stepX * x, startY - stepY * y);
+                ctx.drawImage(mainCanvas, x * Grid.width, y * Grid.height);
+            }
+        }
+
+        const dataUrl = canvas.toDataURL("image/png");
+
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = `${Global.FILE_NAME.trim().length > 0 ? Global.FILE_NAME : "UML-Together"}.png`;
+        document.body.appendChild(link);
+
+        modalPrimaryBtn?.addEventListener("click", async () => {
             link.click();
-
             await delay(1000);
+            link.remove();
             closeModal();
         });
+        modalPrimaryBtn.disabled = false;
 
-        img.src = url;
+        document.querySelector("#modal-content .loading")?.remove();
+
+        Grid.xZoom = 1;
+        Grid.yZoom = 1;
+        Grid.xOffset = 0;
+        Grid.yOffset = 0;
+        Grid.addZoom(0, 0);
+
+        await delay(1000);
+        componentContainer.classList.remove("generate-img");
+        document.getElementById("main-nav")!.style.display = "";
+        document.getElementById("tool-nav")!.style.display = "";
     });
     document.getElementById("nav-btn-export-json")?.addEventListener("click", async () => {
         showLoading("Exporting...");
@@ -216,7 +347,7 @@ export function initialize() {
     });
 }
 
-export function downloadFile(data: any, fileName: string = "uml-together", fileType = "application/json") {
+export async function downloadFile(data: any, fileName: string = "uml-together", fileType = "application/json") {
     const fileData = JSON.stringify(data);
 
     const blob = new Blob([fileData], { type: fileType });
@@ -228,6 +359,8 @@ export function downloadFile(data: any, fileName: string = "uml-together", fileT
     link.download = fileName;
     document.body.appendChild(link);
     link.click();
+    await delay(1000);
+    link.remove();
 }
 
 export async function delay(ms: number) {

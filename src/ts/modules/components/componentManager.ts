@@ -112,4 +112,27 @@ export class ComponentManager {
         }
         return codes;
     }
+
+    public getDiagramSize() {
+        let top: number | undefined = undefined;
+        let left: number | undefined = undefined;
+        let right: number | undefined = undefined;
+        let bottom: number | undefined = undefined;
+
+        for (const [_, component] of this.components) {
+            if (component instanceof ClassComponent) {
+                if (top === undefined || top > component.yPos) top = component.yPos;
+                if (left === undefined || left > component.xPos) left = component.xPos;
+                if (right === undefined || right < component.xPos + component.width) right = component.xPos + component.width;
+                if (bottom === undefined || bottom < component.yPos + component.height) bottom = component.yPos + component.height;
+            }
+        }
+
+        return {
+            top,
+            left,
+            right,
+            bottom,
+        };
+    }
 }

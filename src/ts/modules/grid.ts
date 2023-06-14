@@ -45,7 +45,6 @@ export class Grid {
     public static set xZoom(value: number) {
         Grid._xZoom = Math.max(Math.min(value, this.zoomMax), this.zoomMin);
         Grid.zoomSizeCssRule.style.setProperty("--zoom-size", `${Grid._xZoom}px`);
-        console.log("Grid.zoomSizeCssRule", Grid.zoomSizeCssRule, `${Grid._xZoom}px`);
     }
     public static get yZoom(): number {
         return Grid._yZoom;

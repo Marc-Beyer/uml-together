@@ -19,7 +19,7 @@ function resetModal() {
 
     // Clone the buttons to remove all event listener
     const newModalPrimaryBtn = modalPrimaryBtn.cloneNode(true) as HTMLElement;
-    const newModalSecondaryBtn = modalPrimaryBtn.cloneNode(true) as HTMLElement;
+    const newModalSecondaryBtn = modalSecondaryBtn.cloneNode(true) as HTMLElement;
     modalPrimaryBtn.replaceWith(newModalPrimaryBtn);
     modalSecondaryBtn.replaceWith(newModalSecondaryBtn);
     modalPrimaryBtn = newModalPrimaryBtn;

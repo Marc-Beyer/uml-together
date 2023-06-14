@@ -30,16 +30,23 @@ dialog {
     margin: auto;
     z-index: 10000;
     background-color: var(--background-color);
+    max-width: 90vw;
+    max-height: 90vh;
 
     .modal-container {
         @include flex-column();
         min-height: 200px;
         min-width: 360px;
+        color: var(--secondary-font-color);
 
         .loading {
             display: block;
             width: 80px;
             height: 80px;
+
+            position: absolute;
+            inset: 0;
+            top: calc(50% - 40px);
 
             margin: 0 auto;
 
@@ -53,6 +60,7 @@ dialog {
         button {
             height: 36px;
             margin: 4px;
+            padding: 0 1rem;
             min-width: 88px;
 
             background-color: var(--primary-color);
@@ -73,8 +81,23 @@ dialog {
 
             &.close-btn {
                 background: none;
-                color: var(--font-color);
                 min-width: 40px;
+                color: var(--secondary-font-color);
+
+                &:focus-visible {
+                    font-weight: bold;
+                    background-color: var(--primary-color);
+                    color: var(--font-color);
+                }
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+
+                &:hover {
+                    background-color: var(--primary-color);
+                }
             }
         }
 
@@ -83,7 +106,6 @@ dialog {
             justify-content: space-between;
             align-items: start;
             align-content: start;
-            color: var(--font-color);
 
             h1 {
                 font-size: 1.4rem;
@@ -99,10 +121,18 @@ dialog {
         .modal-content {
             flex: 1;
             padding: 1rem;
-            color: var(--font-color);
 
             h3 {
                 padding: 1rem 0 0 0;
+            }
+
+            canvas {
+                max-width: 50vw;
+                max-height: 50vh;
+                background-size: 20px;
+                backdrop-filter: none;
+                background-repeat: repeat;
+                image-rendering: pixelated;
             }
 
             label {
