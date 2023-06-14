@@ -190,10 +190,10 @@ export class Connection implements GridPart {
 
         switch (this.line) {
             case ConnectionLine.DASHED:
-                Grid.ctx.setLineDash([5, 5]);
+                Grid.ctx.setLineDash([5 * Grid.xZoom, 5 * Grid.xZoom]);
                 break;
             case ConnectionLine.DOTTED:
-                Grid.ctx.setLineDash([2, 2]);
+                Grid.ctx.setLineDash([2 * Grid.xZoom, 2 * Grid.xZoom]);
                 break;
 
             default:
