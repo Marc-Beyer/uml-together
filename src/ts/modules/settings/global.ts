@@ -22,11 +22,14 @@ export class Global {
     public static STORED_LOCALLY: boolean;
 
     // Image export
-    public static IMG_EXP_ZOOM = Grid.zoomMax;
-    public static IMG_EXP_LEFT_OFFSET = 10;
-    public static IMG_EXP_RIGHT_OFFSET = 10;
-    public static IMG_EXP_TOP_OFFSET = 15;
-    public static IMG_EXP_BOTTOM_OFFSET = 15;
+    public static IMG_EXP_ZOOM: number = Grid.zoomMax;
+    public static IMG_EXP_LEFT_OFFSET: number = 10;
+    public static IMG_EXP_RIGHT_OFFSET: number = 10;
+    public static IMG_EXP_TOP_OFFSET: number = 15;
+    public static IMG_EXP_BOTTOM_OFFSET: number = 15;
+    public static IMG_EXP_BACKGROUND_COLOR: string = "#ffffff";
+    public static IMG_EXP_BACKGROUND_ALPHA: number = 0;
+    public static IMG_EXP_DELAY: number = 0;
 
     private static fileName = "";
     public static get FILE_NAME() {

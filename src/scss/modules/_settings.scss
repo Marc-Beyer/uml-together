@@ -1,21 +1,17 @@
 @use "variables";
 
 .modal {
-    position: fixed;
-    display: none;
-    z-index: 3000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100vh;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    margin: auto;
+    z-index: 10000;
+    background-color: var(--background-color);
+    max-width: 90vw;
+    max-height: 90vh;
+    min-width: 600px;
 
     .modal-content {
-        width: 80%;
-        max-width: 500px;
+        width: 100%;
 
-        margin: 15% auto;
+        margin: 0;
         padding: var(--size-1);
 
         border: 1px solid var(--primary-bg-color-darken);
@@ -33,6 +29,37 @@
                 color: var(--hover-color);
                 text-decoration: none;
                 cursor: pointer;
+            }
+        }
+
+        #settings-container {
+            display: flex;
+            justify-content: center;
+
+            #settings-nav {
+                position: inherit;
+                margin-right: 1rem;
+                background: none;
+                border-right: 1px solid var(--secondary-font-color);
+                margin-left: -1rem;
+
+                ul {
+                    li {
+                        list-style: none;
+                        button {
+                            width: 100%;
+                            padding: 0.5rem 1rem;
+
+                            &.highlighted {
+                                background-color: var(--primary-color-darken);
+                            }
+                        }
+                    }
+                }
+            }
+
+            .settings-page {
+                flex: 1;
             }
         }
 
@@ -65,7 +92,13 @@
                 border: 1px solid var(--primary-color-darken);
                 padding: var(--size-05);
             }
+
+            input[type="color"] {
+                padding: 0;
+                border: 1px solid var(--primary-color-darken);
+            }
         }
+
         .btn-container {
             display: flex;
             width: 100%;
@@ -83,7 +116,19 @@
                 &:hover {
                     background-color: var(--hover-color);
                 }
+
+                &:focus-visible {
+                    border: 2px solid var(--primary-bg-color-darken);
+                    outline: 2px solid var(--primary-color-darken);
+                }
             }
+        }
+    }
+    input,
+    select,
+    button {
+        &:focus-visible {
+            outline: 2px solid var(--primary-color);
         }
     }
 }

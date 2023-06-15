@@ -99,6 +99,18 @@ dialog {
                     background-color: var(--primary-color);
                 }
             }
+
+            &.link-btn {
+                background: none;
+                display: inline;
+                margin: 0;
+                padding: 0;
+                min-width: 0;
+                color: var(--primary-color);
+                font-weight: normal;
+                font-size: 1rem;
+                text-decoration: underline;
+            }
         }
 
         .modal-header {
@@ -135,6 +147,8 @@ dialog {
                 backdrop-filter: none;
                 background-repeat: repeat;
                 image-rendering: pixelated;
+
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             }
 
             label {

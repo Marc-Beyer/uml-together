@@ -37,7 +37,6 @@ const mainUrl = import.meta.env.MODE === "development" ? "http://127.0.0.1" : ""
                     const rule = rules[index];
                     if (rule instanceof CSSStyleRule && rule.style.getPropertyValue("--zoom-size")) {
                         Grid.zoomSizeCssRule = rule;
-                        console.log("index", index);
                     }
                 }
             }

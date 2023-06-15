@@ -9,6 +9,12 @@ button.addEventListener("click", function () {
     requestNewSession();
 });
 
+if (window.location.href.endsWith("#new-project")) requestNewSession();
+
+if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.body.classList.add("dark-mode");
+}
+
 const storedSessions = document.getElementById("stored-sessions");
 let storedSessionsCount = 0;
 for (let index = 0; index < localStorage.length; index++) {

@@ -4,6 +4,10 @@ const joinButton = document.getElementById("join-btn") as HTMLButtonElement;
 const sessionInput = document.getElementById("session-input") as HTMLInputElement;
 const sessionError = document.getElementById("session-error") as HTMLSpanElement;
 
+if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.body.classList.add("dark-mode");
+}
+
 joinButton.addEventListener("click", () => {
     // Focus the session input if it is empty
     if (sessionInput.value.trim() === "") {

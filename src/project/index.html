@@ -40,41 +40,85 @@
                 <li><button>Option 3</button></li>
             </ul>
         </div>
-        <div id="settings-modal" class="modal">
+        <dialog id="settings-modal" class="modal">
             <div class="modal-content">
                 <span id="settings-modal-close">&times;</span>
                 <h2>Settings</h2>
-                <div class="option">
-                    <label for="settings-filename">File Name</label>
-                    <input type="text" id="settings-filename" />
-                </div>
-                <div class="option">
-                    <label for="settings-programming-language">Language</label>
-                    <select id="settings-programming-language"></select>
-                </div>
-                <div class="option">
-                    <label for="settings-grid">Grid</label>
-                    <input type="number" pattern="/^[0-9]+$/" id="settings-grid" />
-                </div>
-                <div class="option">
-                    <label for="settings-dark-mode">Dark mode</label>
-                    <label class="switch" for="settings-dark-mode">
-                        <input type="checkbox" id="settings-dark-mode" />
-                        <div class="slider round"></div>
-                    </label>
-                </div>
-                <div class="option">
-                    <label for="settings-store-locally">Store Key Locally</label>
-                    <label class="switch" for="settings-store-locally">
-                        <input type="checkbox" id="settings-store-locally" />
-                        <div class="slider round"></div>
-                    </label>
+                <div id="settings-container">
+                    <nav id="settings-nav">
+                        <ul>
+                            <li><button id="general-settings-btn">General</button></li>
+                            <li><button id="img-export-settings-btn">Export Images</button></li>
+                        </ul>
+                    </nav>
+                    <div id="general-settings" class="settings-page">
+                        <div class="option">
+                            <label for="settings-filename">File Name</label>
+                            <input type="text" id="settings-filename" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-programming-language">Language</label>
+                            <select id="settings-programming-language"></select>
+                        </div>
+                        <div class="option">
+                            <label for="settings-grid">Grid</label>
+                            <input type="number" pattern="/^[0-9]+$/" id="settings-grid" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-dark-mode">Dark mode</label>
+                            <label class="switch" for="settings-dark-mode">
+                                <input type="checkbox" id="settings-dark-mode" />
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                        <div class="option">
+                            <label for="settings-store-locally">Store Key Locally</label>
+                            <label class="switch" for="settings-store-locally">
+                                <input type="checkbox" id="settings-store-locally" />
+                                <div class="slider round"></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="img-export-settings" class="settings-page">
+                        <div class="option">
+                            <label for="settings-ei-zoom">Resolution</label>
+                            <input type="range" id="settings-ei-zoom" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-left-offset">Spacing left</label>
+                            <input type="number" pattern="/^[0-9]+$/" id="settings-ei-left-offset" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-right-offset">Spacing right</label>
+                            <input type="number" pattern="/^[0-9]+$/" id="settings-ei-right-offset" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-top-offset">Spacing top</label>
+                            <input type="number" pattern="/^[0-9]+$/" id="settings-ei-top-offset" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-bottom-offset">Spacing bottom</label>
+                            <input type="number" pattern="/^[0-9]+$/" id="settings-ei-bottom-offset" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-background-color">Background color</label>
+                            <input type="color" id="settings-ei-background-color" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-bg-alpha">Background alpha</label>
+                            <input type="range" min="0" max="1" step="0.01" id="settings-ei-bg-alpha" />
+                        </div>
+                        <div class="option">
+                            <label for="settings-ei-delay">Render delay</label>
+                            <input type="number" pattern="/^[0-9]+$/" id="settings-ei-delay" />
+                        </div>
+                    </div>
                 </div>
                 <div class="btn-container">
                     <button id="settings-modal-save-btn">Save Changes</button>
                 </div>
             </div>
-        </div>
+        </dialog>
 
         <nav id="main-nav">
             <hr />
@@ -91,7 +135,9 @@
             <div class="nav-item">
                 <button id="file-btn">File</button>
                 <div class="sub-menu">
-                    <button id="nav-btn-new-session">New Session</button>
+                    <button id="nav-btn-new-session">New Project</button>
+                    <button id="nav-btn-open-session">Open Project</button>
+                    <button id="nav-btn-join-session">Join Project</button>
                     <hr />
                     <button id="nav-btn-save-sever">Save (On Server)</button>
                     <hr />

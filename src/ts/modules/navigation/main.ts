@@ -32,8 +32,6 @@ import { Connection } from "../connections/connection";
 const componentContainer = document.getElementById("component-container") as HTMLDivElement;
 const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
 
-const imageDelay = 500;
-
 export interface Diagram {
     id: number;
     title: string;
@@ -80,7 +78,7 @@ async function takeImageAt(x: number, y: number): Promise<string> {
     Grid.yOffset = y;
     Grid.addZoom(0, 0);
 
-    await delay(imageDelay);
+    if (Global.IMG_EXP_DELAY > 0) await delay(Global.IMG_EXP_DELAY);
 
     componentContainer.classList.add("generate-img");
 
@@ -114,7 +112,13 @@ export function initialize() {
     createButtons(mockupDiagram);
 
     document.getElementById("nav-btn-new-session")?.addEventListener("click", () => {
+        window.location.href = `/#new-project`;
+    });
+    document.getElementById("nav-btn-open-session")?.addEventListener("click", () => {
         window.location.href = `/`;
+    });
+    document.getElementById("nav-btn-join-session")?.addEventListener("click", () => {
+        window.location.href = `/join`;
     });
     document.getElementById("nav-btn-save-sever")?.addEventListener("click", async () => {
         WebSocketController.instance.sentSaveMessage();
@@ -171,6 +175,8 @@ export function initialize() {
         const modalCloseBtn = document.getElementById("modal-close-btn") as HTMLButtonElement;
 
         let cancel = false;
+        ctx.fillStyle = Grid.backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         modal?.append(canvas);
         if (modalPrimaryBtn) {
@@ -193,6 +199,20 @@ export function initialize() {
             });
         }
 
+        const p = document.createElement("p");
+        p.textContent = "Tip: You can change the properties of the image in the ";
+        modal?.append(p);
+        const openSettingsButton = document.createElement("button");
+        openSettingsButton.textContent = "settings";
+        openSettingsButton.classList.add("link-btn");
+        openSettingsButton.addEventListener("click", () => {
+            closeModal();
+            cancel = true;
+            openSettings();
+            document.getElementById("img-export-settings-btn")?.click();
+        });
+        p.append(openSettingsButton);
+
         for (let x = 0; x < imgNrX; x++) {
             for (let y = 0; y < imgNrY; y++) {
                 if (cancel) {
@@ -205,6 +225,13 @@ export function initialize() {
                     return;
                 }
                 await takeImageAt(startX - stepX * x, startY - stepY * y);
+                ctx.fillStyle = Global.IMG_EXP_BACKGROUND_COLOR;
+                ctx.globalAlpha = Global.IMG_EXP_BACKGROUND_ALPHA;
+                console.log(Global.IMG_EXP_BACKGROUND_COLOR, Global.IMG_EXP_BACKGROUND_ALPHA);
+
+                ctx.clearRect(x * Grid.width, y * Grid.height, Grid.width, Grid.height);
+                ctx.fillRect(x * Grid.width, y * Grid.height, Grid.width, Grid.height);
+                ctx.globalAlpha = 1;
                 ctx.drawImage(mainCanvas, x * Grid.width, y * Grid.height);
             }
         }
