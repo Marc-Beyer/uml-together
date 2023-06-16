@@ -68,11 +68,12 @@
                     padding: 0;
                     position: absolute;
                     top: 50%;
-                    left: -51%;
+                    left: -22%;
                     transform: rotate(45deg);
                     height: 0.1em;
-                    width: 200%;
+                    width: 141.421%;
                     background-color: var(--primary-line-color);
+                    width: 141.421%;
                 }
             }
         }
@@ -226,6 +227,13 @@
                     border: none;
 
                     background: var(--primary-line-color);
+                }
+            }
+            &.note-component {
+                .header {
+                    div {
+                        display: none;
+                    }
                 }
             }
         }
