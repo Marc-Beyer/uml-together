@@ -1,5 +1,7 @@
 import * as crypto from "crypto-js";
 
+import darkScreenShot from "/img/screenshots/screen-01-dark.png";
+
 const mainUrl = import.meta.env.MODE === "development" ? "http://127.0.0.1" : "";
 
 export {};
@@ -13,6 +15,7 @@ if (window.location.href.endsWith("#new-project")) requestNewSession();
 
 if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
     document.body.classList.add("dark-mode");
+    (document.getElementById("screenshot") as HTMLImageElement).src = darkScreenShot;
 }
 
 const storedSessions = document.getElementById("stored-sessions");
